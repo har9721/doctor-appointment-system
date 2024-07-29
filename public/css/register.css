@@ -1,0 +1,37 @@
+body,html{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    height: 100vh;
+    font-size: 16px;
+    font-family: "Lato", sans-serif;
+    font-weight: 400;
+    line-height: 1.8em;
+    color: #666;
+}
+
+.box{
+    display: flex;
+    height: 100vh;
+}
+
+.parent{
+    width: 50%;
+    background-image: url('../Images/register.jpg');
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+    /* height: 100%; */
+}
+.child{
+    width: 50%;
+}
+.child .mask {
+    position: absolute;
+    top: 10%;
+    right: 0;
+    bottom: 0;
+    left: 0%;
+    overflow: hidden;
+    background-attachment: fixed;
+}
