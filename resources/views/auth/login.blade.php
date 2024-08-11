@@ -7,7 +7,8 @@
         <!-- CSRF Token -->
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
-        <title>Laravel</title>
+        <title>Doctor Appointment System</title>
+        <link rel="shortcut icon" href="{{URL::to('assets/images/doctor.png')}}" />
 
         <!-- Fonts -->
         <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
@@ -48,6 +49,7 @@
                 <div class="submit mb-2">
                     <input type="submit" class="center" name="sign-in" value="Sign In">  
                 </div>
+                <a class="submit" href="{{ route('register') }}" style="color: white">Sign Up</a>
                 <a class="submit" href="{{ route('password.request') }}" style="color: white">Forgot Password</a>
             </form>
         </div>

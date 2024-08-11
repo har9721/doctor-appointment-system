@@ -15,10 +15,9 @@ return new class extends Migration
     {
         Schema::create('states', function (Blueprint $table) {
             $table->id();
-            $table->string('stateName');
-            $table->unsignedBigInteger('country_ID');
-            $table->foreign('country_ID')->references('id')->on('countries')->onDelete('cascade');
-            $table->boolean('isActive')->default(1);
+            $table->string('name',30);
+            $table->unsignedBigInteger('country_id')->nullable();
+            $table->foreign('country_id')->references('id')->on('countries')->onDelete('cascade');
             $table->timestamps();
         });
     }
