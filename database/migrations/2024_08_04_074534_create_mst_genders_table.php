@@ -13,10 +13,10 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('countries', function (Blueprint $table) {
+        Schema::create('mst_genders', function (Blueprint $table) {
             $table->id();
-            $table->string('sortname',3);
-            $table->string('name',150);
+            $table->string('gender');
+            $table->boolean('isActive');
             $table->timestamps();
         });
     }
@@ -28,6 +28,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('countries');
+        Schema::dropIfExists('mst_genders');
     }
 };

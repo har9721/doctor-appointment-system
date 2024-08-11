@@ -1,37 +1,84 @@
-body,html{
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    height: 100vh;
-    font-size: 16px;
-    font-family: "Lato", sans-serif;
-    font-weight: 400;
-    line-height: 1.8em;
-    color: #666;
-}
-
-.box{
-    display: flex;
+body {
+  font-family: Arial, sans-serif;
+  /* background-color: #f4f4f4; */
+  margin: 0;
+  padding: 20px;
+  height: max-content;
+  /* background: linear-gradient(45deg, #4FB0C6, #4F86C6); */
+  /* background: rgb(101,66,126); */
+  /* background: linear-gradient(149deg, rgba(101,66,126,1) 0%, rgba(255,68,48,1) 50%, rgba(255,253,137,1) 100%); */
+    background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+    background-size: 400% 400%;
+    animation: gradient 15s ease infinite;
     height: 100vh;
 }
+.form-container {
+  background: #fff;
+  padding: 40px;
+  max-width: 900px;
+  margin: auto;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgb(9 9 6);
+  position: relative;
+  top: 50px;
+}
+.step {
+  display: none;
+}
+.step.active {
+  display: block;
+}
+.step-indicator {
+  margin-bottom: 20px;
+}
+.step-indicator div {
+  width: 20%;
+  padding: 10px;
+  text-align: center;
+  border-radius: 30px;
+  background-color: #e70fc6;
+  color: #fff
+}
+.step-indicator .active {
+  background-color: #77e483f5;
+  color: #fff;
+}
+.form-buttons {
+  display: flex;
+  justify-content: space-between;
+}
+button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  background-color: #e314c4;
+  color: #fff;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+button:hover {
+  background-color: #021b2c;
+}
 
-.parent{
-    width: 50%;
-    background-image: url('../Images/register.jpg');
-    background-repeat: no-repeat;
-    background-size: cover;
-    background-position: center;
-    /* height: 100%; */
+label{
+  font-weight: bold;
 }
-.child{
-    width: 50%;
+
+.error{
+  color: red;
+  display: none;
 }
-.child .mask {
-    position: absolute;
-    top: 10%;
-    right: 0;
-    bottom: 0;
-    left: 0%;
-    overflow: hidden;
-    background-attachment: fixed;
+
+@keyframes gradient {
+  0% {
+      background-position: 0% 50%;
+  }
+
+  50% {
+      background-position: 100% 50%;
+  }
+
+  100% {
+      background-position: 0% 50%;
+  }
 }
