@@ -3,8 +3,11 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\RegisterUserRequest;
+use App\Models\Patients;
 use App\Models\User;
 use Illuminate\Foundation\Auth\RegistersUsers;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 
@@ -68,5 +71,28 @@ class RegisterController extends Controller
             'email' => $data['email'],
             'password' => Hash::make($data['password']),
         ]);
+    }
+
+    public function showRegistrationForm()
+    {
+        return view('auth.register');
+    }
+
+    public function register(RegisterUserRequest $request)
+    {
+        $validated = $request->validated();
+
+        $addPatients = Patients::addPatients($validated);
+
+        if($addPatients != '')
+        {
+            $response['status'] = 'success';
+            $response['message'] = 'Patients records created successfully.';
+        }else{
+            $response['status'] = 'error';
+            $response['message'] = 'Patients records not created successfully.';
+        }
+
+        echo json_encode($response);
     }
 }
