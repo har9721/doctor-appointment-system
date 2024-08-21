@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
@@ -13,30 +14,36 @@ class Patients extends Model
 
     protected $table = 'patients';
 
-    protected $fillable = ['first_name','last_name','email','password','mobile','address','city_ID','gender_ID'];
+    public $timestamps = false;
+
+    protected $fillable = ['person_ID','created_at'];
 
     public static function addPatients($data)
     {
         $addPatients = Patients::create([
-            'first_name' => trim($data['first_name']),
-            'last_name' => trim($data['last_name']),
-            'email' => trim($data['email']),
-            'password' => Hash::make('12345678'),
-            'mobile' => trim($data['mobile']),
-            'address' => trim($data['address']),
-            'city_ID' => $data['city'],
-            'gender_ID' => $data['gender'],
+            'person_ID' => $data['person_ID'],
             'created_at' => now(),
         ]);
 
         if(!empty($addPatients))
         {
             $data['patient_ID'] = $addPatients->id;
+            $data['role'] = config('constant.patients_role_ID');
+
+            // add entry in user table
+            User::addUser($data);
+
+            // save other information of patients
             PatientsEmergencyContacts::addEmergencyContacts($data);
             PatientsMedicalHistory::insertMedicalHistory($data);
             PatientsLifeStyleInformation::addLifeStyleInformation($data);
         }
 
         return (!empty($addPatients)) ? $addPatients->id : '';
+    }
+
+    public function person()
+    {
+        return $this->belongsTo(Person::class,'person_ID')->where('isActive',1)->select('id','first_name','last_name','email','mobile','age','address','city_ID','gender_ID','isActive');
     }
 }

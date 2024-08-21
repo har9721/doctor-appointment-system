@@ -18,14 +18,14 @@ class SendMessage implements ShouldQueue
 
     public $data;
     
-    public function __construct($patients)
+    public function __construct($userData)
     {
-        $this->data = $patients;
+        $this->data = $userData;
     }
 
     public function handle()
     {
         info('in jobs class');
-        Mail::to($this->data['email'])->send( new sendWelcomeMail($this->data));
+        Mail::to($this->data['email'])->send(new sendWelcomeMail($this->data));
     }
 }

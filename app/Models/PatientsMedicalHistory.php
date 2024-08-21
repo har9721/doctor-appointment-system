@@ -11,6 +11,8 @@ class PatientsMedicalHistory extends Model
 
     protected $table = 'patients_medical_histories';
 
+    public $timestamps = false;
+
     protected $fillable = ['patient_ID','illness','surgery','allergies','chronicDisease','medication','createdBy'];
 
     public static function insertMedicalHistory($data)

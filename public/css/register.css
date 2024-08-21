@@ -67,7 +67,7 @@ label{
 .error{
   color: red;
   display: none;
-}
+/* } */
 
 @keyframes gradient {
   0% {
