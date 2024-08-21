@@ -21,7 +21,8 @@ class DatabaseSeeder extends Seeder
             GenderSeeder::class,
             RoleSeeder::class,
             SmokingStatusSeeder::class,
-            AlcoholStatusSeeder::class
+            AlcoholStatusSeeder::class,
+            UserSeeder::class
         ]);
     }
 }

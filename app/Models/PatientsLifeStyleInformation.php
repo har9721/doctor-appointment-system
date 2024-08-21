@@ -11,6 +11,8 @@ class PatientsLifeStyleInformation extends Model
 
     protected $table = 'patients_life_style_information';
 
+    public $timestamps = false;
+
     protected $fillable = ['patient_ID','smokingStatus_ID','alcoholStatus_ID','exercise','createdBy'];
 
     public static function addLifeStyleInformation($data)

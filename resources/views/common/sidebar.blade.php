@@ -25,24 +25,26 @@
     <!-- Divider -->
     <hr class="sidebar-divider">
 
-    <!-- Heading -->
-    <div class="sidebar-heading">
-        Interface
-    </div>
-
     <!-- Nav Item - Pages Collapse Menu -->
     <li class="nav-item">
-        <a class="nav-link" href="#">
+        <a class="nav-link" href="{{ route('admin.patients') }}">
             <i class="fas fa-fw fa-user"></i>
-            <span>User</span>
+            <span>Patients</span>
+        </a>
+    </li>
+
+    <li class="nav-item">
+        <a class="nav-link" href="{{ route('admin.specialty') }}">
+            <i class="fas fa-notes-medical"></i>
+            <span>Doctor Speciality</span>
         </a>
     </li>
 
     <!-- Nav Item - Utilities Collapse Menu -->
     <li class="nav-item">
-        <a class="nav-link collapsed" href="#" active>
-            <i class="fas fa-fw fa-tasks"></i>
-            <span>Task</span>
+        <a class="nav-link collapsed" href="{{ route('admin.doctor') }}" active>
+            <i class="fas fa-user-md"></i>
+            <span>Doctor</span>
         </a>
     </li>
 

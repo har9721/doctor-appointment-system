@@ -282,7 +282,7 @@ $(document).on('click','#submit', function(){
         $.ajax({
             type : "post",
             url : registerUser,
-            data : {'smoking_status' : smoking_status,'alcohol_status' : alcohol_status, 'exercise' : exercise,'first_name' : first_name,'last_name': last_name,'email' : email,'mobile': mobile,'gender' : gender,'age' : age, 'city' : city ,'address': address ,'name' : name,'contact_relation' : contact_relation,'contact_no' : contact_no, 'past_illness' : past_illness, 'chronic_condition' : chronic_condition, 'surgeries' : surgeries,'allergies' : allergies,'medication' : medication},
+            data : {'smoking_status' : smoking_status,'alcohol_status' : alcohol_status, 'exercise' : exercise,'first_name' : first_name,'last_name': last_name,'email' : email,'mobile': mobile,'gender' : gender,'age' : age, 'city' : city ,'address': address ,'name' : name,'contact_relation' : contact_relation,'contact_no' : contact_no, 'past_illness' : past_illness, 'chronic_condition' : chronic_condition, 'surgeries' : surgeries,'allergies' : allergies,'medication' : medication ,'isPatients' : 1},
             beforeSend: function()
             {
                 $('#submit').attr('disabled',true);

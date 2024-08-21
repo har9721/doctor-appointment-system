@@ -20,8 +20,8 @@ class RegisterUserRequest extends FormRequest
         return [
             'first_name' => 'required|min:3|regex:/^[\pL\s_]+$/u',
             'last_name' => 'required|min:3|regex:/^[\pL\s_]+$/u',
-            'email' => 'required|email|unique:patients,email',
-            'mobile' => 'required|numeric|unique:patients,mobile|digits:10',
+            'email' => 'required|email|unique:users,email',
+            'mobile' => 'required|numeric|unique:users,mobile|digits:10',
             'gender' => 'required|numeric',
             'age' => 'required|numeric|lt:110',
             'city' => 'required',
@@ -36,7 +36,8 @@ class RegisterUserRequest extends FormRequest
             'medication' => 'required|min:2',
             'smoking_status' => 'required|in:1,2,3',
             'alcohol_status' => 'required|in:1,2,3',
-            'exercise' => 'required'
+            'exercise' => 'required',
+            'isPatients' => 'required',
         ];
     }
 
