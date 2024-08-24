@@ -18,7 +18,7 @@ function showStep(step) {
     steps[step].classList.add('active');
     stepIndicators[step].classList.add('active');
     prevBtn.style.display = step === 0 ? 'none' : 'inline';
-    nextBtn.textContent = step === steps.length - 1 ? 'Submit' : 'Next';
+    // nextBtn.textContent = step === steps.length - 1 ? 'Submit' : 'Next';
 
     if(step == steps.length -1)
     {

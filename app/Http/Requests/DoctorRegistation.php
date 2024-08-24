@@ -20,14 +20,15 @@ class DoctorRegistation extends FormRequest
         return [
             'first_name' => 'required|min:3|regex:/^[\pL\s\-]+$/u',
             'last_name' => 'required|min:3|regex:/^[\pL\s\-]+$/u',
-            'email' => 'required|email|unique:users,email',
-            'mobile' => 'required|numeric|unique:users,mobile|digits:10',
+            'email' => 'required|email|unique:person,email',
+            'mobile' => 'required|numeric|unique:person,mobile|digits:10',
             'gender' => 'required|in:1,2,3',
             'age' => 'required|numeric|lt:110',
             'state' => 'required|numeric',
             'city' => 'required|numeric',
             'speacility' => 'required|numeric',
-            'licenseNumber' => 'required'
+            'licenseNumber' => 'required',
+            'isPatients' => 'sometimes'
         ];
     }
 
