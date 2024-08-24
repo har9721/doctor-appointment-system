@@ -29,8 +29,9 @@
             <!-- Step 1 -->
             <div class="step active">
                 <h2>Personal Information</h2>
+                <span style="color: red;">Note : All the information is mandatory.</span>
 
-                <div class="row">
+                <div class="row mt-2">
                     <div class="col-md-6 form-group">
                         <label for="first_name">First Name :</label>
                         <input type="text" class="form-control" id="first_name" placeholder="enter first name..." autocomplete="off" value="">
@@ -69,7 +70,7 @@
 
                     <div class="col-md-6 form-group">
                         <label for="age">Age :</label>
-                        <input type="number" id="age" class="form-control" autocapitalize="off" value="" placeholder="enter your age...">
+                        <input type="number" id="age" class="form-control" autocomplete="off" value="" placeholder="enter your age...">
                         <span class="error" id="age_error">Please enter your age.</span>
                     </div>
                 </div>
@@ -102,8 +103,9 @@
             <!-- Step 2 -->
             <div class="step">
                 <h2>Emergency Contact Details</h2>
+                <span style="color: red;">Note : All the information is mandatory.</span>
                
-                <div class="row">
+                <div class="row mt-2">
                     <div class="col-md-6 form-group">
                         <label for="name">Name :</label>
                         <input type="text" id="name" class="form-control" placeholder="enter name..." autocomplete="off">
@@ -129,8 +131,9 @@
             <!-- Step 3 -->
             <div class="step">
                 <h2>Medical History</h2>
+                <span style="color: red;">Note : All the information is mandatory.</span>
 
-                <div class="row">
+                <div class="row mt-2">
                     <div class="col-md-6 form-group">
                         <label for="past_illness">Past Illness :</label>
                         <textarea id="past_illness" class="form-control" placeholder="enter past illness..." autocomplete="off" rows="1"></textarea>
@@ -169,8 +172,9 @@
 
             <div class="step">
                 <h2>Lifestyle Information</h2>
+                <span style="color: red;">Note : All the information is mandatory.</span>
 
-                <div class="row">
+                <div class="row mt-2">
                     <div class="col-md-6 form-group">
                         <label for="smoking_status">Smoking Status :</label>
                         <select id="smoking_status" class="form-control">
@@ -200,14 +204,13 @@
             <div class="form-buttons">
                 <button type="button" class="btn btn-md btn-dark" id="prevBtn"><i class="fas fa-arrow-circle-left pr-1"></i>Previous</button>
                 <button type="button" class="btn btn-md btn-dark" id="nextBtn"><i class="fas fa-arrow-circle-right pr-1"></i>Next</button>
-                <button type="button" class="btn btn-md btn-dark" id="submit" style="display: none;"><i class="fas fa-save pr-1">Save</i></button>
+                <button type="button" class="btn btn-md btn-dark" id="submit" style="display: none;"><i class="fas fa-save pr-1"></i>Save</button>
             </div>
         </form>
     </div>
 
     <script src="{{ URL::to('assets/js/jquery.min.js') }}"></script>
     <script src="{{URL::to('assets/js/sweetalert2.js')}}"></script>
-    <!-- <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> -->
     <script type="text/javascript">
         let getCity = "{{ route('get-city') }}";
         let getStates = "{{ route('get-state') }}";

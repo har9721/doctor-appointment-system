@@ -2,7 +2,6 @@
 
 namespace App\Mail;
 
-use App\Models\Patients;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
@@ -16,9 +15,9 @@ class sendWelcomeMail extends Mailable
 
     protected $data;
 
-    public function __construct(Patients $patients)
+    public function __construct($user)
     {
-        $this->data = $patients;
+        $this->data = $user;
     }
 
     public function envelope()
@@ -36,6 +35,7 @@ class sendWelcomeMail extends Mailable
                 'name' => $this->data['first_name']. ' '.$this->data['last_name'],
                 'password' => '12345678',
                 'url' => "http://127.0.0.1:8000/",
+                'email' => $this->data['email'],
             ],
         );
     }

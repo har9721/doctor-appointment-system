@@ -11,6 +11,8 @@ class PatientsEmergencyContacts extends Model
 
     protected $table = 'patients_emergency_contacts';
 
+    public $timestamps = false;
+
     protected $fillable = ['patient_ID','contact_name','contact_relation','phone_no','createdBy'];
 
     public static function addEmergencyContacts($data)

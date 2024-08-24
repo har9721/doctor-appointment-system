@@ -9,8 +9,7 @@ class PatientsObserver
 {
     public function created(Patients $patients)
     {
-        info('in observer');
-        dispatch(new SendMessage($patients));
+
     }
 
     public function updated(Patients $patients)

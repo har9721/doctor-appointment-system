@@ -18,7 +18,7 @@ function showStep(step) {
     steps[step].classList.add('active');
     stepIndicators[step].classList.add('active');
     prevBtn.style.display = step === 0 ? 'none' : 'inline';
-    nextBtn.textContent = step === steps.length - 1 ? 'Submit' : 'Next';
+    // nextBtn.textContent = step === steps.length - 1 ? 'Submit' : 'Next';
 
     if(step == steps.length -1)
     {
@@ -282,7 +282,7 @@ $(document).on('click','#submit', function(){
         $.ajax({
             type : "post",
             url : registerUser,
-            data : {'smoking_status' : smoking_status,'alcohol_status' : alcohol_status, 'exercise' : exercise,'first_name' : first_name,'last_name': last_name,'email' : email,'mobile': mobile,'gender' : gender,'age' : age, 'city' : city ,'address': address ,'name' : name,'contact_relation' : contact_relation,'contact_no' : contact_no, 'past_illness' : past_illness, 'chronic_condition' : chronic_condition, 'surgeries' : surgeries,'allergies' : allergies,'medication' : medication},
+            data : {'smoking_status' : smoking_status,'alcohol_status' : alcohol_status, 'exercise' : exercise,'first_name' : first_name,'last_name': last_name,'email' : email,'mobile': mobile,'gender' : gender,'age' : age, 'city' : city ,'address': address ,'name' : name,'contact_relation' : contact_relation,'contact_no' : contact_no, 'past_illness' : past_illness, 'chronic_condition' : chronic_condition, 'surgeries' : surgeries,'allergies' : allergies,'medication' : medication ,'isPatients' : 1},
             beforeSend: function()
             {
                 $('#submit').attr('disabled',true);

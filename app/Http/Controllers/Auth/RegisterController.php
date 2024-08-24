@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\RegisterUserRequest;
 use App\Models\Patients;
+use App\Models\Person;
 use App\Models\User;
 use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Http\Request;
@@ -82,9 +83,9 @@ class RegisterController extends Controller
     {
         $validated = $request->validated();
 
-        $addPatients = Patients::addPatients($validated);
+        $addPerson = Person::addPerson($validated);
 
-        if($addPatients != '')
+        if($addPerson != '')
         {
             $response['status'] = 'success';
             $response['message'] = 'Patients records created successfully.';

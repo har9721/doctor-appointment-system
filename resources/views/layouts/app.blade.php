@@ -16,10 +16,12 @@
     <!-- Custom styles for this template-->
     <link href="{{ URL::to('assets/css/sb-admin-2.min.css') }}" rel="stylesheet">
 
+    <link href="{{ URL::to('assets/datatables/jquery.dataTable.min.css') }}" rel="stylesheet">
+
     <!-- toggle switch -->
     <link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
 
-    @yield('bootstrap')
+    @stack('css')
 </head>
 <body id="page-top">
     <!-- Page Wrapper -->
@@ -62,11 +64,13 @@
     <script src="{{ URL::to('assets/js/jquery.min.js') }}"></script>
     <script src="{{ URL::to('assets/js/bootstrap.bundle.min.js') }}"></script>
 
+    <script src="{{ URL::to('assets/datatables/jquery.dataTables.min.js') }}"></script>
     <!-- Custom scripts for all pages-->
     <script src="{{ URL::to('assets/js/sb-admin-2.min.js') }}"></script>
     
+    <script src="{{ URL::to('assets/js/jquery.repeater.min.js') }}"></script>
+
     <!-- toggle switch -->
-    <script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
     <script src="{{URL::to('assets/js/sweetalert2.js')}}"></script>
 
     @stack('scripts')
