@@ -20,7 +20,6 @@ class Person extends Model
 
     public static function addPerson($data)
     {
-        info($data);
         $insertPerson = Person::create([
             'first_name' => ucfirst(trim($data['first_name'])),
             'last_name' => ucfirst(trim($data['last_name'])),

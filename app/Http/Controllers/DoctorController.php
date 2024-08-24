@@ -31,10 +31,10 @@ class DoctorController extends Controller
         if($saveDoctorInfo != '')
         {
             $response['status'] = 'success';
-            $response['message'] = 'Doctor added created successfully.';
+            $response['message'] = 'Doctor added successfully.';
         }else{
             $response['status'] = 'error';
-            $response['message'] = 'Doctor not added not created successfully.';
+            $response['message'] = 'Doctor not added successfully.';
         }
 
         echo json_encode($response);
@@ -42,7 +42,7 @@ class DoctorController extends Controller
 
     public function fetchAllDoctorList(Request $request)
     {
-        $getDoctorList = Doctor::with(['person.city','person.gender','specialty'])->where('isActive',1)->get(['id','person_ID','specialty_ID','licenseNumber','isActive'])->toArray();
+        $getDoctorList = Doctor::with(['person.city','person.gender','specialty'])->where('isActive',1)->latest()->get(['id','person_ID','specialty_ID','licenseNumber','isActive'])->toArray();
 
         if($request->ajax())
         {

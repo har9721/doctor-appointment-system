@@ -20,8 +20,8 @@ class RegisterUserRequest extends FormRequest
         return [
             'first_name' => 'required|min:3|regex:/^[\pL\s_]+$/u',
             'last_name' => 'required|min:3|regex:/^[\pL\s_]+$/u',
-            'email' => 'required|email|unique:users,email',
-            'mobile' => 'required|numeric|unique:users,mobile|digits:10',
+            'email' => 'required|email|unique:person,email',
+            'mobile' => 'required|numeric|unique:person,mobile|digits:10',
             'gender' => 'required|numeric',
             'age' => 'required|numeric|lt:110',
             'city' => 'required',

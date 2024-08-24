@@ -70,7 +70,7 @@
 
                     <div class="col-md-6 form-group">
                         <label for="age">Age :</label>
-                        <input type="number" id="age" class="form-control" autocapitalize="off" value="" placeholder="enter your age...">
+                        <input type="number" id="age" class="form-control" autocomplete="off" value="" placeholder="enter your age...">
                         <span class="error" id="age_error">Please enter your age.</span>
                     </div>
                 </div>
