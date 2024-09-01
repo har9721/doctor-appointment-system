@@ -6,7 +6,7 @@ use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
 
-class DoctorRegistation extends FormRequest
+class DoctorRegistration extends FormRequest
 {
     protected $stopOnFirstFailure = true;
 
@@ -42,7 +42,6 @@ class DoctorRegistation extends FormRequest
 
     protected function failedValidation(Validator $validator)
     {
-        // print_r($validator);
         throw new HttpResponseException(response()->json([
             'success' => false,
             'message' =>$validator->errors()->first(),

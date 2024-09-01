@@ -22,8 +22,6 @@ return new class extends Migration
             $table->bigInteger('mobile');
             $table->unsignedBigInteger('role_ID');
             $table->foreign('role_ID')->references('id')->on('roles')->onDelete('cascade');
-            $table->unsignedBigInteger('person_ID')->nullable();
-            $table->foreign('person_ID')->references('id')->on('person')->onDelete('cascade');
             $table->boolean('isActive')->default(1);
             $table->boolean('isDeleted')->default(0);
             $table->timestamps();

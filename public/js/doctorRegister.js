@@ -41,7 +41,7 @@ $(document).on('click','#submitForm', function(){
                 });
 
                 setTimeout(function(){
-                    window.location.reload();
+                    window.location.href = getDoctorList;
                 },4000);
             }else{    
                 Swal.fire({

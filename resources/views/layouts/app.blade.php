@@ -21,6 +21,12 @@
     <!-- toggle switch -->
     <link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
 
+    <!-- calender -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.9.0/fullcalendar.css" />
+
+    <!-- date time picker -->
+    <link href="{{ URL::to('assets/css/jquery.datetimepicker.min.css') }}"  rel="stylesheet">
+
     @stack('css')
 </head>
 <body id="page-top">
@@ -72,6 +78,12 @@
 
     <!-- toggle switch -->
     <script src="{{URL::to('assets/js/sweetalert2.js')}}"></script>
+
+    <!-- calender -->
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
+
+    <!-- date time picker js -->
+    <script src="{{ URL::to('assets/js/jquery.datetimepicker.full.min.js') }}"></script>
 
     @stack('scripts')
 </body>

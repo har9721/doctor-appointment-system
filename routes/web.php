@@ -46,6 +46,15 @@ Route::group(['prefix' => '/admin', 'as' => 'admin.'], function(){
         Route::get('fetch-specialty','fetchAllSpecialty')->name('get-specialty');
         Route::get('get-specialty','fetchSpecialtyList')->name('specialtyList');
     });
+});
 
+Route::group(['prefix' => '/doctor', 'as' => 'doctor.'], function(){
+    Route::controller(DoctorController::class)->group(function(){
+        Route::get('time-slot','viewTimeSlot')->name('time-slot');
+        Route::get('fetch-time-slot-list','getTimeSlot')->name('getTimeSlot');
+        Route::post('add-time-slot','addTimeSlot')->name('addTimeSlot');
+        Route::post('delete-time-slot','deleteTimeSlot')->name('deleteTimeSlot');
+        Route::post('update-time-slot','updateTimeSlot')->name('updateTimeSlot');
+    });
 });
 
