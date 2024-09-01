@@ -32,32 +32,33 @@
     </div>
 </div>
 
-    <div class="modal" id="specialtyModal" tabindex="-1" role="dialog">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title"><b>Add Doctor Specialty</b></h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <div class="row">
-                        <div class="col-md-12">
-                            <label for="specialty">Specialty <span style="color: red;">*</span> :</label>
-                            <input type="text" name="specialty" id="specialty" class="form-control" placeholder="enter specialty name..." value="">
-                            <span class="errorMessage" style="display: none; color:red"></span>
-                        </div>
+<div class="modal" id="specialtyModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><b>Add Doctor Specialty</b></h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <label for="specialty">Specialty <span style="color: red;">*</span> :</label>
+                        <input type="text" name="specialty" id="specialty" class="form-control" placeholder="enter specialty name..." value="">
+                        <span class="errorMessage" style="display: none; color:red"></span>
                     </div>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-success" id="submit">Save</button>
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" id="submit">Save</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
             </div>
         </div>
     </div>
+</div>
 @endsection
+
 @push('scripts')
 <script>
     let saveSpecialty = "{{ route('admin.save-specialty') }}";

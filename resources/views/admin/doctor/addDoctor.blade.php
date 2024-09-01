@@ -115,6 +115,7 @@
     let getCity = "{{ route('get-city') }}";
     let getStates = "{{ route('get-state') }}";
     let getSpecialty = "{{ route('admin.specialtyList') }}"
+    let getDoctorList = "{{ route('admin.doctor') }}"
 </script>
 <script src="{{ asset('js/doctorRegister.js') }}"></script>
 @endpush

@@ -13,14 +13,14 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('patients_emergency_contacts', function (Blueprint $table) {
+        Schema::create('doctor_time_slots', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('patient_ID');
-            $table->foreign('patient_ID')->references('id')->on('patients')->onDelete('cascade');
-            $table->string('contact_name');
-            $table->string('contact_relation');
-            $table->bigInteger('phone_no');
-            $table->boolean('isActive')->default(1);
+            $table->unsignedBigInteger('doctor_ID');
+            $table->foreign('doctor_ID')->references('id')->on('doctors')->onDelete('cascade');
+            $table->date('availableDate');
+            $table->time('start_time')->nullable();
+            $table->time('end_time')->nullable();
+            $table->boolean('isBooked')->default(0);
             $table->boolean('isDeleted')->default(0);
             $table->timestamps();
             $table->unsignedBigInteger('createdBy')->nullable();
@@ -40,6 +40,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('patients_emergency_contacts');
+        Schema::dropIfExists('doctor_time_slots');
     }
 };

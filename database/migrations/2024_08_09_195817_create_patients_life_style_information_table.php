@@ -26,11 +26,11 @@ return new class extends Migration
             $table->boolean('isDeleted')->default(0);
             $table->timestamps();
             $table->unsignedBigInteger('createdBy')->nullable();
-            $table->foreign('createdBy')->references('id')->on('patients')->onDelete('cascade');
+            $table->foreign('createdBy')->references('id')->on('users')->onDelete('cascade');
             $table->unsignedBigInteger('updatedBy')->nullable();
-            $table->foreign('updatedBy')->references('id')->on('patients')->onDelete('cascade');
+            $table->foreign('updatedBy')->references('id')->on('users')->onDelete('cascade');
             $table->unsignedBigInteger('deletedBy')->nullable();
-            $table->foreign('deletedBy')->references('id')->on('patients')->onDelete('cascade');
+            $table->foreign('deletedBy')->references('id')->on('users')->onDelete('cascade');
             $table->timestamp('deletedAt')->nullable();
         });
     }

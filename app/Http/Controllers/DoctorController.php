@@ -3,8 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\DoctorRegistation;
+use App\Http\Requests\DoctorRegistration;
 use App\Http\Requests\SpeialtyRequest;
+use App\Http\Requests\ValidateTimeSlot;
 use App\Models\Doctor;
+use App\Models\DoctorTimeSlots;
 use App\Models\Mst_specialty;
 use App\Models\Person;
 use Illuminate\Http\Request;
@@ -22,7 +25,7 @@ class DoctorController extends Controller
         return view('admin.doctor.addDoctor');    
     }
 
-    public function doctorRegistration(DoctorRegistation $request)
+    public function doctorRegistration(DoctorRegistration $request)
     {
         $validated = $request->validated();
 
@@ -137,5 +140,79 @@ class DoctorController extends Controller
     public function fetchSpecialtyList()
     {
         return Mst_specialty::getAllSpecialty();
+    }
+
+    public function viewTimeSlot()
+    {
+        $loginUserId = Doctor::getLoginDoctorID();
+
+        return view('doctor.viewTimeSlot',compact('loginUserId'));    
+    }
+
+    public function getTimeSlot()
+    {
+        $fetchAllTimeSlots = DoctorTimeSlots::fetchDoctorTimeSlots();
+
+        return response()->json($fetchAllTimeSlots);
+    }
+
+    public function addTimeSlot(ValidateTimeSlot $request)
+    {
+        $addTimeSlot = DoctorTimeSlots::addDoctorTimeSlot($request->all());
+
+        $msg = ($request['isEdit'] == '1') ? 'updated' : 'added';
+
+        if($addTimeSlot != '')
+        {
+            $response['status'] = 'success';
+            $response['message'] = 'Time slot is '. $msg .' successfully.';
+        }else
+        {
+            $response['status'] = 'success';
+            $response['message'] = 'Time slot is not '.$msg.' successfully.';
+        }
+
+        return response()->json($response);
+    }
+    
+    public function deleteTimeSlot(Request $request)
+    {
+        $id = (isset($request->id)) ? $request->id : null;
+
+        if($id)
+        {
+            $deleteTimeSlot = DoctorTimeSlots::deleteTimeSlot($id);
+        }else{
+            $deleteTimeSlot = '';
+        }
+
+        if($deleteTimeSlot != '')
+        {
+            $response['status'] = 'success';
+            $response['message'] = 'Time slot is deleted successfully.';
+        }else
+        {
+            $response['status'] = 'success';
+            $response['message'] = 'Time slot is not deleted successfully.';
+        }
+
+        return response()->json($response);
+    }
+
+    public function updateTimeSlot(ValidateTimeSlot $request)
+    {
+        $updateTimeSlot = DoctorTimeSlots::updateDoctorTimeSlot($request->all());
+
+        if($updateTimeSlot != '')
+        {
+            $response['status'] = 'success';
+            $response['message'] = 'Time slot is updated successfully.';
+        }else
+        {
+            $response['status'] = 'success';
+            $response['message'] = 'Time slot is not updated successfully.';
+        }
+
+        return response()->json($response);
     }
 }

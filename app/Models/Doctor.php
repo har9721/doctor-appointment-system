@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
 class Doctor extends Model
@@ -40,5 +41,10 @@ class Doctor extends Model
     public function specialty()
     {
         return $this->belongsTo(Mst_specialty::class,'specialty_ID')->where('isActive',1)->select('id','specialtyName','isActive');    
+    }
+
+    public static function getLoginDoctorID()
+    {
+        return Doctor::join('users','users.person_ID','doctors.person_ID')->where('users.id',Auth::user()->id)->first('doctors.id');
     }
 }
