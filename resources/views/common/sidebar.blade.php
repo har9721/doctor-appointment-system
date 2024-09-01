@@ -40,6 +40,13 @@
         </a>
     </li>
 
+    <li class="nav-item">
+        <a class="nav-link" href="{{ route('doctor.time-slot') }}">
+            <i class="fas fa-calendar"></i>
+            <span>Manage Availability</span>
+        </a>
+    </li>
+
     <!-- Nav Item - Utilities Collapse Menu -->
     <li class="nav-item">
         <a class="nav-link collapsed" href="{{ route('admin.doctor') }}" active>
