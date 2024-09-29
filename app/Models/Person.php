@@ -47,7 +47,7 @@ class Person extends Model
 
     public function doctor()
     {
-        return $this->hasOne(Doctor::class,'person_ID');    
+        return $this->hasOne(Doctor::class,'person_ID')->where('isActive',1)->select('id','person_ID','specialty_ID','licenseNumber','isActive');    
     }
 
     public function city()

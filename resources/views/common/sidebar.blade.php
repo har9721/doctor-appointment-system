@@ -42,7 +42,7 @@
 
     <li class="nav-item">
         <a class="nav-link" href="{{ route('doctor.time-slot') }}">
-            <i class="fas fa-calendar"></i>
+            <i class="fas fa-calendar-check"></i>
             <span>Manage Availability</span>
         </a>
     </li>
@@ -52,6 +52,13 @@
         <a class="nav-link collapsed" href="{{ route('admin.doctor') }}" active>
             <i class="fas fa-user-md"></i>
             <span>Doctor</span>
+        </a>
+    </li>
+
+    <li class="nav-item">
+        <a class="nav-link collapsed" href="{{ route('patients.appointment-booking') }}" active>
+            <i class="fas fa-calendar"></i>
+            <span>Appointment Booking</span>
         </a>
     </li>
 

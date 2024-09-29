@@ -2,9 +2,11 @@
 
 namespace App\Providers;
 
+use App\Models\Appointments;
 use App\Models\Doctor;
 use App\Models\Patients;
 use App\Models\User;
+use App\Observers\AppointmentsObserver;
 use App\Observers\DoctorObserver;
 use App\Observers\PatientsObserver;
 use App\Observers\UserObserver;
@@ -36,6 +38,7 @@ class EventServiceProvider extends ServiceProvider
         Patients::observe(PatientsObserver::class);
         Doctor::observe(DoctorObserver::class);
         User::observe(UserObserver::class);
+        Appointments::observe(AppointmentsObserver::class);
     }
 
     /**

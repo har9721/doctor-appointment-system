@@ -218,6 +218,7 @@
         let registerUser = "{{ route('register') }}";
         let smokingStatus = "{{ route('get-smoking-status') }}";
         let alcoholStatus = "{{ route('get-alcohol-status') }}";
+        let loginUrl = "{{ route('/') }}";
     </script>
     <script src="{{ asset('js/register.js') }}"></script>
 </body>

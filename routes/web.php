@@ -58,3 +58,11 @@ Route::group(['prefix' => '/doctor', 'as' => 'doctor.'], function(){
     });
 });
 
+Route::group(['prefix' => '/patients', 'as' => 'patients.'], function(){
+    Route::controller(PatientsController::class)->group(function(){
+        Route::get('appointment-booking','viewAppointmentBookingPage')->name('appointment-booking');
+        Route::get('search-doctor','searchDoctor')->name('search-doctor');
+        Route::post('book-appointment','bookAppointment')->name('book-appointment');
+    });
+});
+
