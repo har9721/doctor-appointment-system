@@ -22,7 +22,7 @@ class ValidateTimeSlot extends FormRequest
         {
             return [
                 'date' => ['required','date_format:Y-m-d','after_or_equal:'.date('Y-m-d')],
-                'startTime' => ['required','date_format:H:i:s',
+                'startTime' => ['required','date_format:H:i',
                     Rule::unique('doctor_time_slots','start_time')->where('availableDate', $this->date)->where('start_time', $this->startTime)->where('doctor_ID', $this->doctor_ID),
                 ],
             ];

@@ -17,7 +17,7 @@ class DoctorTimeSlots extends Model
 
     CONST DELETED_AT = 'deletedAt';
 
-    protected $appends = ['start','end','title'];
+    protected $appends = ['start','end','title','time'];
 
     protected $fillable = ['doctor_ID', 'availableDate' ,'start_time','end_time','created_at'];
 
@@ -92,5 +92,26 @@ class DoctorTimeSlots extends Model
             'updated_at' => now(),
             'updatedBy' => Auth::user()->id
         ]);    
+    }
+
+    public function doctor()
+    {
+        return $this->belongsTo(Doctor::class,'doctor_ID')->select('id','person_ID','specialty_ID','licenseNumber','isActive');    
+    }
+
+    public function time() : Attribute
+    {
+        return new Attribute(
+            get : fn() =>  date('H:i A',strtotime($this->start_time)).' - '.date('H:i A',strtotime($this->end_time))
+        );  
+    }
+
+    public static function updateIsBookTimeSlot($data)
+    {
+        return DoctorTimeSlots::where('id',$data['timeSlot'])->update([
+            'isBooked' => 1,
+            'updatedBy' => Auth::user()->id,
+            'updated_at' => now()
+        ]);
     }
 }

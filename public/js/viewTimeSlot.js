@@ -207,7 +207,7 @@ function editEventDetails(event)
     let enddate = event.event.end;
     let endHours = enddate.getHours();
     let endMinutes = enddate.getMinutes();
-    let endTime = convertTimestampToTime(date);
+    let endTime = convertTimestampToTime(enddate);
         
     // show manage availability modal
     $('#manageAvailability').modal('show');
@@ -368,5 +368,5 @@ function convertTimestampToTime(eventDate)
     let hours = timeObject.getHours();
     let minutes = timeObject.getMinutes();
 
-    return `${hours}:${(minutes < 10) ? '0'+minutes : minutes}:00`;  
+    return `${hours}:${(minutes < 10) ? '0'+minutes : minutes}`;  
 }
