@@ -45,6 +45,7 @@ Route::group(['prefix' => '/admin', 'as' => 'admin.'], function(){
         Route::post('save-specialty','saveSpecialty')->name('save-specialty');
         Route::get('fetch-specialty','fetchAllSpecialty')->name('get-specialty');
         Route::get('get-specialty','fetchSpecialtyList')->name('specialtyList');
+        Route::post('delete-specialty','deleteSpecialty')->name('delete-specialty');
     });
 });
 
@@ -55,6 +56,14 @@ Route::group(['prefix' => '/doctor', 'as' => 'doctor.'], function(){
         Route::post('add-time-slot','addTimeSlot')->name('addTimeSlot');
         Route::post('delete-time-slot','deleteTimeSlot')->name('deleteTimeSlot');
         Route::post('update-time-slot','updateTimeSlot')->name('updateTimeSlot');
+    });
+});
+
+Route::group(['prefix' => '/patients', 'as' => 'patients.'], function(){
+    Route::controller(PatientsController::class)->group(function(){
+        Route::get('appointment-booking','viewAppointmentBookingPage')->name('appointment-booking');
+        Route::get('search-doctor','searchDoctor')->name('search-doctor');
+        Route::post('book-appointment','bookAppointment')->name('book-appointment');
     });
 });
 

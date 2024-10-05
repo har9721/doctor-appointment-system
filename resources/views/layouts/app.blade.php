@@ -27,6 +27,9 @@
     <!-- date time picker -->
     <link href="{{ URL::to('assets/css/jquery.datetimepicker.min.css') }}"  rel="stylesheet">
 
+    <!-- select 2 css -->
+    <link rel="stylesheet" href="{{URL::to('assets/css/select2.min.css')}}">
+
     @stack('css')
 </head>
 <body id="page-top">
@@ -84,6 +87,9 @@
 
     <!-- date time picker js -->
     <script src="{{ URL::to('assets/js/jquery.datetimepicker.full.min.js') }}"></script>
+
+    <!-- select2 -->
+    <script src="{{URL::to('assets/js/select2.min.js')}}"></script>
 
     @stack('scripts')
 </body>

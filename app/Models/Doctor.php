@@ -47,4 +47,9 @@ class Doctor extends Model
     {
         return Doctor::join('users','users.person_ID','doctors.person_ID')->where('users.id',Auth::user()->id)->first('doctors.id');
     }
+
+    public function timeSlot()
+    {
+        return $this->hasMany(DoctorTimeSlots::class,'doctor_ID')->where('isDeleted',0)->select('id','availableDate','start_time','end_time','doctor_ID');
+    }
 }

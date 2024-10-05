@@ -21,6 +21,7 @@ var table = $('#specialtyList').DataTable({
 $(document).on('click','#submit', function()
 {
     let specialty = $('#specialty').val();
+    let hidden_id = $('#hidden_id').val();
 
     if(specialty.trim() === ''){
         return $('.errorMessage').css('display','block').text('Please enter specialty name.');
@@ -33,13 +34,13 @@ $(document).on('click','#submit', function()
         $.ajax({
             type : "post",
             url : saveSpecialty,
-            data : {'name' : specialty},
+            data : {'name' : specialty,'hidden_id' : hidden_id},
             beforeSend: function(){
                 $('#submit').attr('disabled', true);
             },
             success : function (response){
                 let data = JSON.parse(response);
-                console.log(data);
+
                 if(data.status == 'success'){
                     Swal.fire({
                         title: "Success",
@@ -84,3 +85,76 @@ $(document).on('click','#submit', function()
 $(document).on('keyup', 'input[type=text]', function(){
     $('.errorMessage').css('display','none').text('');
 })
+
+$(document).on('click','.editSpecialty', function(){
+    let id = $(this).data('id');
+    let specialty = $(this).data('specialty');
+
+    $('#specialtyModal').modal('show');
+    $('#specialty').val(specialty);
+    $('#hidden_id').val(id);
+});
+
+$(document).on('click','.deleteSpecialty', function(){
+    let id = $(this).data('id');
+
+    Swal.fire({
+        title: "Are you sure?",
+        text: "You won't be able to revert this!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Yes, delete it!"
+    }).then((result) => {
+        if (result.isConfirmed) {
+            $.ajaxSetup({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                }
+            });
+            $.ajax({
+                type : "post",
+                url : deleteSpecialty,
+                data : {'id' : id},
+                success : function (response){
+    console.log(response);
+    
+                    if(response['status'] == 'success'){
+                        Swal.fire({
+                            title: "Success",
+                            text: response['message'],
+                            icon: "success",
+                            timer: 5000
+                        });
+    
+                        $('#specialtyList').DataTable().ajax.reload();
+    
+                    }else{    
+                        Swal.fire({
+                            title: "Success",
+                            text: response['message'],
+                            icon: "success",
+                            timer: 5000
+                        });
+                    }
+                },
+                error : function(response)
+                {
+                    if(response.status === 422)
+                    {
+                        var errors = response.responseJSON;
+                        Swal.fire({
+                            title: "Error",
+                            text: errors.message,
+                            icon: "error",
+                            timer: 5000
+                        });
+                    }
+                }
+            })
+        }
+    });
+});
+
+    

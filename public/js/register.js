@@ -299,7 +299,7 @@ $(document).on('click','#submit', function(){
                     });
 
                     setTimeout(function(){
-                        window.location.reload();
+                        window.location.href = loginUrl;
                     },4000);
                 }else{    
                     Swal.fire({

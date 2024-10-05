@@ -25,7 +25,9 @@ class HomeController extends Controller
     {
         $stateID = $request->state_Id;
 
-        return city::where('state_ID',$stateID)->orderBy('id','desc')->get(['id','name']);   
+        return city::when($stateID != null, function($query) use($stateID){
+            $query->where('state_id',$stateID);
+        })->orderBy('id','desc')->get(['id','name']);   
     }
 
     public function getState()
