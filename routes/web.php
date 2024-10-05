@@ -45,6 +45,7 @@ Route::group(['prefix' => '/admin', 'as' => 'admin.'], function(){
         Route::post('save-specialty','saveSpecialty')->name('save-specialty');
         Route::get('fetch-specialty','fetchAllSpecialty')->name('get-specialty');
         Route::get('get-specialty','fetchSpecialtyList')->name('specialtyList');
+        Route::post('delete-specialty','deleteSpecialty')->name('delete-specialty');
     });
 });
 
