@@ -44,6 +44,7 @@
             <div class="modal-body">
                 <div class="row">
                     <div class="col-md-12">
+                        <input type="hidden" id="hidden_id" value="">
                         <label for="specialty">Specialty <span style="color: red;">*</span> :</label>
                         <input type="text" name="specialty" id="specialty" class="form-control" placeholder="enter specialty name..." value="">
                         <span class="errorMessage" style="display: none; color:red"></span>
@@ -63,6 +64,7 @@
 <script>
     let saveSpecialty = "{{ route('admin.save-specialty') }}";
     let specialtyList = "{{ route('admin.get-specialty') }}";
+    let deleteSpecialty = "{{ route('admin.delete-specialty') }}";
 </script>
 
 <script src="{{ asset('js/specialty.js') }}"></script>

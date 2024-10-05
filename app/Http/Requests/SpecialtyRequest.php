@@ -5,8 +5,9 @@ namespace App\Http\Requests;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
+use Illuminate\Validation\Rule;
 
-class SpeialtyRequest extends FormRequest
+class SpecialtyRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -25,9 +26,17 @@ class SpeialtyRequest extends FormRequest
      */
     public function rules()
     {
-        return [
-            'name' => 'required|min:2|regex:/^[A-Za-z.,-]+$/'
-        ];
+        if(empty($this->hidden_id))
+        {
+            return [
+                'name' => 'required|min:2|unique:mst_specialties,specialtyName|regex:/^[A-Za-z., -]+$/'
+            ];
+        }else{
+            return [
+                'name' => ['required','min:2',Rule::unique('mst_specialties','specialtyName')->ignore($this->hidden_id),'regex:/^[A-Za-z., -]+$/'],
+                'hidden_id' => 'required'
+            ];
+        }
     }
 
     public function messages()
