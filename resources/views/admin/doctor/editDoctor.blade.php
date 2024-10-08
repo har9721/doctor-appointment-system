@@ -4,6 +4,13 @@
         .errorMessages{
             color: red;
         }
+        .imageThumb {
+            max-height: 75px;
+            border: 2px solid;
+            border-radius: 50%;
+            padding: 1px;
+            cursor: pointer;
+        }
     </style>
 @endpush
 @section('content')
@@ -23,25 +30,32 @@
         <div class="card-body">
             <form id="doctorForm" enctype="multipart/form-data">
                 <input type="hidden" name="isPatients" value="0">
+                <input type="hidden" name="user_ID" value="{{ $doctorDetails['user_ID'] }}">
+                <div class="row mb-4">
+                    <div class="col-md-8 col-md-9 col-sm-12 preview-area">
+                        <?php $location = "doctorProfilePictures/".$doctorDetails['fileName']; ?>
+                        <img class="imageThumb" src="{{ Storage::url($location) }}" alt="Profile Image">
+                    </div>
+                </div>
                 <div class="row mb-4">
                     <div class="col-md-3">
                         <label for="first_name"><b>First Name<span style="color: red;">*</span> : </b></label>
-                        <input type="text" class="form-control" name="first_name" id="first_name" placeholder="enter first name...">
+                        <input type="text" class="form-control" name="first_name" id="first_name" placeholder="enter first name..." value="{{ $doctorDetails['first_name'] }}">
                     </div>
 
                     <div class="col-md-3">
                         <label for="last_name"><b>Last Name<span style="color: red;">*</span> :</b></label>
-                        <input type="text" class="form-control" name="last_name" id="last_name" placeholder="enter last name...">
+                        <input type="text" class="form-control" name="last_name" id="last_name" placeholder="enter last name..." value="{{ $doctorDetails['last_name'] }}">
                     </div>
 
                     <div class="col-md-3">
                         <label for="email"><b>Email<span style="color: red;">*</span> :</b></label>
-                        <input type="email" id="email" name="email" class="form-control" placeholder="enter email...">
+                        <input type="email" id="email" name="email" class="form-control" placeholder="enter email..." value="{{ $doctorDetails['email'] }}">
                     </div>
 
                     <div class="col-md-3">
                         <label for="mobile"><b>Mobile<span style="color: red;">*</span> :</b></label>
-                        <input type="number" id="mobile" name="mobile" class="form-control" placeholder="enter mobile...">
+                        <input type="number" id="mobile" name="mobile" class="form-control" placeholder="enter mobile..." value="{{ $doctorDetails['mobile'] }}">
                     </div>
                 </div>
 
@@ -51,11 +65,12 @@
                         <select class="form-control" id="gender" name="gender">
                             <option value="">select gender</option>
                         </select>
+                        <input type="hidden" id="hidden_gender_ID" value="{{ $doctorDetails['gender_ID'] }}">
                     </div>
 
                     <div class="col-md-3">
                         <label for="age"><b>Age<span style="color:red">*</span></b> :</label>
-                        <input type="text" class="form-control" name="age" id="age" value="" placeholder="enter age...">
+                        <input type="text" class="form-control" name="age" id="age" placeholder="enter age..." value="{{ $doctorDetails['age'] }}">
                     </div>
 
                     <div class="col-md-3">
@@ -63,6 +78,7 @@
                         <select id="state" class="form-control" name="state">
                             <option value="">Select State</option>
                         </select>
+                        <input type="hidden" id="hidden_state_ID" value="{{ $doctorDetails['state_ID'] }}">
                     </div>
 
                     <div class="col-md-3">
@@ -70,6 +86,7 @@
                         <select id="city" class="form-control" name="city">
                             <option value="">Select City</option>
                         </select>
+                        <input type="hidden" id="hidden_city_ID" value="{{ $doctorDetails['city_ID'] }}">
                     </div>
                 </div>
 
@@ -79,21 +96,34 @@
                         <select class="form-control" id="speciality" name="speciality">
                             <option value="">select speciality</option>
                         </select>
+                        <input type="hidden" id="hidden_specialty_ID" value="{{ $doctorDetails['specialty_ID'] }}">
                     </div>
 
                     <div class="col-md-3">
                         <label for="licenseNumber"><b>Medical License Number <span style="color: red;">*</span> :</b></label>
-                        <input type="text" name="licenseNumber" class="form-control" id="licenseNumber" value="" placeholder="enter medical license number...">
+                        <input type="text" name="licenseNumber" class="form-control" id="licenseNumber" placeholder="enter medical license number..." value="{{ $doctorDetails['licenseNumber'] }}">
                     </div>
 
                     <div class="col-md-2">
                         <label for="experience"><b>Experience<span style="color: red;">*</span> :</b></label>
-                        <input type="number" class="form-control" name="experience" id="experience" placeholder="enter experience">
+                        <input type="number" class="form-control" name="experience" id="experience" placeholder="enter experience" value="{{ $doctorDetails['experience'] }}">
                     </div>
 
                     <div class="col-md-4">
+                        <label for="profileImageRadioBtn"><b>Do you want to update profile Image<span style="color: red;">*</span> :</b></label><br/>
+                        <label class="radio-inline">
+                            <input type="radio" name="imageUpdateOption" value="Yes">Yes
+                        </label>
+                        <label class="radio-inline">
+                            <input type="radio" name="imageUpdateOption" value="No" checked>No
+                        </label>
+                    </div>
+                </div>
+
+                <div class="row" id="fileUploadDiv" style="display: none;">
+                    <div class="col-md-3">
                         <label for="image"><b>Profile Image <span style="color: red;">*</span> :</b></label>
-                        <input type="file" name="profile_image" accept="image/*" class="form-control" id="image" value="" >
+                        <input type="file" name="profile_image" class="form-control" id="image" value="{{ $doctorDetails['fileName'] }}" >
                     </div>
                 </div>
 
@@ -109,7 +139,7 @@
 @endsection
 @push('scripts')
 <script>
-    let saveDoctorDetails = "{{ route('admin.doctorRegister') }}";
+    let saveDoctorDetails = "{{ route('admin.doctorUpdate') }}";
     let getGender = "{{ route('get-gender') }}";
     let getCity = "{{ route('get-city') }}";
     let getStates = "{{ route('get-state') }}";

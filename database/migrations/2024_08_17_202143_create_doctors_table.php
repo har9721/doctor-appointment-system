@@ -15,11 +15,13 @@ return new class extends Migration
     {
         Schema::create('doctors', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('person_ID')->nullable();
-            $table->foreign('person_ID')->references('id')->on('person')->onDelete('cascade');
+            $table->unsignedBigInteger('user_ID')->nullable();
+            $table->foreign('user_ID')->references('id')->on('users')->onDelete('cascade');
             $table->unsignedBigInteger('specialty_ID');
             $table->foreign('specialty_ID')->references('id')->on('mst_specialties')->onDelete('cascade');
             $table->string('licenseNumber')->nullable();
+            $table->string('fileName')->nullable();
+            $table->integer('experience')->nullable();
             $table->boolean('isActive')->default(1);
             $table->boolean('isDeleted')->default(0);
             $table->timestamps();

@@ -18,7 +18,70 @@ var table = $('#doctorList').DataTable({
         {data: 'city', name:'city',"sortable": true, "searchable": true},
         {data: 'specialty', name:'specialty',"sortable": true, "searchable": true},
         {data: 'licenseNumber', name:'licenseNumber',"sortable": true, "searchable": true},
+        {data: 'experience', name:'experience',"sortable": true, "searchable": true},
         {data: 'edit', name: 'action', orderable: false, searchable: false},
         {data: 'delete', name: 'delete', orderable: false, searchable: false},
     ],
+});
+
+$(document).on('click','.deleteDoctor', function(){
+    let id = $(this).data('id');
+    let user_id = $(this).data('user_id');
+
+    Swal.fire({
+        title: "Are you sure?",
+        text: "You won't be able to revert this!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Yes, delete it!"
+    }).then((result) => {
+        if (result.isConfirmed) {
+            $.ajaxSetup({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                }
+            });
+            $.ajax({
+                type : "post",
+                url : deleteDoctor,
+                data : {'id' : id, 'user_id' : user_id},
+                success : function (response){
+    
+                    if(response['status'] == 'success'){
+                        Swal.fire({
+                            title: "Success",
+                            text: response['message'],
+                            icon: "success",
+                            timer: 5000
+                        });
+    
+                        $('#doctorList').DataTable().ajax.reload();
+    
+                    }else{    
+                        Swal.fire({
+                            title: "Success",
+                            text: response['message'],
+                            icon: "success",
+                            timer: 5000
+                        });
+                    }
+                },
+                error : function(response)
+                {
+                    if(response.status === 422)
+                    {
+                        var errors = response.responseJSON;
+                        Swal.fire({
+                            title: "Error",
+                            text: errors.message,
+                            icon: "error",
+                            timer: 5000
+                        });
+                    }
+                }
+            })
+        }
+    });
 });
