@@ -118,7 +118,6 @@ $(document).on('click','.deleteSpecialty', function(){
                 url : deleteSpecialty,
                 data : {'id' : id},
                 success : function (response){
-    console.log(response);
     
                     if(response['status'] == 'success'){
                         Swal.fire({

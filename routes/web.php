@@ -46,6 +46,9 @@ Route::group(['prefix' => '/admin', 'as' => 'admin.'], function(){
         Route::get('fetch-specialty','fetchAllSpecialty')->name('get-specialty');
         Route::get('get-specialty','fetchSpecialtyList')->name('specialtyList');
         Route::post('delete-specialty','deleteSpecialty')->name('delete-specialty');
+        Route::get('/edit-doctor-details/{doctor}','editDoctorForm')->name('editDoctorDetails');
+        Route::post('/update-doctor-details','doctorUpdate')->name('doctorUpdate');
+        Route::post('/delete-doctor','deleteDoctor')->name('deleteDoctor');
     });
 });
 

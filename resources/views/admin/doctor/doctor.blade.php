@@ -26,6 +26,7 @@
                             <th>City</th>
                             <th>Speciality</th>
                             <th>License Number</th>
+                            <th>Experience</th>
                             <th>Edit</th>
                             <th>Delete</th>
                         </tr>
@@ -43,6 +44,7 @@
 @push('scripts')
 <script>
     let getDoctorList = "{{ route('admin.doctor-list') }}";
+    let deleteDoctor = "{{ route('admin.deleteDoctor') }}";
 </script>
 <script src="{{ asset('js/doctor.js') }}"></script>
 @endpush

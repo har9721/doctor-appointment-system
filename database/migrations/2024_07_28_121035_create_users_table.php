@@ -19,9 +19,15 @@ return new class extends Migration
             $table->string('last_name');
             $table->string('email')->unique();
             $table->string('password');
-            $table->bigInteger('mobile');
+            $table->bigInteger('mobile')->unique();
+            $table->integer('age');
+            $table->string('address',255)->nullable();
             $table->unsignedBigInteger('role_ID');
             $table->foreign('role_ID')->references('id')->on('roles')->onDelete('cascade');
+            $table->unsignedBigInteger('city_ID')->nullable();
+            $table->foreign('city_ID')->references('id')->on('cities')->onDelete('cascade');
+            $table->unsignedBigInteger('gender_ID');
+            $table->foreign('gender_ID')->references('id')->on('mst_genders')->onDelete('cascade');
             $table->boolean('isActive')->default(1);
             $table->boolean('isDeleted')->default(0);
             $table->timestamps();

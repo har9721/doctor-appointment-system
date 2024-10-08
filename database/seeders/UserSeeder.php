@@ -23,6 +23,9 @@ class UserSeeder extends Seeder
             'password' => Hash::make('12345678'),
             'mobile' => '8475784578',
             'role_ID' => 1,
+            'age' => 27,
+            'gender_ID' => 1,
+             
         ]);
     }
 }
