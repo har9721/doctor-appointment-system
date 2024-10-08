@@ -15,27 +15,25 @@ class Doctor extends Model
 
     public $timestamps = false;
 
-    protected $fillable = ['person_ID','specialty_ID','licenseNumber','created_at'];
+    const DELETED_AT = 'deletedAt';
+
+    protected $fillable = ['fileName','experience','user_ID','specialty_ID','licenseNumber','created_at'];
 
     public static function addDoctors($data)
     {   
-        $insertDoctor = Doctor::create([
-            'person_ID' => $data['person_ID'],
-            'specialty_ID' => $data['speacility'],
+        return Doctor::create([
+            'fileName' => $data['fileName'],
+            'experience' => $data['experience'],
+            'user_ID' => $data['user_ID'],
+            'specialty_ID' => $data['speciality'],
             'licenseNumber' => trim($data['licenseNumber']),
             'created_at' => now(),
         ]);
-
-        if($insertDoctor)
-        {
-            $data['role'] = 2;
-            return User::addUser($data);
-        }
     }
 
-    public function person()
+    public function user()
     {
-        return $this->belongsTo(Person::class,'person_ID')->where('isActive',1)->select('id','first_name','last_name','email','mobile','age','city_ID','gender_ID');    
+        return $this->belongsTo(User::class,'user_ID')->where('isActive',1)->select('id','first_name','last_name','email','mobile','age','city_ID','gender_ID');    
     }
 
     public function specialty()
@@ -51,5 +49,30 @@ class Doctor extends Model
     public function timeSlot()
     {
         return $this->hasMany(DoctorTimeSlots::class,'doctor_ID')->where('isDeleted',0)->select('id','availableDate','start_time','end_time','doctor_ID');
+    }
+
+    public static function updateDoctorInfo($data)
+    {
+        $doctorData = array_filter([
+            'fileName' => isset($data['fileName']) ? $data['fileName'] : null,
+            'experience' => $data['experience'],
+            'specialty_ID' => $data['speciality'],
+            'licenseNumber' => trim($data['licenseNumber']),
+            'updated_at' => now(),
+            'updatedBy' => Auth::user()->id
+        ]);
+
+        return Doctor::where('user_ID',$data['user_ID'])->update($doctorData);
+    }
+
+    public static function deleteDoctor($id)
+    {
+        return Doctor::where('id',$id)
+        ->update([
+            'isActive' => 0,
+            'isDeleted' => 1,
+            'deletedAt' => now(),
+            'deletedBy' => Auth::user()->id
+        ]);
     }
 }

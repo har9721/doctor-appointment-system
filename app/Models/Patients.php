@@ -17,12 +17,12 @@ class Patients extends Model
 
     public $timestamps = false;
 
-    protected $fillable = ['person_ID','created_at'];
+    protected $fillable = ['user_ID','created_at'];
 
     public static function addPatients($data)
     {
         $addPatients = Patients::create([
-            'person_ID' => $data['person_ID'],
+            'user_ID' => $data['user_ID'],
             'created_at' => now(),
         ]);
 
@@ -30,9 +30,6 @@ class Patients extends Model
         {
             $data['patient_ID'] = $addPatients->id;
             $data['role'] = config('constant.patients_role_ID');
-
-            // add entry in user table
-            User::addUser($data);
 
             // save other information of patients
             PatientsEmergencyContacts::addEmergencyContacts($data);
@@ -43,9 +40,9 @@ class Patients extends Model
         return (!empty($addPatients)) ? $addPatients->id : '';
     }
 
-    public function person()
+    public function user()
     {
-        return $this->belongsTo(Person::class,'person_ID')->where('isActive',1)->select('id','first_name','last_name','email','mobile','age','address','city_ID','gender_ID','isActive');
+        return $this->belongsTo(User::class,'user_ID')->where('isActive',1)->select('id','first_name','last_name','email','mobile','age','address','city_ID','gender_ID','isActive');
     }
 
     public static function getLoginPatientsId()

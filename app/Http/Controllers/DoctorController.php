@@ -2,16 +2,18 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\DoctorRegistation;
 use App\Http\Requests\DoctorRegistration;
 use App\Http\Requests\SpecialtyRequest;
 use App\Http\Requests\SpeialtyRequest;
 use App\Http\Requests\ValidateTimeSlot;
+use App\Models\city;
 use App\Models\Doctor;
 use App\Models\DoctorTimeSlots;
 use App\Models\Mst_specialty;
 use App\Models\Person;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Yajra\DataTables\Facades\DataTables;
 
 class DoctorController extends Controller
@@ -30,7 +32,19 @@ class DoctorController extends Controller
     {
         $validated = $request->validated();
 
-        $saveDoctorInfo = Person::addPerson($validated);
+        if(!empty($validated['profile_image']))
+        {
+            $file = $request->file('profile_image');
+            $fileName = time().'_'.$file->getClientOriginalName();
+
+            // add file name in validated array to save in a DB
+            $validated['fileName'] = $fileName;
+
+            // store file in storage folder
+            Storage::disk('public')->putFileAs('doctorProfilePictures',$file,$fileName);
+        }
+
+        $saveDoctorInfo = User::addUser($validated);
 
         if($saveDoctorInfo != '')
         {
@@ -46,30 +60,30 @@ class DoctorController extends Controller
 
     public function fetchAllDoctorList(Request $request)
     {
-        $getDoctorList = Doctor::with(['person.city','person.gender','specialty'])->where('isActive',1)->latest()->get(['id','person_ID','specialty_ID','licenseNumber','isActive'])->toArray();
+        $getDoctorList = Doctor::with(['user.city','user.gender','specialty'])->where('isActive',1)->latest()->get(['id','user_ID','specialty_ID','licenseNumber','experience','isActive'])->toArray();
 
         if($request->ajax())
         {
             return DataTables::of($getDoctorList)
             ->addIndexColumn()
             ->editColumn('fullname', function($row){
-                return isset($row['person']) ? $row['person']['full_name'] : '';
+                return isset($row['user']) ? $row['user']['full_name'] : '';
             })
 
             ->editColumn('email', function($row){
-                return isset($row['person']['email']) ? $row['person']['email'] : '';
+                return isset($row['user']['email']) ? $row['user']['email'] : '';
             })
             
             ->editColumn('mobile', function($row){
-                return isset($row['person']['mobile']) ? $row['person']['mobile'] : '';
+                return isset($row['user']['mobile']) ? $row['user']['mobile'] : '';
             })
 
             ->editColumn('gender', function($row){
-                return (isset($row['person']['gender'])) ? $row['person']['gender']['gender'] : '';    
+                return (isset($row['user']['gender'])) ? $row['user']['gender']['gender'] : '';    
             })
 
             ->editColumn('city', function($row){
-                return (isset($row['person']['city'])) ? $row['person']['city']['name'] : null;
+                return (isset($row['user']['city'])) ? $row['user']['city']['name'] : null;
             })
 
             ->editColumn('specialty', function($row){
@@ -77,12 +91,12 @@ class DoctorController extends Controller
             })
 
             ->editColumn('edit', function($row){
-                return '<button name="edit" id="edit" class="editUserDetails mr-2" data-toggle="tooltip" data-id = "'.$row['id'].'" data-placement="bottom" title="Edit">
+                return '<a href="'.route('admin.editDoctorDetails',['doctor' => $row['id']]).'"><button name="edit" id="edit" class="editDoctorDetails mr-2" data-toggle="tooltip" data-id = "'.$row['id'].'" data-placement="bottom" title="Edit">
                 <i class="fas fa-edit"  aria-hidden="true"></i>
-                </button>';
+                </button></a>';
             })
             ->editColumn('delete', function($row){
-                return '<button name="delete" id="delete" class="mr-2 deleteUser" data-toggle="tooltip" data-id = "'.$row['id'].'" data-placement="bottom" title="Delete">
+                return '<button name="delete" id="delete" class="mr-2 deleteDoctor" data-toggle="tooltip" data-id = "'.$row['id'].'" data-user_ID="'.$row['user_ID'].'" data-placement="bottom" title="Delete">
                 <i class="fas fa-trash"  aria-hidden="true"></i>
                 </button>';
             })
@@ -242,5 +256,79 @@ class DoctorController extends Controller
         }
 
         return response()->json($response);
+    }
+
+    public function editDoctorForm(Doctor $doctor)
+    {
+        $getDoctorDetails = Doctor::with(['user'])->where('id',$doctor->id)
+        ->get(['id','fileName','experience','user_ID','specialty_ID','licenseNumber'])
+        ->map(function($doctor){
+            $doctor['first_name'] = $doctor->user->first_name;
+            $doctor['last_name'] = $doctor->user->last_name;
+            $doctor['email'] = $doctor->user->email;
+            $doctor['mobile'] = $doctor->user->mobile;
+            $doctor['age'] = $doctor->user->age;
+            $doctor['city_ID'] = $doctor->user->city_ID;
+            $doctor['gender_ID'] = $doctor->user->gender_ID;
+            $doctor['state_ID'] = city::where('id',$doctor->user->city_ID)->pluck('state_id')->first();
+
+            return $doctor;
+        })->toArray();
+
+        $doctorDetails = (!empty($getDoctorDetails)) ? $getDoctorDetails[0] : null;
+
+        return view('admin.doctor.editDoctor',compact('doctorDetails'));
+    }
+
+    public function doctorUpdate(DoctorRegistration $request)
+    {
+        $validated = $request->validated();
+
+        if(isset($validated['profile_image']) && $validated['imageUpdateOption'] == 'Yes')
+        {
+            ini_set('upload_max_filesize', -1); 
+            ini_set('post_max_size', -1); 
+
+            $file = $request->file('profile_image');
+            $fileName = time().'_'.$file->getClientOriginalName();
+
+            // add file name in validated array to save in a DB
+            $validated['fileName'] = $fileName;
+
+            // store file in storage folderx
+            Storage::disk('public')->putFileAs('doctorProfilePictures',$file,$fileName);
+        }
+
+        $updateUserDetails = User::updateUserInfo($validated);
+
+        if($updateUserDetails != '')
+        {
+            $response['status'] = 'success';
+            $response['message'] = 'Doctor details is updated successfully.';
+        }else
+        {
+            $response['status'] = 'success';
+            $response['message'] = 'Doctor details is not updated successfully.';
+        }
+
+        echo json_encode($response);
+    }
+
+    public function deleteDoctor(Request $request)
+    {
+        
+        $deleteDoctor = User::deleteUser($request->all());
+
+        if($deleteDoctor != '')
+        {
+            $response['status'] = 'success';
+            $response['message'] = 'Doctor deleted successfully.';
+        }else
+        {
+            $response['status'] = 'success';
+            $response['message'] = 'Doctor not deleted successfully.';
+        }
+
+        echo json_encode($response);
     }
 }

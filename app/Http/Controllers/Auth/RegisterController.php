@@ -83,7 +83,7 @@ class RegisterController extends Controller
     {
         $validated = $request->validated();
 
-        $addPerson = Person::addPerson($validated);
+        $addPerson = User::addUser($validated);
 
         if($addPerson != '')
         {

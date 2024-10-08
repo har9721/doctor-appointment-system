@@ -38,7 +38,7 @@
         <li class="nav-item">
             <a class="nav-link collapsed" href="{{ route('admin.doctor') }}" active>
                 <i class="fas fa-user-md"></i>
-                <span>Doctor</span>
+                <span>Doctors</span>
             </a>
         </li>
 
