@@ -43,7 +43,7 @@ class Doctor extends Model
 
     public static function getLoginDoctorID()
     {
-        return Doctor::join('users','users.person_ID','doctors.person_ID')->where('users.id',Auth::user()->id)->first('doctors.id');
+        return Doctor::where('user_id',Auth::user()->id)->first('id');
     }
 
     public function timeSlot()

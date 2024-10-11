@@ -23,14 +23,14 @@ class NewAppointmentForDoctor extends Mailable
     public function envelope()
     {
         return new Envelope(
-            subject: 'New Appointment For Doctor',
+            subject: 'New Appointment',
         );
     }
 
     public function content()
     {
         return new Content(
-            view: 'view.sendNewAppointment',
+            view: 'mail.sendNewAppointment',
             with: [
                 'name' => $this->doctorData['doctor_name'],
                 'patientName' => $this->doctorData['patientsName'],
