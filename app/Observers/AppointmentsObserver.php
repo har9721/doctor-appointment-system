@@ -13,9 +13,9 @@ class AppointmentsObserver
     public function created(Appointments $appointments)
     {
         $doctorDetails = Doctor::join('doctor_time_slots','doctor_time_slots.doctor_ID','doctors.id')
-        ->join('person','person.id','doctors.person_ID')
+        ->join('users','users.id','doctors.user_ID')
         ->where('doctor_time_slots.id',$appointments->doctorTimeSlot_ID)
-        ->get(['person.first_name','person.last_name','person.email','doctor_time_slots.start_time','doctor_time_slots.end_time'])->toArray();
+        ->get(['users.first_name','users.last_name','users.email','doctor_time_slots.start_time','doctor_time_slots.end_time'])->toArray();
 
         $emailData['doctor_name'] = (!empty($doctorDetails)) ? $doctorDetails[0]['first_name'].' '.$doctorDetails[0]['last_name'] : null;
         $emailData['doctor_email'] = (!empty($doctorDetails)) ? $doctorDetails[0]['email'] : null;

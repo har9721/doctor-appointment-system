@@ -47,6 +47,6 @@ class Patients extends Model
 
     public static function getLoginPatientsId()
     {
-        return Patients::join('users','users.person_ID','patients.person_ID')->where('users.id',Auth::user()->id)->first('patients.id');
+        return Patients::where('user_ID',Auth::user()->id)->first('id');
     }
 }

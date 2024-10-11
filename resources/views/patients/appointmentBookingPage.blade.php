@@ -128,7 +128,7 @@
                 </div>
                 <div class="col-md-3">
                     <label for="date">Date : <span style="color: red;">*</span></label>
-                    <input type="text" id="date" class="datetimepicker form-control" value="<?php echo date('d-m-Y') ?>">
+                    <input type="text" id="date" class="datetimepicker form-control" value="<?php echo date('d-m-Y') ?>" onkeydown="return false;">
                 </div>
                 <div class="col-md-3 mt-4">
                     <button class="btn btn-success form-group mt-2" id="search">Search</button>
@@ -137,26 +137,7 @@
 
             <!-- Search Results -->
             <div id="searchResults" class="search-results row mt-4">
-                <!-- Doctor cards will be dynamically inserted here -->
-                <!-- <div class="card" style="width: 18rem;">
-                    <img src="https://unsplash.com/photos/a-rock-on-the-beach-with-a-mossy-log-on-it-Cv7XG4SpEMQ" class="card-img-top" alt="...">
-                    <div class="card-body">
-                        <h5 class="card-title">Card title</h5>
-                        <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-                        <a href="#" class="btn btn-primary">Go somewhere</a>
-                    </div>
-                </div> -->
             </div>
-
-            <!-- Appointment Section -->
-            <!-- <div class="appointment-section">
-                <h4 class="text-center">Select a Time Slot</h4>
-                <div id="timeSlotsContainer" class="d-flex flex-column align-items-center mt-3">
-                </div>
-                <div class="text-center">
-                    <button id="bookAppointmentBtn" class="book-btn">Book Appointment</button>
-                </div>
-            </div> -->
         </div>
     </div>
 </div>
