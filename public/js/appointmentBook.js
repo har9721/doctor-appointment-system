@@ -40,10 +40,11 @@ document.addEventListener('DOMContentLoaded', function() {
                         response.forEach(doctor => {
                             const timeSlot = doctor.time_slot;
                             const baseUrl = window.location.origin;
+                            const fileName = doctor.fileName;
                             let selectedTimeSlot = null;
 
                             // Access the image URL
-                            const imageUrl = baseUrl + '/Images/doctor.jpg';
+                            const imageUrl = baseUrl + '/storage/doctorProfilePictures/'+fileName;
 
                             let doctorCard = `
                             <div class="col-md-6">

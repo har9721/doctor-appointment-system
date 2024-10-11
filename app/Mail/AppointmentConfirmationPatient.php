@@ -23,7 +23,7 @@ class AppointmentConfirmationPatient extends Mailable
     public function envelope()
     {
         return new Envelope(
-            subject: 'Appointment Confirmation Patient',
+            subject: 'Appointment Confirmation',
         );
     }
 

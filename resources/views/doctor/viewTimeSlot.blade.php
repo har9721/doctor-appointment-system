@@ -33,12 +33,12 @@
                         <input type="hidden" id="hidden_timeslot_id" value="">
 
                         <label for="start_time">Start Time <span style="color: red;">*</span> :</label>
-                        <input type="text" name="start_time" id="start_time" class="form-control datetimepicker" value="" placeholder="select time..." autocomplete="off">
+                        <input type="text" name="start_time" id="start_time" class="form-control datetimepicker" value="" placeholder="select time..." autocomplete="off" onkeydown="return false;">
                         <span class="errorMessage" id="start_time_error" style="display: none; color:red">Please select start time</span>
                     </div>
                     <div class="col-md-6">
                         <label for="end_time">End Time <span style="color: red;">*</span> :</label>
-                        <input type="text" name="end_time" id="end_time" class="form-control datetimepicker" value="" placeholder="select time..." autocomplete="off">
+                        <input type="text" name="end_time" id="end_time" class="form-control datetimepicker" value="" placeholder="select time..." autocomplete="off" onkeydown="return false;">
                         <span class="errorMessage" id="end_time_error" style="display: none; color:red">Please select end time</span>
                     </div>
                 </div>

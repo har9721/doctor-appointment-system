@@ -10,5 +10,6 @@
     <p>Dear Dr. {{ $name }},</p>
     <p>You have a new appointment with {{ $patientName }} scheduled for {{ $date }} at {{ $time }}.</p>
     <p>Please make sure to attend the appointment on time.</p>
+    <p>Thank you!.</p>
 </body>
 </html>

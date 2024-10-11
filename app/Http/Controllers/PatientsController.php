@@ -74,20 +74,20 @@ class PatientsController extends Controller
 
         $getDoctorDetails = Doctor::with(['timeSlot' => function($q) use($date){
             $q->when(!empty($date), function($query) use($date){
-                $query->where('availableDate',$date)->where('isBooked',0);
+                $query->where('availableDate',$date)->where('isBooked',0)->where('end_time','>',date('H:i:s',strtotime('+5 hours 30 minutes',time())));
             });
         }])
         ->join('mst_specialties','mst_specialties.id','doctors.specialty_ID')
-        ->join('person','person.id','doctors.person_ID')
-        ->join('cities','cities.id','person.city_ID')
-        ->join('mst_genders','mst_genders.id','person.gender_ID')
+        ->join('users','users.id','doctors.user_ID')
+        ->join('cities','cities.id','users.city_ID')
+        ->join('mst_genders','mst_genders.id','users.gender_ID')
         ->when(!empty($city_ID), function($query) use($city_ID){
-            $query->where('person.city_ID',$city_ID);
+            $query->where('users.city_ID',$city_ID);
         })
         ->when(!empty($specialty), function($query) use($specialty){
             $query->where('mst_specialties.id',$specialty);
         })
-        ->get(['doctors.id','doctors.person_ID','doctors.specialty_ID','doctors.licenseNumber','person.id as personId','person.first_name','person.last_name','person.email','person.age','person.mobile','person.address','person.gender_ID','mst_genders.gender','mst_specialties.specialtyName','mst_specialties.id as specialtyId']);
+        ->get(['doctors.id','doctors.specialty_ID','doctors.fileName','doctors.licenseNumber','users.id as personId','users.first_name','users.last_name','users.email','users.age','users.mobile','users.address','users.gender_ID','mst_genders.gender','mst_specialties.specialtyName','mst_specialties.id as specialtyId']);
 
         return $getDoctorDetails;
     }
