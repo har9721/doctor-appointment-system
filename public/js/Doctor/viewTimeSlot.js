@@ -38,6 +38,9 @@ document.addEventListener('DOMContentLoaded', function() {
         aspectRatio: 3,
         slotMinTime: '10:00:00',
         slotMaxTime: '19:00:00',
+        // validRange: {
+        //     start: new Date()
+        // },
 
         headerToolbar: {
             left: 'prev,next today',

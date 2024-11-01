@@ -4,10 +4,11 @@ body {
   margin: 0;
   padding: 20px;
   height: max-content;
+  background-color: #dddfde !important;
   /* background: linear-gradient(45deg, #4FB0C6, #4F86C6); */
   /* background: rgb(101,66,126); */
   /* background: linear-gradient(149deg, rgba(101,66,126,1) 0%, rgba(255,68,48,1) 50%, rgba(255,253,137,1) 100%); */
-    background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+    /* background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab); */
     background-size: 400% 400%;
     animation: gradient 15s ease infinite;
     height: 100vh;
@@ -36,11 +37,13 @@ body {
   padding: 10px;
   text-align: center;
   border-radius: 30px;
-  background-color: #e70fc6;
+  background-color: #0cb8b6;
+  /* background-color: #e70fc6; */
   color: #fff
 }
 .step-indicator .active {
-  background-color: #77e483f5;
+  background-color: #2d7835f5;
+  /* background-color: #77e483f5; */
   color: #fff;
 }
 .form-buttons {
