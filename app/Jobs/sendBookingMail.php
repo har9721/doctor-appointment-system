@@ -18,6 +18,10 @@ class sendBookingMail implements ShouldQueue
 
     public $emailData;
 
+    public $failOnTimeout = false;
+
+    public $timeout = 120000;
+
     public function __construct($data)
     {
         info('inside job constructor ');

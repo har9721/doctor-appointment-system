@@ -36,6 +36,13 @@
 
         <!-- Nav Item - Utilities Collapse Menu -->
         <li class="nav-item">
+            <a class="nav-link" href="{{ route('admin.specialty') }}">
+                <i class="fas fa-notes-medical"></i>
+                <span>Doctor Speciality</span>
+            </a>
+        </li>
+
+        <li class="nav-item">
             <a class="nav-link collapsed" href="{{ route('admin.doctor') }}" active>
                 <i class="fas fa-user-md"></i>
                 <span>Doctors</span>
@@ -43,9 +50,9 @@
         </li>
 
         <li class="nav-item">
-            <a class="nav-link" href="{{ route('admin.specialty') }}">
-                <i class="fas fa-notes-medical"></i>
-                <span>Doctor Speciality</span>
+            <a class="nav-link collapsed" href="{{ route('appoinments.my-appointments') }}" active>
+                <i class="fas fa-calendar"></i>
+                <span>Appointments</span>
             </a>
         </li>
     
@@ -55,6 +62,13 @@
             <a class="nav-link" href="{{ route('doctor.time-slot') }}">
                 <i class="fas fa-calendar-check"></i>
                 <span>Manage Availability</span>
+            </a>
+        </li>
+
+        <li class="nav-item">
+            <a class="nav-link collapsed" href="{{ route('appoinments.my-appointments') }}" active>
+                <i class="fas fa-calendar"></i>
+                <span>Appointments</span>
             </a>
         </li>
     
@@ -68,7 +82,7 @@
         </li>
 
         <li class="nav-item">
-            <a class="nav-link collapsed" href="{{ route('patients.appointment-booking') }}" active>
+            <a class="nav-link collapsed" href="{{ route('appoinments.my-appointments') }}" active>
                 <i class="fas fa-calendar"></i>
                 <span>My Appointments</span>
             </a>

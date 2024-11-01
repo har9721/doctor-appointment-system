@@ -1,4 +1,9 @@
 @extends('layouts.app')
+<style>
+    .fc-daygrid-day-bottom{
+        padding-bottom: 20px;
+    }
+</style>
 @section('content')
 <div class="container-fluid">
     <div class="card shadow mb-4">
@@ -7,7 +12,7 @@
             <div class="text-right">
             </div>
         </div>
-        <div class="card-body">
+        <div class="card-body"> 
             <!-- <div class="container ro"> -->
                 <div id="calendar"></div>
             <!-- </div> -->
@@ -87,5 +92,5 @@
     let deleteTimeSlot = '{{ route("doctor.deleteTimeSlot") }}';
     let updateTimeSlot = '{{ route("doctor.updateTimeSlot") }}';
 </script>
-<script src="{{ asset('js/viewTimeSlot.js') }}"></script>
+<script src="{{ asset('js/Doctor/viewTimeSlot.js') }}"></script>
 @endsection

@@ -146,5 +146,5 @@
     let getSpecialty = "{{ route('admin.specialtyList') }}"
     let getDoctorList = "{{ route('admin.doctor') }}"
 </script>
-<script src="{{ asset('js/doctorRegister.js') }}"></script>
+<script src="{{ asset('js/Doctor/doctorRegister.js') }}"></script>
 @endpush

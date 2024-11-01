@@ -37,5 +37,5 @@
     let getPatientList = "{{route('admin.get-patients')}}";
 
 </script>
-    <script src="{{ asset('js/patients.js') }}"></script>
+    <script src="{{ asset('js/Patient/patients.js') }}"></script>
 @endpush
