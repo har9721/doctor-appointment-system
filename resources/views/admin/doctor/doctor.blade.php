@@ -46,5 +46,5 @@
     let getDoctorList = "{{ route('admin.doctor-list') }}";
     let deleteDoctor = "{{ route('admin.deleteDoctor') }}";
 </script>
-<script src="{{ asset('js/doctor.js') }}"></script>
+<script src="{{ asset('js/Doctor/doctor.js') }}"></script>
 @endpush

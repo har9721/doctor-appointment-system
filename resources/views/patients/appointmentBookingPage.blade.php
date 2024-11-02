@@ -99,8 +99,13 @@
         }
 
         .accordion-body {
-            max-width: 100%; /* Keep the accordion inside its container */
-            overflow-x: auto; /* Enable horizontal scrolling for many time slots */
+            max-width: 100%;
+            overflow-x: auto;
+        }
+
+        .select2-container .select2-selection--single
+        {
+            height: 36px !important;
         }
 </style>
 @section('content')
@@ -149,5 +154,5 @@
     let searchDoctor = "{{ route('patients.search-doctor') }}";
     let bookingUrl = "{{ route('patients.book-appointment') }}";
 </script>
-<script src="{{ asset('js/appointmentBook.js') }}"></script>
+<script src="{{ asset('js/Appointments/appointmentBook.js') }}"></script>
 @endpush

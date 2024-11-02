@@ -67,5 +67,5 @@
     let deleteSpecialty = "{{ route('admin.delete-specialty') }}";
 </script>
 
-<script src="{{ asset('js/specialty.js') }}"></script>
+<script src="{{ asset('js/Doctor/specialty.js') }}"></script>
 @endpush

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -92,17 +93,18 @@ class DoctorTimeSlots extends Model
             'updated_at' => now(),
             'updatedBy' => Auth::user()->id
         ]);    
-    }
+    }   
 
     public function doctor()
     {
-        return $this->belongsTo(Doctor::class,'doctor_ID')->select('id','person_ID','specialty_ID','licenseNumber','isActive');    
+        return $this->belongsTo(Doctor::class,'doctor_ID')->select('id','user_ID','specialty_ID','licenseNumber','isActive');    
     }
 
     public function time() : Attribute
     {
         return new Attribute(
-            get : fn() =>  date('H:i A',strtotime($this->start_time)).' - '.date('H:i A',strtotime($this->end_time))
+            get : fn() =>  Carbon::parse($this->start_time)->format('h:i A').' - '.Carbon::parse($this->end_time)->format('h:i A')
+            // get : fn() =>  date('H:i A',strtotime($this->start_time)).' - '.date('H:i A',strtotime($this->end_time))
         );  
     }
 
@@ -113,5 +115,10 @@ class DoctorTimeSlots extends Model
             'updatedBy' => Auth::user()->id,
             'updated_at' => now()
         ]);
+    }
+
+    public function appointments()
+    {
+        return $this->hasOne(Appointments::class,'doctorTimeSlot_ID')->select('id','doctorTimeSlot_ID','patient_ID','appointmentDate','isBooked','created_at');
     }
 }

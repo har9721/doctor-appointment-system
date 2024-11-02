@@ -2,6 +2,7 @@
 
 namespace App\Mail;
 
+use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
@@ -17,6 +18,10 @@ class AppointmentConfirmationPatient extends Mailable
 
     public function __construct($data)
     {
+        info('inside appointment confirmation mailable class');
+        info('-----------------------------start here-----------------------------------------------');
+        info($data);
+        info('-----------------------------end here-------------------------------------------------');
         $this->patientsData = $data;
     }
 
@@ -29,13 +34,18 @@ class AppointmentConfirmationPatient extends Mailable
 
     public function content()
     {
+        info('final data to send mail');
+        info('-----------------------------start here-----------------------------------------------');
+        info($this->patientsData);
+        info('-----------------------------end here-------------------------------------------------');
+
         return new Content(
             view: 'mail.sendBookingConfirmation',
             with: [
                 'name' => $this->patientsData['doctor_name'],
                 'patientName' => $this->patientsData['patientsName'],
-                'date' => $this->patientsData['date'],
-                'time' => $this->patientsData['time'],
+                'date' => date('d-m-Y',strtotime($this->patientsData['date'])),
+                'time' => Carbon::parse($this->patientsData['time'])->format('h:i A'),
             ],
         );
     }

@@ -129,6 +129,8 @@ function clickOnTimeSlot(timeSlot)
 {
     selectedTimeSlot = $(timeSlot).data('time_slot_id');
 
+    $('.time-slot').removeClass('selected');
+
     timeSlot.classList.add('selected');
 }
 

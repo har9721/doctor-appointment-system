@@ -9,6 +9,7 @@ use App\Models\Patients;
 use App\Models\Person;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 use Yajra\DataTables\Facades\DataTables;
 
 class PatientsController extends Controller
@@ -74,7 +75,7 @@ class PatientsController extends Controller
 
         $getDoctorDetails = Doctor::with(['timeSlot' => function($q) use($date){
             $q->when(!empty($date), function($query) use($date){
-                $query->where('availableDate',$date)->where('isBooked',0)->where('end_time','>',date('H:i:s',strtotime('+5 hours 30 minutes',time())));
+                $query->where('availableDate',$date)->where('isBooked',0);
             });
         }])
         ->join('mst_specialties','mst_specialties.id','doctors.specialty_ID')
@@ -97,7 +98,8 @@ class PatientsController extends Controller
         $data = $request->all();
 
         $validated = Validator::make($data,[
-            'date' => ['required','date_format:d-m-Y','after_or_equal:'.date('d-m-Y')]
+            'date' => ['required','date_format:d-m-Y','after_or_equal:'.date('d-m-Y')],
+            'timeSlot' => [Rule::unique('appointments','doctorTimeSlot_ID')->where('appointmentDate',$data['date'])->where('patient_ID',$data['patient_ID'])->where('doctorTimeSlot_ID',$data['timeSlot'])]
         ]);
 
         if($validated->fails())
