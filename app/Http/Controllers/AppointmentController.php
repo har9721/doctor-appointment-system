@@ -53,7 +53,7 @@ class AppointmentController extends Controller
         return response()->json($response);
     }
 
-    public function getAppointmentsDetails(AppointmentRequest $request)
+    public function getAppointmentsDetails(Request $request)
     {
         if($request->ajax())
         {
