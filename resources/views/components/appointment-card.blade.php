@@ -21,14 +21,14 @@
         </p>
         <div class="text-right">
             @if($status == 'pending')
-                <button class="btn btn-success appointmentButoon" data-id="{{ $appointment->id }}" data-status="confirm" data-date="{{ $appointment->appointmentDate }}">Confirm Appointment</button>
+                <button class="btn btn-success appointmentButoon" id="confirm_button" data-id="{{ $appointment->id }}" data-status="confirm" data-date="{{ $appointment->appointmentDate }}">Confirm Appointment</button>
             @endif
             @if($status == 'confirmed')
-                <button class="btn btn-danger appointmentButoon" data-id="{{ $appointment->id }}" data-status="cancel" data-date="{{ $appointment->appointmentDate }}">Cancel Appointment</button>
+                <button class="btn btn-danger appointmentButoon" id="cancel_button" data-id="{{ $appointment->id }}" data-status="cancel" data-date="{{ $appointment->appointmentDate }}">Cancel Appointment</button>
             @endif
 
             @if($status != 'canceled')
-                <button class="btn btn-dark rescheduleAppointment" data-date="{{ $appointment->appointmentDate }}" data-id="{{ $appointment->id }}" data-status="cancel">Reschedule Appointment</button>
+                <button class="btn btn-dark rescheduleAppointment" id="reshedule_button" data-date="{{ $appointment->appointmentDate }}" data-id="{{ $appointment->id }}" data-status="cancel">Reschedule Appointment</button>
             @endif
         </div>
     </div>

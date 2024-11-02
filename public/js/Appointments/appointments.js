@@ -110,6 +110,10 @@ $(document).on('click','.appointmentButoon', function()
         type : "post",
         url : mark_appointments,
         data : {'appointment_id' : appointment_id, 'status' : appointment_status,'appointment_date' : appointment_date},
+        beforeSend : function(){
+            $('#confirm_button').attr('disabled',true)
+            $('#cancel_button').attr('disabled',true)
+        },
         success: function (response){
             if(response['status'] == 'success'){
                 Swal.fire({
@@ -144,6 +148,10 @@ $(document).on('click','.appointmentButoon', function()
                 });
             }
         },
+        complete : function(){
+            $('#confirm_button').attr('disabled',false);
+            $('#cancel_button').attr('disabled',false);
+        }
     })
 });
 
@@ -151,7 +159,6 @@ $(document).on('click','.rescheduleAppointment', function()
 {
     const appointment_id = $(this).data('id');
     const date = $(this).data('date');
-    let selectedTimeSlot = null;
 
     $.ajaxSetup({
         headers:{
@@ -162,6 +169,10 @@ $(document).on('click','.rescheduleAppointment', function()
         type : "get",
         url : fetch_appointments_details,
         data : {'appointment_id' : appointment_id,'appointment_date' : date},
+        beforeSend : function()
+        {
+            $('#reshedule_button').attr('disbled',true);
+        },
         success: function (response){
 
             $('#timeSlotDiv').empty();
@@ -176,9 +187,9 @@ $(document).on('click','.rescheduleAppointment', function()
                 $('#hidden_appointment_id').val(response.bookedSlot.id);
                 $('#hidden_timeslot_id').val(response.bookedSlot.doctorTimeSlot_ID);
 
-                // const slot = `<div class="time-slot mr-1" onclick="clickOnTimeSlot(this)" data-time_slot_id ="${response.bookedSlot.doctor_time_slot.id}">${response.bookedSlot.doctor_time_slot.time}</div>`;
-
                 response.availableTimeSlot.forEach(element => {
+                    let selectedTimeSlot = null;
+
                     if(response.bookedSlot.doctor_time_slot != null)
                     {
                         $('#hidden_doctor_id').val(response.bookedSlot.doctor_time_slot.doctor_ID);
@@ -217,13 +228,16 @@ $(document).on('click','.rescheduleAppointment', function()
                 });
             }
         },
+        complete: function()
+        {
+            $('#reshedule_button').attr('disabled',false);
+        }
     })
 });
 
 $(document).off('change', '#appointment_date').on('change','#appointment_date', function(){
     const date = $(this).val();
     const doctor_ID = $('#hidden_doctor_id').val();
-    selectedTimeSlot = null;
 
     $.ajaxSetup({
         headers:{
@@ -270,11 +284,15 @@ $(document).off('change', '#appointment_date').on('change','#appointment_date', 
     })
 });
 
+let selectedTimeSlot = null;
+
 function clickOnTimeSlot(timeSlot)
 {   
     selectedTimeSlot = $(timeSlot).data('time_slot_id');
 
     $('#submit').attr('disabled',false);
+
+    $('.time-slot').removeClass('selected');
 
     timeSlot.classList.add('selected');
 }
@@ -301,6 +319,10 @@ $(document).on('click','#submit', function(){
                 type : "get",
                 url : reschedule_appointment,
                 data : {'appointment_date' : appointment_date,'doctor_ID' : doctor_ID, 'appointment_id' : appointment_id, 'patient_ID' : patient_ID,'new_time_slot' : selectedTimeSlot},
+                beforeSend : function()
+                {
+                    $('#submit').attr('disabled',true);
+                },
                 success: function (response)
                 {
                     if(response['status'] == 'success'){
@@ -336,7 +358,10 @@ $(document).on('click','#submit', function(){
                         });
                     }
                 },
-                
+                complete : function()
+                {
+                    $('#submit').attr('disabled',false);
+                }
             });
         }else{
             Swal.fire({

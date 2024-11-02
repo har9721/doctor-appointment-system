@@ -64,7 +64,8 @@ class Appointments extends Model
         ->where('appointments.isActive', 1)
         ->when(Auth::user()->role_ID == config('constant.doctor_role_ID'),function($query){
             $query->where('doctors.user_ID',Auth::user()->id);
-        },function($query){
+        })
+        ->when(Auth::user()->role_ID == config('constant.patients_role_ID'),function($query){
             $query->where('patients.user_ID',Auth::user()->id);
         })
         ->latest('appointments.created_at')
