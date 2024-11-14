@@ -110,7 +110,7 @@ class Appointments extends Model
         $emailData['time'] = $doctorDetails ? $doctorDetails->start_time : null;
         $emailData['isRescheduled'] = $appointments->isRescheduled;
 
-        if (Auth::user()->role_ID == config('constant.doctor_role_ID')) {
+        if (Auth::user()->role_ID == config('constant.doctor_role_ID') || Auth::user()->role_ID == config('constant.admin_role_ID')) {
             $appointments->load(['patients.user']);
 
             $emailData['patientsName'] = $appointments->patients ? $appointments->patients->user->first_name . ' ' . $appointments->patients->user->last_name : null;

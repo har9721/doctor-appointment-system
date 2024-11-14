@@ -34,67 +34,6 @@ $(document).ready(function () {
 
 });
 
-// $('#search').on('click',function(){
-//     getAppointmentsList();
-// });
-
-// function getAppointmentsList()
-// {
-//     $.ajaxSetup({
-//         headers:{
-//             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-//         }
-//     })
-//     $.ajax({
-//         type: "GET",
-//         url: getAppointments,
-//         data: {'from_date' : $('#from_date').val(), 'to_date' : $('#to_date').val(),'status': $('#status').val()},
-//         success: function (response) {
-            
-//             $('#searchResults').empty();
-
-//             if(response.length > 0)
-//             {
-//                 response.forEach(element => 
-//                 {
-//                     let doctor_name = element.doctor_full_name;
-//                     let patients_name = element.patient_full_name;
-//                     let speciality = element.specialtyName;
-//                     let status = element.status;
-//                     let appointment_date = element.appointmentDate;
-//                     let appointment_time = element.time;
-//                     let button = (element.status == 'pending' || element.status == 'confirmed') ? 'Cancel Appointment' : 'Rebook Appointment';
-                        
-//                     let appointmentCard = `
-//                         <div class="card appointment-card mx-2">
-//                             <div class="card-header">
-//                                 <h5 class="mb-0">Dr. ${doctor_name}</h5>
-//                             </div>
-//                             <div class="card-body">
-//                                 <p><strong>Specialty:</strong> ${speciality}</p>
-//                                 <p><strong>Date:</strong> ${appointment_date}</p>
-//                                 <p><strong>Time:</strong> ${appointment_time}</p>
-//                                 <p><strong>Status:</strong> 
-//                                     <span class="appointment-status status-pending">${status}</span>
-//                                 </p>
-//                                 <div class="text-right">
-//                                     <button class="btn btn-danger">${button}</button>
-//                                 </div>
-//                             </div>
-//                         </div>
-//                     `;
-
-//                     $('#searchResults').append(appointmentCard);
-//                 });
-//             }else{
-//                 let msg = 'No record found';
-
-//                 $('#searchResults').append(msg);
-//             }
-//         }
-//     });
-// }
-
 $(document).on('click','.appointmentButoon', function()
 {
     const appointment_id = $(this).data('id');

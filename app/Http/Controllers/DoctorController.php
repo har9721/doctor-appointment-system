@@ -331,4 +331,27 @@ class DoctorController extends Controller
 
         echo json_encode($response);
     }
+
+    public function getAllDoctorList(Request $request)
+    {
+        return Doctor::where('specialty_ID',$request->speciality_id)->with('user')->get();    
+    }
+
+    public function fetchTimeSlotForDate(Request $request)
+    {
+        if($request->ajax())
+        {
+            $selected_date = date('Y-m-d', strtotime($request->date));
+
+            $getAvailableTimeSlot = Doctor::with(['timeSlot' => function($query) use($selected_date){
+                $query->where('availableDate',$selected_date)->where('isBooked',0);
+            }])->where('id',$request->doctor_ID)
+            ->where('isActive',1)
+            ->first(['id','specialty_ID','user_ID']);
+
+            return $getAvailableTimeSlot;
+        }else{
+            return null;
+        }
+    }
 }

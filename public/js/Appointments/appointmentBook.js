@@ -12,7 +12,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
     getCityList();
     getSpecialtyList();
+    getPatientsList();
 
+    let selectedTimeSlot = null;
 
     $('#search').on('click', function(){
         let speciality = $('#speciality').val();
@@ -41,7 +43,6 @@ document.addEventListener('DOMContentLoaded', function() {
                             const timeSlot = doctor.time_slot;
                             const baseUrl = window.location.origin;
                             const fileName = doctor.fileName;
-                            let selectedTimeSlot = null;
 
                             // Access the image URL
                             const imageUrl = baseUrl + '/storage/doctorProfilePictures/'+fileName;
@@ -182,6 +183,190 @@ $(document).on('click', '.book-btn',function(){
     
 });
 
+$(document).on('change','#speciality', function(){
+    getDoctorList($(this).val());
+});
+
+$(document).on('click','#searchForTimeslot',function(){
+    const doctor = $('#doctor').val();
+    const date = $('#date').val();
+    const patients = $('#patients').val();
+    const speciality = $('#speciality').val();
+    selectedTimeSlot = null;
+    
+    if(!Number(patients))
+    {
+        return Swal.fire({
+            title : 'error',
+            text : 'Please select patients name.',
+            icon : 'error',
+            timer : 3000
+        });
+    }
+
+    if(!Number(speciality))
+    {
+        return Swal.fire({
+            title : 'error',
+            text : 'Please select specialty.',
+            icon : 'error',
+            timer : 3000
+        });
+    }
+
+    if(!Number(doctor))
+    {
+        return Swal.fire({
+            title : 'error',
+            text : 'Please select doctor.',
+            icon : 'error',
+            timer : 3000
+        });
+    }
+
+    if(date == '')
+    {
+        return Swal.fire({
+            title : 'error',
+            text : 'Please select a date',
+            icon : 'error',
+            timer : 3000
+        });
+    }
+
+    $.ajaxSetup({
+        headers:{
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
+    })
+    $.ajax({
+        type : 'GET',
+        url : getAvailableTimeSlot,
+        data : {'doctor_ID' : doctor, 'date' : date},
+        success : function(response)
+        {
+            if(response)
+            {
+                if(response.time_slot)
+                {
+                    $(`#timeSlotDiv`).empty();
+
+                    response.time_slot.forEach(element => {
+                        if(element)
+                        {
+                            const available_time_slot = `<div class="time-slot mr-1" onclick="clickOnTimeSlot(this)" data-time_slot_id ="${element.id}">${element.time}</div>`;
+
+                            $(`#timeSlotDiv`).append(available_time_slot);
+                        }
+                    });
+                }
+            }
+        },
+        complete:function ()
+        {
+            $('#confirmAppointment').css('visibility','visible');
+        }
+    });
+});
+
+$(document).on('click','#confirmAppointment', function(){
+    const doctor = $('#doctor').val();
+    const date = $('#date').val();
+    const patients = $('#patients').val();
+    const speciality = $('#speciality').val();
+
+    if(!Number(patients))
+    {
+        return Swal.fire({
+            title : 'error',
+            text : 'Please select patients name.',
+            icon : 'error',
+            timer : 3000
+        });
+    }
+
+    if(!Number(speciality))
+    {
+        return Swal.fire({
+            title : 'error',
+            text : 'Please select specialty.',
+            icon : 'error',
+            timer : 3000
+        });
+    }
+
+    if(!Number(doctor))
+    {
+        return Swal.fire({
+            title : 'error',
+            text : 'Please select doctor.',
+            icon : 'error',
+            timer : 3000
+        });
+    }
+
+    if(date == '')
+    {
+        return Swal.fire({
+            title : 'error',
+            text : 'Please select a date',
+            icon : 'error',
+            timer : 3000
+        });
+    }
+
+    if(selectedTimeSlot)
+    {
+        $.ajaxSetup({
+            headers:{
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            }
+        })
+        $.ajax({
+            type : 'POST',
+            url : bookingUrl,
+            beforeSend : function(){ 
+                $('#confirmAppointment').attr('disabled',true);
+            },
+            data : {'doctor_ID' : doctor, 'date' : date, 'patient_ID' : patients, 'timeSlot' : selectedTimeSlot},
+            success : function(response)
+            {
+                if(response['status'] == 'success'){
+                    Swal.fire({
+                        title: "Success",
+                        text: response['message'],
+                        icon: "success",
+                        timer: 3000
+                    });
+    
+                    setTimeout(function(){
+                        window.location.reload();
+                    },2000);
+                }else{    
+                    Swal.fire({
+                        title: "Error",
+                        text: response['message'],
+                        icon: "error",
+                        timer: 3000
+                    });
+                }
+            },
+            complete:function ()
+            {
+                $('#confirmAppointment').attr('disabled','false');
+            }
+        });
+
+    }else{
+        return Swal.fire({
+            title : 'error',
+            text : 'Please select time slot',
+            icon : 'error',
+            timer : 3000
+        });
+    }
+});
+
 function getCityList(){
     $.ajaxSetup({
         headers: {
@@ -225,4 +410,54 @@ function getSpecialtyList(){
             });
         }
     })
+}
+
+function getPatientsList(){
+    $.ajaxSetup({
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
+    });
+    $.ajax({
+        type : "get",
+        url : patientsList,
+        success : function (response){
+            $.each(response, function (key, val) 
+            { 
+                $('#patients').append($("<option></option>")
+                .attr("value", response[key].id)
+                .text(val.user.full_name));
+            });
+        }
+    });
+
+    $("#patients").select2({
+        placeholder: "Select patients name",
+    });
+}
+
+function getDoctorList(speciality_id){
+    $.ajaxSetup({
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
+    });
+    $.ajax({
+        type : "get",
+        url : doctorList,
+        data : {'speciality_id' : speciality_id},
+        success : function (response){
+            $('#doctor').append(`<option value=""></option`);
+            $.each(response, function (key, val) 
+            { 
+                $('#doctor').append($("<option></option>")
+                .attr("value", response[key].id)
+                .text(val.user.full_name));
+            });
+        }
+    });
+
+    $("#doctor").select2({
+        placeholder: "Select doctor name",
+    });
 }
