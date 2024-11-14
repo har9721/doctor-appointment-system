@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\AppointmentBooking;
 use App\Http\Requests\AppointmentRequest;
 use App\Models\Appointments;
 use App\Models\Doctor;
@@ -93,20 +94,20 @@ class PatientsController extends Controller
         return $getDoctorDetails;
     }
 
-    public function bookAppointment(Request $request)
+    public function bookAppointment(AppointmentBooking $request)
     {
-        $data = $request->all();
+        $data = $request->validated();
 
-        $validated = Validator::make($data,[
-            'date' => ['required','date_format:d-m-Y','after_or_equal:'.date('d-m-Y')],
-            'timeSlot' => [Rule::unique('appointments','doctorTimeSlot_ID')->where('appointmentDate',$data['date'])->where('patient_ID',$data['patient_ID'])->where('doctorTimeSlot_ID',$data['timeSlot'])]
-        ]);
+        // $validated = Validator::make($data,[
+        //     'date' => ['required','date_format:d-m-Y','after_or_equal:'.date('d-m-Y')],
+        //     'timeSlot' => [Rule::unique('appointments','doctorTimeSlot_ID')->where('appointmentDate',$data['date'])->where('patient_ID',$data['patient_ID'])->where('doctorTimeSlot_ID',$data['timeSlot'])]
+        // ]);
 
-        if($validated->fails())
-        {
-            $response['status'] = 'error';
-            $response['message'] = $validated->messages()->first('date');
-        }else{
+        // if($validated->fails())
+        // {
+        //     $response['status'] = 'error';
+        //     $response['message'] = $validated->messages()->first('date');
+        // }else{
 
             $bookAppointment = Appointments::bookPatientAppointment($data);
 
@@ -118,8 +119,13 @@ class PatientsController extends Controller
                 $response['status'] = 'success';
                 $response['message'] = 'Appointment not book successfully.';
             }
-        }
+        // }
 
         return response()->json($response);
+    }
+
+    public function getAllPatientsList()
+    {
+        return Patients::with('user')->get();   
     }
 }
