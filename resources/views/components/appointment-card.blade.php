@@ -7,6 +7,9 @@
         @endif
     </div>
     <div class="appointment-details">
+        @if(Auth::user()->role_ID == config('constant.admin_role_ID'))
+            <p style="color: black;"><b>Patient Name:</b> {{ $appointment->patient_full_name }}</p>
+        @endif
         <p><strong>Specialty:</strong> {{ $appointment->specialtyName }}</p>
         <p><strong>Date:</strong> {{ $appointment->appointmentDate }}</p>
         <p><strong>Time:</strong> {{ $appointment->time }}</p>

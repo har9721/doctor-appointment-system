@@ -62,6 +62,8 @@ Route::middleware('auth')->group(function(){
             Route::post('add-time-slot','addTimeSlot')->name('addTimeSlot');
             Route::post('delete-time-slot','deleteTimeSlot')->name('deleteTimeSlot');
             Route::post('update-time-slot','updateTimeSlot')->name('updateTimeSlot');
+            Route::get('/get-doctor-list','getAllDoctorList')->name('get-all-doctor');
+            Route::get('/fetch-time-slot','fetchTimeSlotForDate')->name('fetch-time-slot');
         });
     });
 
@@ -70,6 +72,7 @@ Route::middleware('auth')->group(function(){
             Route::get('appointment-booking','viewAppointmentBookingPage')->name('appointment-booking');
             Route::get('search-doctor','searchDoctor')->name('search-doctor');
             Route::post('book-appointment','bookAppointment')->name('book-appointment');
+            Route::get('/get-patients-list','getAllPatientsList')->name('get-all-patients');
         });
     });
 
