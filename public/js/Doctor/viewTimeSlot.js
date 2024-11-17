@@ -72,6 +72,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
         eventClick : function(event)
         {
+            const dropdown = [
+                { value : 'edit' , text : 'Edit'},
+                { value : 'delete' , text : 'Delete'}
+            ];
+
+            // append values to dropdown
+            appendValuesToDropdown(dropdown);
+
             showEditAndDeleteActionModal(event);
         },
 
@@ -88,7 +96,16 @@ document.addEventListener('DOMContentLoaded', function() {
                     timer: 2000
                 });
             }else{
-                updateDropEventsDetails(info); 
+
+                const dropdown = [
+                    { value : 'copy' , text : 'Copy'},
+                    { value : 'move' , text : 'Move'}
+                ];
+
+                // append values to dropdown
+                appendValuesToDropdown(dropdown);
+
+                showEditAndDeleteActionModal(info);
             }  
         },
 
@@ -189,10 +206,25 @@ function showEditAndDeleteActionModal(event)
     document.getElementById('submitAction').addEventListener('click', function(){
         let action = $('#action').val();
     
-        if(action === 'edit')
-            editEventDetails(event);
-        else if(action === 'delete')
-            deleteEventDetails(event);
+        if(action)
+        {
+            if(action === 'edit')
+                editEventDetails(event);
+            else if(action === 'delete')
+                deleteEventDetails(event);
+            else if(action === 'copy')
+                copyEventDetails(event);
+            else if(action === 'move')
+                moveEventDetails(event);
+        }else
+        {
+            Swal.fire({
+                title: "Error",
+                text: "Please select an action",
+                icon: "error",
+                timer: 3000
+            });
+        }
     });
 }
 
@@ -372,4 +404,92 @@ function convertTimestampToTime(eventDate)
     let minutes = timeObject.getMinutes();
 
     return `${hours}:${(minutes < 10) ? '0'+minutes : minutes}`;  
+}
+
+function appendValuesToDropdown(values)
+{
+    $('#action').empty();
+
+    $('#action').append(
+        $('<option></option>').attr('value', 'select_actions').text('Select Actions').prop('selected', true).prop('disabled', true)
+    );
+
+    $.each(values, function (key, val) 
+    {
+        $('#action').append($("<option></option>")
+        .attr("value", val.value)
+        .text(val.text));
+    });
+}
+
+function copyEventDetails(event)
+{
+    let startDate = event.event.start;
+    let endDate = event.event.end;
+    const newDate = convertTimestampToDate(startDate);
+    const startTime = convertTimestampToTime(startDate);
+    const endTime = convertTimestampToTime(endDate);
+    const doctor_ID = $('#hidden_login_user_id').val();
+
+    $.ajaxSetup({
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
+    });
+    $.ajax({
+        type : "post",
+        url : addTimeSlot,
+        data : {'date' : newDate, 'startTime' : startTime, 'endTime' : endTime, 'doctor_ID' : doctor_ID, 'isEdit' : 0},
+        beforeSend : function()
+        {
+            $('#submitAction').attr('disabled',true);
+        },
+        success : function(response)
+        {
+            if(response['status'] == 'success'){
+                Swal.fire({
+                    title: "Success",
+                    text: response['message'],
+                    icon: "success",
+                    timer: 3000
+                });
+
+                setTimeout(function(){
+                    window.location.reload();
+                },2000);
+            }else{    
+                Swal.fire({
+                    title: "Success",
+                    text: response['message'],
+                    icon: "success",
+                    timer: 2000
+                });
+            }
+        },
+        error : function(response){
+            if(response.status === 422)
+            {
+                var errors = response.responseJSON;
+                Swal.fire({
+                    title: "Error",
+                    text: errors.message,
+                    icon: "error",
+                    timer: 3000
+                });
+
+                setTimeout(function(){
+                    window.location.reload();
+                },2000);
+            }
+        },
+        complete : function(){
+            $('#submitAction').attr('disabled',false);
+        }
+    });
+    
+}
+
+function moveEventDetails(event)
+{
+    updateDropEventsDetails(event);
 }

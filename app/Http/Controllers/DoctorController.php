@@ -223,11 +223,11 @@ class DoctorController extends Controller
         if($updateTimeSlot != '')
         {
             $response['status'] = 'success';
-            $response['message'] = 'Time slot is updated successfully.';
+            $response['message'] = 'Time slot is moved successfully.';
         }else
         {
             $response['status'] = 'success';
-            $response['message'] = 'Time slot is not updated successfully.';
+            $response['message'] = 'Time slot is not moved successfully.';
         }
 
         return response()->json($response);
