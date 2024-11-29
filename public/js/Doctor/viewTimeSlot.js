@@ -118,6 +118,15 @@ document.addEventListener('DOMContentLoaded', function() {
     calendar.render();
 });
 
+document.getElementById('recurrence').addEventListener('change',function(){
+    const value = $('#recurrence').val();
+    if (value === 'weekly') {
+        $('#weeklyOptions').removeClass('d-none');
+    } else {
+        $('#weeklyOptions').addClass('d-none');
+    }
+});
+
 const submitBtn = document.getElementById('submit');
 
 submitBtn.addEventListener('click', function(){
@@ -128,6 +137,26 @@ submitBtn.addEventListener('click', function(){
     let doctor_ID = $('#hidden_login_user_id').val();
     let hidden_timeslot_id = $('#hidden_timeslot_id').val();
     let isEdit = (hidden_timeslot_id !== '') ? '1' : '0';
+    let recurrence = $('#recurrence').val();
+
+    const days = [];
+
+    if(recurrence === 'weekly')
+    {
+        $('#weeklyOptions input:checked').each(function(){
+            days.push($(this).val());
+        });
+
+        if(days.length == 0)
+        {
+            return Swal.fire({
+                title: "Error",
+                text: "Please select atleast one day for recurrence!",
+                icon: "error",
+                timer: 3000
+            });
+        }
+    }
 
     if(startTime !== '' && endTime !== '')
     {
@@ -145,7 +174,7 @@ submitBtn.addEventListener('click', function(){
                 $('#start_time_error').css('display','none');
                 $('#submit').attr('disabled',true);
             },
-            data : {'date' : eventDate, 'startTime' : startTime, 'endTime': endTime,'doctor_ID': doctor_ID, 'hidden_timeslot_id' : hidden_timeslot_id, 'isEdit' : isEdit},
+            data : {'date' : eventDate, 'startTime' : startTime, 'endTime': endTime,'doctor_ID': doctor_ID, 'hidden_timeslot_id' : hidden_timeslot_id, 'isEdit' : isEdit, 'days' : days, 'recurrence': recurrence},
             success : function(response)
             {
                 if(response['status'] == 'success'){

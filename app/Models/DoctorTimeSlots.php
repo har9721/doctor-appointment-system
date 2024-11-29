@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Jobs\AddRecursiveTimeSlot;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -24,23 +25,33 @@ class DoctorTimeSlots extends Model
 
     public static function addDoctorTimeSlot($data)
     {
-        if($data['isEdit'] == 0)
+        if(empty($data['recurrence']))
         {
-            $addOrEditTimeSlot = DoctorTimeSlots::create([
-                'doctor_ID' => $data['doctor_ID'],
-                'availableDate' => date('Y-m-d',strtotime($data['date'])),
-                'start_time' => $data['startTime'],
-                'end_time' => $data['endTime'],
-                'created_at' => now(),
-                'createdBy' => Auth::user()->id
-            ]);
+            if($data['isEdit'] == 0)
+            {
+                $addOrEditTimeSlot = DoctorTimeSlots::create([
+                    'doctor_ID' => $data['doctor_ID'],
+                    'availableDate' => date('Y-m-d',strtotime($data['date'])),
+                    'start_time' => $data['startTime'],
+                    'end_time' => $data['endTime'],
+                    'created_at' => now(),
+                    'createdBy' => Auth::user()->id
+                ]);
+            }else{
+                $addOrEditTimeSlot = DoctorTimeSlots::where('id', $data['hidden_timeslot_id'])->update([
+                    'start_time' => $data['startTime'],
+                    'end_time' => $data['endTime'],
+                    'updated_at' => now(),
+                    'updatedBy' => Auth::user()->id
+                ]);
+            }
         }else{
-            $addOrEditTimeSlot = DoctorTimeSlots::where('id', $data['hidden_timeslot_id'])->update([
-                'start_time' => $data['startTime'],
-                'end_time' => $data['endTime'],
-                'updated_at' => now(),
-                'updatedBy' => Auth::user()->id
-            ]);
+            $data['createdBy'] = Auth::user()->id;
+            $data['updatedBy'] = Auth::user()->id;
+
+            AddRecursiveTimeSlot::dispatch($data);
+
+            $addOrEditTimeSlot = 1;
         }
 
         return $addOrEditTimeSlot;
