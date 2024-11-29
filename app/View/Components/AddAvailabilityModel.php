@@ -7,6 +7,7 @@ use Illuminate\View\Component;
 class AddAvailabilityModel extends Component
 {
     public $id;
+    public $weekdays = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
 
     public function __construct($id)
     {
