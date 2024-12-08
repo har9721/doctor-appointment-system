@@ -11,6 +11,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Route;
 use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
@@ -67,7 +68,7 @@ class User extends Authenticatable
 
     public function city()
     {
-        return $this->belongsTo(city::class,'city_ID')->select('id','name');    
+        return $this->belongsTo(city::class,'city_ID')->select('id','name','state_id');    
     }
 
     public function gender()
@@ -84,29 +85,48 @@ class User extends Authenticatable
 
     public static function updateUserInfo($data)
     {
-        $updateUser = User::where('id',$data['user_ID'])
-        ->update([
-            'first_name' => ucfirst(trim($data['first_name'])),
-            'last_name' => ucfirst(trim($data['last_name'])),
-            'email' => trim($data['email']),
-            'password' => Hash::make('12345678'),
-            'age' => trim($data['age']),
-            'mobile' => trim($data['mobile']),
-            'gender_ID' => $data['gender'],
-            'address' => isset($data['address']) ? trim($data['address']) : null,
-            'city_ID' => $data['city'],
-            'updated_at' => now(),
-            'updatedBy' => Auth::user()->id
-        ]);
+        $user = User::findOrFail($data['user_ID']);
+        $data['updatedBy'] = Auth::user()->id;
 
-        if($updateUser)
-        {
-            $updateDoctor = Doctor::updateDoctorInfo($data);
-        }else{
-            $updateDoctor = 0;
-        }
+        // Trim all the input data
+        // $data = array_map('trim', $data);
 
-        return $updateDoctor;
+        $user->fill($data);
+
+        $user->when(
+            Auth::user()->role->roleName === 'Admin', function ($user) use($data)
+            {
+                $user->email = $data['email'];
+            },
+            function ($user)
+            {
+                if(Auth::user()->role->roleName === 'Doctor')
+                {
+                    unset($user->email);
+                } 
+            }
+        );
+
+        $updateUser = $user->save();
+
+        // $updateUser = User::where('id',$data['user_ID'])
+        // ->update([
+        //     'first_name' => ucfirst(trim($data['first_name'])),
+        //     'last_name' => ucfirst(trim($data['last_name'])),
+        //     'email' => trim($data['email']),
+        //     'password' => Hash::make('12345678'),
+        //     'age' => trim($data['age']),
+        //     'mobile' => trim($data['mobile']),
+        //     'gender_ID' => $data['gender'],
+        //     'address' => isset($data['address']) ? trim($data['address']) : null,
+        //     'city_ID' => $data['city'],
+        //     'updated_at' => now(),
+        //     'updatedBy' => Auth::user()->id
+        // ]);
+
+        return (Route::currentRouteName() === 'admin.upateUserDetails') ? 1 : (
+            ($updateUser) ? Doctor::updateDoctorInfo($data) : 0
+        );
     }
 
     public static function deleteUser($data)
@@ -122,5 +142,10 @@ class User extends Authenticatable
         {
             return Doctor::deleteDoctor($data['id']);
         }
+    }
+
+    public function role()
+    {
+        return $this->belongsTo(Role::class,'role_ID')->where('isActive',1)->select('id','roleName');
     }
 }

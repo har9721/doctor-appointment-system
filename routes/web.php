@@ -39,6 +39,11 @@ Route::middleware('auth')->group(function(){
             Route::get('/get-all-patients','getAllPatients')->name('get-patients');
         });
 
+        Route::controller(HomeController::class)->group(function(){
+            Route::get('profile/{user}','profileView')->name('profile');
+            Route::post('update-user-info','updateUserDetails')->name('upateUserDetails');
+        });
+
         Route::controller(DoctorController::class)->group(function(){
             Route::get('/doctor','doctorView')->name('doctor');
             Route::get('add-doctor','addDoctor')->name('add-doctor');
@@ -52,6 +57,7 @@ Route::middleware('auth')->group(function(){
             Route::get('/edit-doctor-details/{doctor}','editDoctorForm')->name('editDoctorDetails');
             Route::post('/update-doctor-details','doctorUpdate')->name('doctorUpdate');
             Route::post('/delete-doctor','deleteDoctor')->name('deleteDoctor');
+            Route::get('/edit-doctor-details','getEditForm')->name('editDoctor');
         });
     });
 

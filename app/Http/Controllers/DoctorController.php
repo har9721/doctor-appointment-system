@@ -13,6 +13,7 @@ use App\Models\Mst_specialty;
 use App\Models\Person;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Yajra\DataTables\Facades\DataTables;
 
@@ -277,7 +278,11 @@ class DoctorController extends Controller
 
         $doctorDetails = (!empty($getDoctorDetails)) ? $getDoctorDetails[0] : null;
 
-        return view('admin.doctor.editDoctor',compact('doctorDetails'));
+        $heading = (Auth::user()->role->roleName === 'Admin') ? 'Doctor Registration Form' : (Auth::user()->role->roleName === 'Doctor' ? 'My Profile' : '');
+
+        $backUrl = (Auth::user()->role->roleName === 'Admin') ? 'admin.doctor' : (Auth::user()->role->roleName === 'Doctor' ? 'home' : '');
+
+        return view('admin.doctor.editDoctor',compact('doctorDetails','heading','backUrl'));
     }
 
     public function doctorUpdate(DoctorRegistration $request)
@@ -301,13 +306,17 @@ class DoctorController extends Controller
 
         $updateUserDetails = User::updateUserInfo($validated);
 
+        $url = (Auth::user()->role_ID == 1) ? 'doctor-list' : '';
+
         if($updateUserDetails != '')
         {
             $response['status'] = 'success';
+            $response['url'] = $url;
             $response['message'] = 'Doctor details is updated successfully.';
         }else
         {
-            $response['status'] = 'success';
+            $response['status'] = 'error';
+            $response['url'] = $url;
             $response['message'] = 'Doctor details is not updated successfully.';
         }
 
@@ -353,5 +362,13 @@ class DoctorController extends Controller
         }else{
             return null;
         }
+    }
+
+    public function getEditForm()
+    {
+        $getDoctorId = Doctor::where('user_ID',Auth::user()->id)->first('id');
+
+        // dd($getDoctorId->id);
+        $this->editDoctorForm($getDoctorId->id);
     }
 }
