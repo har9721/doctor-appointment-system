@@ -2,12 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\UserFormRequest;
 use App\Models\AlcoholStatus;
 use App\Models\city;
 use App\Models\MstGender;
 use App\Models\SmokingStatus;
 use App\Models\state;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class HomeController extends Controller
 {
@@ -48,5 +51,37 @@ class HomeController extends Controller
     public function getAlcoholStatus()
     {
         return AlcoholStatus::where('isActive',1)->get(['id','statusName']);    
+    }
+
+    public function profileView(User $user)
+    {
+        $result = $user->load(['city']);
+
+        return view('admin.profile',compact('user'));    
+    }
+
+    public function updateUserDetails(UserFormRequest $request)
+    {
+        try {
+            $data = $request->validated();
+            $data['user_ID'] = Auth::user()->id;
+
+            $updateUserInfo = User::updateUserInfo($data);
+
+            if($updateUserInfo != '')
+            {
+                $response['status'] = 'success';
+                $response['message'] = 'Profile details is updated successfully.';
+            }else
+            {
+                $response['status'] = 'error';
+                $response['message'] = 'Profile details is not updated successfully.';
+            }
+
+            echo json_encode($response);
+
+        } catch (\Exception $e) {
+            echo json_encode($e->getMessage());
+        }
     }
 }

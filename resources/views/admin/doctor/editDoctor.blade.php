@@ -5,7 +5,7 @@
             color: red;
         }
         .imageThumb {
-            max-height: 75px;
+            max-height: 80px;
             border: 2px solid;
             border-radius: 50%;
             padding: 1px;
@@ -17,9 +17,9 @@
 <div class="container-fluid">
     <div class="card shadow mb-4">
         <div class="card-header py-3 d-flex justify-content-between">
-            <h4 class="mt-2 font-weight-bold text-primary">Doctor Registration Form</h4>
+            <h4 class="mt-2 font-weight-bold text-primary">{{ $heading }}</h4>
             <div class="text-right">
-                <a href="{{ route('admin.doctor') }}">
+                <a href='{{ route("$backUrl") }}'>
                     <button type="button" class="btn btn-secondary mr-2">
                     <i class="fas fa-arrow-circle-left"></i>
                         Back
@@ -34,7 +34,8 @@
                 <div class="row mb-4">
                     <div class="col-md-8 col-md-9 col-sm-12 preview-area">
                         <?php $location = "doctorProfilePictures/".$doctorDetails['fileName']; ?>
-                        <img class="imageThumb" src="{{ Storage::url($location) }}" alt="Profile Image">
+                        <img class="imageThumb img-thumbnail" style="width: 100px; height: 100px; cursor: pointer;"  src="{{ Storage::url($location) }}" alt="Profile Image" data-bs-toggle="modal" 
+                        data-bs-target="#viewDoctorPictureModal">
                     </div>
                 </div>
                 <div class="row mb-4">
@@ -50,7 +51,7 @@
 
                     <div class="col-md-3">
                         <label for="email"><b>Email<span style="color: red;">*</span> :</b></label>
-                        <input type="email" id="email" name="email" class="form-control" placeholder="enter email..." value="{{ $doctorDetails['email'] }}">
+                        <input type="email" id="email" name="email" class="form-control" placeholder="enter email..." value="{{ $doctorDetails['email'] }}" @if(Auth::user()->role_ID != 1) disabled @endif>
                     </div>
 
                     <div class="col-md-3">
@@ -136,6 +137,9 @@
         </div>
     </div>
 </div>
+
+<x-view-profile-image :image="$location"/>
+
 @endsection
 @push('scripts')
 <script>

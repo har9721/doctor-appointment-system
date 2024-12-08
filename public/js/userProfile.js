@@ -17,7 +17,7 @@ $(document).on('change', '#state',function(){
     getCityList(state_ID,city_Id); 
 });
 
-$('#doctorForm').on('submit', function(e){
+$('#profileForm').on('submit', function(e){
     e.preventDefault();
     const email = $('#email').val();
 
@@ -31,7 +31,7 @@ $('#doctorForm').on('submit', function(e){
     })
     $.ajax({
         type : 'post',
-        url : saveDoctorDetails,
+        url : saveUserDetails,
         data : formData,
         processData : false,
         contentType : false,
@@ -50,17 +50,10 @@ $('#doctorForm').on('submit', function(e){
                     timer: 4000
                 });
 
-                if(data.url === '')
-                {
-                    setTimeout(function(){
-                        window.location.reload();
-                    },4000);
-                }else
-                {
-                    setTimeout(function(){
-                        window.location.href = getDoctorList;
-                    },4000);
-                }
+                setTimeout(function(){
+                    window.location.reload();
+                },4000);
+
             }else{    
                 Swal.fire({
                     title: "Success",
@@ -88,67 +81,6 @@ $('#doctorForm').on('submit', function(e){
         }
     })
 })
-
-// $(document).on('click','#submitForm', function(){
-//     let first_name = $('#first_name').val();
-//     let last_name = $('#last_name').val();
-//     let email = $('#email').val();
-//     let mobile_no = $('#mobile').val();
-//     let gender = $('#gender').val();
-//     let speciality = $('#speciality').val();
-//     let age = $('#age').val();
-//     let state = $('#state').val();
-//     let city = $('#city').val();
-//     let licenseNumber = $('#licenseNumber').val();
-
-//     $.ajaxSetup({
-//         headers:{
-//             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-//         }
-//     })
-//     $.ajax({
-//         type : 'post',
-//         url : saveDoctorDetails,
-//         data : {'first_name' : first_name, 'last_name' : last_name, 'email' : email, 'mobile' : mobile_no, 'gender' : gender, 'speacility' : speciality, 'age' : age,'state' : state, 'city' : city, 'licenseNumber' : licenseNumber,'isPatients' : 0},
-//         success: function(response)
-//         {
-//             let data = JSON.parse(response);
-            
-//             if(data.status == 'success'){
-//                 Swal.fire({
-//                     title: "Success",
-//                     text: data.message,
-//                     icon: "success",
-//                     timer: 4000
-//                 });
-
-//                 setTimeout(function(){
-//                     window.location.href = getDoctorList;
-//                 },4000);
-//             }else{    
-//                 Swal.fire({
-//                     title: "Success",
-//                     text: data.message,
-//                     icon: "success",
-//                     timer: 4000
-//                 });
-//             }
-//         },
-//         error: function(response)
-//         {
-//             if(response.status === 422)
-//             {
-//                 var errors = response.responseJSON;
-//                 Swal.fire({
-//                     title: "Error",
-//                     text: errors.message,
-//                     icon: "error",
-//                     timer: 4000
-//                 });
-//             }
-//         },
-//     })
-// })
 
 $('input[type=radio]').on('change',function(){
     if($(this).val() === 'Yes')
@@ -178,7 +110,7 @@ function getGenderList(selectedGenderId = null){
                 else
                     selectedTrue = false;
 
-                $('#gender').append($("<option></option>")
+                $('#gender_ID').append($("<option></option>")
                 .attr("value", response[key].id)
                 .text(val.gender)
                 .prop('selected',selectedTrue));
@@ -189,6 +121,8 @@ function getGenderList(selectedGenderId = null){
 
 function getStateList(selectedStateID = null){
     var selectedTrue = false;
+    $('#state').empty();
+    $("#state").append($("<option value='' disabled selected>Select State</option>"));
 
     $.ajaxSetup({
         headers: {
@@ -213,15 +147,14 @@ function getStateList(selectedStateID = null){
             });
         }
     })
+
+    $('#state').select2();
 }
-$(document).on('click', '.img-thumbnail', function () {
-    const imgSrc = $(this).attr('src');
-    $('#viewDoctorPictureModal img').attr('src', imgSrc);
-});
 
 function getCityList(state_ID,selectedCity_ID = null){
     var selectedTrue = false;
-    $('#city').empty();
+    $('#city_ID').empty();
+    $("#city_ID").append($("<option value='' disabled selected>Select City</option>"));
 
     $.ajaxSetup({
         headers: {
@@ -240,7 +173,7 @@ function getCityList(state_ID,selectedCity_ID = null){
                 else
                     selectedTrue = false;
 
-                $('#city').append($("<option></option>")
+                $('#city_ID').append($("<option></option>")
                 .attr("value", response[key].id)
                 .text(val.name)
                 .prop('selected',selectedTrue));
@@ -248,7 +181,7 @@ function getCityList(state_ID,selectedCity_ID = null){
         }
     });
 
-    $('#city').select2();
+    $('#city_ID').select2();
 }
 
 function getSpecialtyList(selectedSpecialty_ID = null){
