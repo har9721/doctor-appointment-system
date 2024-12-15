@@ -37,6 +37,8 @@ Route::middleware('auth')->group(function(){
         Route::controller(PatientsController::class)->group(function(){
             Route::get('/patients','patientView')->name('patients');
             Route::get('/get-all-patients','getAllPatients')->name('get-patients');
+            Route::get('/edit-patients-details/{patients}','editPatient')->name('edit-patients');
+            Route::post('/save-patients-details','updatePatientsDetails')->name('patientsUpdate');
         });
 
         Route::controller(HomeController::class)->group(function(){

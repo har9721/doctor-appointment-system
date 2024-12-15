@@ -16,6 +16,7 @@
                             <th>Email</th>
                             <th>Mobile</th>
                             <th>Gender</th>
+                            <th>Age</th>
                             <th>City</th>
                             <th>Address</th>
                             <th>Edit</th>
@@ -35,6 +36,11 @@
 @push('scripts')
 <script>
     let getPatientList = "{{route('admin.get-patients')}}";
+    let getGender = "{{ route('get-gender') }}";
+    let getCity = "{{ route('get-city') }}";
+    let getStates = "{{ route('get-state') }}";
+    let smokingStatus = "{{ route('get-smoking-status') }}";
+    let alcoholStatus = "{{ route('get-alcohol-status') }}";
 
 </script>
     <script src="{{ asset('js/Patient/patients.js') }}"></script>

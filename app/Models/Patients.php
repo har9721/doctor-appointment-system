@@ -49,4 +49,19 @@ class Patients extends Model
     {
         return Patients::where('user_ID',Auth::user()->id)->first('id');
     }
+
+    public function emergencyContact()
+    {
+        return $this->hasOne(PatientsEmergencyContacts::class,'patient_ID')->where('isActive',1)->select('id','patient_ID','contact_name','contact_relation','phone_no',);    
+    }
+
+    public function lifeStyleInformation()
+    {
+        return $this->hasOne(PatientsLifeStyleInformation::class,'patient_ID')->where('isActive',1)->select('id','patient_ID','smokingStatus_ID','alcoholStatus_ID','exercise');    
+    }
+
+    public function medicalHistory()
+    {
+        return $this->hasOne(PatientsMedicalHistory::class,'patient_ID')->where('isActive',1)->select('id','patient_ID','illness','surgery','allergies','chronicDisease','medication');    
+    }
 }

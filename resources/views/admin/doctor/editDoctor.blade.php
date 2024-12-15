@@ -11,6 +11,10 @@
             padding: 1px;
             cursor: pointer;
         }
+        .select2-container .select2-selection--single
+        {
+            height: 36px !important;
+        }
     </style>
 @endpush
 @section('content')
@@ -77,7 +81,7 @@
                     <div class="col-md-3">
                         <label for="state"><b>State</b><span style="color:red">*</span> :</label>
                         <select id="state" class="form-control" name="state">
-                            <option value="">Select State</option>
+                            <!-- <option value="">Select State</option> -->
                         </select>
                         <input type="hidden" id="hidden_state_ID" value="{{ $doctorDetails['state_ID'] }}">
                     </div>
@@ -85,7 +89,7 @@
                     <div class="col-md-3">
                         <label for="city"><b>City</b><span style="color:red">*</span> :</label>
                         <select id="city" class="form-control" name="city">
-                            <option value="">Select City</option>
+                            <!-- <option value="">Select City</option> -->
                         </select>
                         <input type="hidden" id="hidden_city_ID" value="{{ $doctorDetails['city_ID'] }}">
                     </div>

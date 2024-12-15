@@ -79,6 +79,10 @@ class DoctorController extends Controller
                 return isset($row['user']['mobile']) ? $row['user']['mobile'] : '';
             })
 
+            ->editColumn('age', function($row){
+                return isset($row['user']['age']) ? $row['user']['age'] : '';
+            })
+
             ->editColumn('gender', function($row){
                 return (isset($row['user']['gender'])) ? $row['user']['gender']['gender'] : '';    
             })
@@ -368,7 +372,6 @@ class DoctorController extends Controller
     {
         $getDoctorId = Doctor::where('user_ID',Auth::user()->id)->first('id');
 
-        // dd($getDoctorId->id);
         $this->editDoctorForm($getDoctorId->id);
     }
 }

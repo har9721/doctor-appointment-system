@@ -4,6 +4,10 @@
         .errorMessages{
             color: red;
         }
+        .select2-container .select2-selection--single
+        {
+            height: 36px !important;
+        }
     </style>
 @endpush
 @section('content')
@@ -61,7 +65,7 @@
                     <div class="col-md-3">
                         <label for="state"><b>State</b><span style="color:red">*</span> :</label>
                         <select id="state" class="form-control" name="state">
-                            <option value="">Select State</option>
+                            <!-- <option value="">Select State</option> -->
                         </select>
                     </div>
 
