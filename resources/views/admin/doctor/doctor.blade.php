@@ -23,6 +23,7 @@
                             <th>Email</th>
                             <th>Mobile</th>
                             <th>Gender</th>
+                            <th>Age</th>
                             <th>City</th>
                             <th>Speciality</th>
                             <th>License Number</th>

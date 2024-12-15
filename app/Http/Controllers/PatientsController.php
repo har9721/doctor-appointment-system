@@ -4,11 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\AppointmentBooking;
 use App\Http\Requests\AppointmentRequest;
+use App\Http\Requests\RegisterUserRequest;
 use App\Models\Appointments;
 use App\Models\Doctor;
 use App\Models\Patients;
 use App\Models\Person;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Yajra\DataTables\Facades\DataTables;
@@ -37,6 +40,9 @@ class PatientsController extends Controller
                 ->editColumn('mobile', function($row){
                     return (isset($row['user'])) ? $row['user']['mobile'] : "";
                 })
+                ->editColumn('age', function($row){
+                    return (isset($row['user'])) ? $row['user']['age'] : "";
+                })
                 ->editColumn('address', function($row){
                     return (isset($row['user'])) ? $row['user']['address'] : "";
                 })
@@ -47,16 +53,16 @@ class PatientsController extends Controller
                     return (!empty($row['user']['city'])) ? $row['user']['city']['name'] : '';
                 })
                 ->editColumn('edit', function($row){
-                    return '<button name="edit" id="edit" class="editUserDetails mr-2" data-toggle="tooltip" data-id = "'.$row['id'].'" data-placement="bottom" title="Edit">
+                    return '<a href="'. route('admin.edit-patients',['patients' => $row['id']]) .'"><button name="edit" id="edit" class="editPatientsDetails mr-2" data-toggle="tooltip" data-id = "'.$row['id'].'" data-placement="bottom" title="Edit">
                     <i class="fas fa-edit"  aria-hidden="true"></i>
-                    </button>';
+                    </button></a>';
                 })
                 ->editColumn('delete', function($row){
                     return '<button name="delete" id="delete" class="mr-2 deleteUser" data-toggle="tooltip" data-id = "'.$row['id'].'" data-placement="bottom" title="Delete">
                     <i class="fas fa-trash" aria-hidden="true"></i>
                     </button>';
                 })
-                ->rawColumns(['name','city','gender','edit','delete'])
+                ->rawColumns(['name','city','gender','age','edit','delete'])
                 ->make(true);
         }
     }
@@ -98,28 +104,16 @@ class PatientsController extends Controller
     {
         $data = $request->validated();
 
-        // $validated = Validator::make($data,[
-        //     'date' => ['required','date_format:d-m-Y','after_or_equal:'.date('d-m-Y')],
-        //     'timeSlot' => [Rule::unique('appointments','doctorTimeSlot_ID')->where('appointmentDate',$data['date'])->where('patient_ID',$data['patient_ID'])->where('doctorTimeSlot_ID',$data['timeSlot'])]
-        // ]);
+        $bookAppointment = Appointments::bookPatientAppointment($data);
 
-        // if($validated->fails())
-        // {
-        //     $response['status'] = 'error';
-        //     $response['message'] = $validated->messages()->first('date');
-        // }else{
-
-            $bookAppointment = Appointments::bookPatientAppointment($data);
-
-            if($bookAppointment != null)
-            {
-                $response['status'] = 'success';
-                $response['message'] = 'Appointment book successfully.';
-            }else{
-                $response['status'] = 'success';
-                $response['message'] = 'Appointment not book successfully.';
-            }
-        // }
+        if($bookAppointment != null)
+        {
+            $response['status'] = 'success';
+            $response['message'] = 'Appointment book successfully.';
+        }else{
+            $response['status'] = 'success';
+            $response['message'] = 'Appointment not book successfully.';
+        }
 
         return response()->json($response);
     }
@@ -127,5 +121,53 @@ class PatientsController extends Controller
     public function getAllPatientsList()
     {
         return Patients::with('user')->get();   
+    }
+
+    public function editPatient(Patients $patients)
+    {
+        if(Auth::user()->role->roleName === 'Admin')
+        {
+            $patientsData = $patients->load([
+                'user.city'
+            ]);
+        }else{
+            $patientsData = $patients->load([
+                'emergencyContact',
+                'lifeStyleInformation',
+                'medicalHistory',
+                'user.city'
+            ]);
+        }
+
+        $heading = (Auth::user()->role->roleName === 'Admin') ? 'Edit Patient Details' : (Auth::user()->role->roleName === 'Petients' ? 'My Profile' : '');
+
+        $backUrl = (Auth::user()->role->roleName === 'Admin') ? 'admin.patients' : (Auth::user()->role->roleName === 'Petients' ? 'home' : '');
+
+        return view('admin.patients.editPatients',compact('patientsData','heading','backUrl'));
+    }
+    
+    public function updatePatientsDetails(RegisterUserRequest $request)
+    {
+        $validated = $request->validated();
+
+        $updateUserDetails = User::updateUserInfo($validated);
+
+        $url = (Auth::user()->role_ID == 1) ? 'patients' : '';
+
+        $msg = (Auth::user()->role_ID == 1) ? 'Patients' : 'Profile';
+
+        if($updateUserDetails != '')
+        {
+            $response['status'] = 'success';
+            $response['url'] = $url;
+            $response['message'] = "$msg details is updated successfully.";
+        }else
+        {
+            $response['status'] = 'error';
+            $response['url'] = $url;
+            $response['message'] = "$msg details is not updated successfully.";
+        }
+
+        echo json_encode($response);
     }
 }

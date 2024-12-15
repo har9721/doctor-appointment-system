@@ -190,6 +190,8 @@ function getGenderList(selectedGenderId = null){
 function getStateList(selectedStateID = null){
     var selectedTrue = false;
 
+    $('#state').append($("<option value='' selected disabled>Select State</option>"));
+
     $.ajaxSetup({
         headers: {
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -212,7 +214,9 @@ function getStateList(selectedStateID = null){
                 .prop('selected', selectedTrue));
             });
         }
-    })
+    });
+
+    $('#state').select2();
 }
 $(document).on('click', '.img-thumbnail', function () {
     const imgSrc = $(this).attr('src');
@@ -222,6 +226,8 @@ $(document).on('click', '.img-thumbnail', function () {
 function getCityList(state_ID,selectedCity_ID = null){
     var selectedTrue = false;
     $('#city').empty();
+
+    $('#city').append($("<option value='' selected disabled>Select City</option>"));
 
     $.ajaxSetup({
         headers: {

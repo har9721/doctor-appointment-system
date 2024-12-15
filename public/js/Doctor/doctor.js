@@ -15,6 +15,7 @@ var table = $('#doctorList').DataTable({
         {data: 'email', name:'email',"sortable": true, "searchable": true},
         {data: 'mobile', name:'mobile',"sortable": true, "searchable": true},
         {data: 'gender', name:'gender',"sortable": true, "searchable": true},
+        {data: 'age', name:'age',"sortable": true, "searchable": true},
         {data: 'city', name:'city',"sortable": true, "searchable": true},
         {data: 'specialty', name:'specialty',"sortable": true, "searchable": true},
         {data: 'licenseNumber', name:'licenseNumber',"sortable": true, "searchable": true},
@@ -57,8 +58,6 @@ $(document).on('click','.deleteDoctor', function(){
                             timer: 5000
                         });
     
-                        $('#doctorList').DataTable().ajax.reload();
-    
                     }else{    
                         Swal.fire({
                             title: "Success",
@@ -67,6 +66,8 @@ $(document).on('click','.deleteDoctor', function(){
                             timer: 5000
                         });
                     }
+
+                    $('#doctorList').DataTable().ajax.reload();
                 },
                 error : function(response)
                 {

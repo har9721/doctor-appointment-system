@@ -347,7 +347,9 @@ function getStateList(){
                 .text(val.name));
             });
         }
-    })
+    });
+
+    $('#state').select2();
 }
 
 function getCityList(state_ID){
@@ -368,7 +370,9 @@ function getCityList(state_ID){
                 .text(val.name));
             });
         }
-    })
+    });
+
+    $('#city').select2();
 }
 
 function getGenderList(){

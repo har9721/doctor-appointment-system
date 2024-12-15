@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 
 class PatientsLifeStyleInformation extends Model
 {
@@ -26,5 +27,23 @@ class PatientsLifeStyleInformation extends Model
         ]);  
         
         return $addLifeStyleInfo;
+    }
+
+    public function patients()
+    {
+        return $this->belongsTo(Patients::class,'patient_ID');    
+    }
+
+    public static function updateLifeStyleInformation($data)
+    {
+        info('inside lifestyle');
+        return PatientsLifeStyleInformation::where('id',$data['lifestyle_hidden_id'])
+        ->update([
+            'smokingStatus_ID' => $data['smoking_status'],
+            'alcoholStatus_ID' => $data['alcohol_status'],
+            'exercise' => $data['exercise'],
+            'updatedBy' => Auth::user()->id,
+            'updated_at' => now()
+        ]);    
     }
 }
