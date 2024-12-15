@@ -124,9 +124,22 @@ class User extends Authenticatable
         //     'updatedBy' => Auth::user()->id
         // ]);
 
-        return (Route::currentRouteName() === 'admin.upateUserDetails') ? 1 : (
-            ($updateUser) ? Doctor::updateDoctorInfo($data) : 0
-        );
+
+        if(Route::currentRouteName() === 'admin.upateUserDetails' || Route::currentRouteName() === 'admin.patientsUpdate')
+        {
+            if($updateUser && $data['isPatients'] == 1)
+            {
+                PatientsEmergencyContacts::updateEmergencyContact($data);
+                PatientsMedicalHistory::updateMedicalInformation($data);
+                PatientsLifeStyleInformation::updateLifeStyleInformation($data);
+
+                return 1;
+            }else{
+                return 1;
+            }
+        }else{
+            return ($updateUser) ? Doctor::updateDoctorInfo($data) : 0;
+        }
     }
 
     public static function deleteUser($data)

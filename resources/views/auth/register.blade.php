@@ -16,6 +16,14 @@
 
     <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- select 2 css -->
+    <link rel="stylesheet" href="{{URL::to('assets/css/select2.min.css')}}">
+    <style>
+        .select2-container .select2-selection--single
+        {
+            height: 36px !important;
+        }
+    </style>
 </head>
 <body>
     <div class="form-container mt-2">
@@ -79,7 +87,7 @@
                     <div class="col-md-3 form-group">
                         <label for="state">State :</label>
                         <select id="state" class="form-control">
-                            <option>Select State</option>
+                            <option selected disabled>Select State</option>
                         </select>
                         <span class="error" id="state_error">Please select your state.</span>
                     </div>
@@ -87,7 +95,7 @@
                     <div class="col-md-3 form-group">
                         <label for="city">City :</label>
                         <select id="city" class="form-control">
-                            <option>Select City</option>
+                            <option selected disabled>Select City</option>
                         </select>
                         <span class="error" id="city_error">Please select your city.</span>
                     </div>
@@ -211,6 +219,8 @@
 
     <script src="{{ URL::to('assets/js/jquery.min.js') }}"></script>
     <script src="{{URL::to('assets/js/sweetalert2.js')}}"></script>
+    <!-- select2 -->
+    <script src="{{URL::to('assets/js/select2.min.js')}}"></script>
     <script type="text/javascript">
         let getCity = "{{ route('get-city') }}";
         let getStates = "{{ route('get-state') }}";

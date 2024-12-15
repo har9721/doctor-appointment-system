@@ -37,10 +37,14 @@
                         $id = Auth::user()->id;
                         $routeName = 'admin.profile';
                         $param = 'user';
-                    } else {
+                    } elseif(Auth::user()->role_ID == 2) {
                         $id = App\Models\Doctor::getLoginDoctorID(); 
                         $routeName = 'admin.editDoctorDetails';
                         $param = 'doctor';
+                    }else{
+                        $id = App\Models\Patients::getLoginPatientsId(); 
+                        $routeName = 'admin.edit-patients';
+                        $param = 'patients';
                     }
                 @endphp
 
