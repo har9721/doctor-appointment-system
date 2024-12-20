@@ -17,6 +17,8 @@ class AppointmentRequest extends FormRequest
     {
         return [
             'appointment_date' => ['required','date_format:d-m-Y','after_or_equal:'.date('d-m-Y')],
+            'patient_ID' => 'required',
+            'reason' => 'nullable'
         ];
     }
 

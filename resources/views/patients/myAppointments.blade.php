@@ -43,6 +43,10 @@
             color: white;
             /* background: #1de9b6;         */
         }
+        .status-completed {
+            background-color: #1de9b6;
+            color: black;
+        }
         .time-slot {
             padding: 5px 8px;
             margin-bottom: 10px;
@@ -81,7 +85,7 @@
             </div>
         </div>
         <div class="card-body">
-            <form id="dateFilterForm" method="GET"  action="{{route('appoinments.my-appointments')}}">
+            <form id="dateFilterForm" method="GET"  action="{{route('appointments.my-appointments')}}">
                 <div class="row">
                     <div class="col-md-3">
                         <label for="date">From Date : <span style="color: red;">*</span></label>
@@ -106,6 +110,9 @@
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" id="cancelled_tab" data-toggle="tab" href="#canceled" role="tab" aria-controls="canceled" aria-selected="false">Cancelled</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="completed_tab" data-toggle="tab" href="#completed" role="tab" aria-controls="completed" aria-selected="false">Completed</a>
                 </li>
             </ul>
 
@@ -144,6 +151,17 @@
                     @endif
                 </div>
 
+                <!-- Completed Tab -->
+                <div class="tab-pane fade mt-5" id="completed" role="tabpanel" aria-labelledby="completed_tab">
+                    @if($completedAppointments->isEmpty())
+                        <p class="mt-4" style="text-align: center;">No completed appointments found for the selected date range.</p>
+                    @else
+                        @foreach($completedAppointments as $appointment)
+                            <x-appointment-card :appointment="$appointment" status="completed" />
+                        @endforeach
+                    @endif
+                </div>
+
             </div>
         </div>
     </div>
@@ -152,13 +170,17 @@
 <!-- --------------------reschedule modal-------------- -->
 <x-reschedule-modal-component/>
 
+<!-- ----------include add amount modal---------------- -->
+@include('components.addAmount',['id' => $appointment->id]);
+
 @endsection
 @push('scripts')
 <script>
-    let mark_appointments = "{{ route('appoinments.mark-appoitment') }}";
-    let reschedule_appointment = "{{ route('appoinments.reschedule-appoitment') }}";
-    let fetch_appointments_details = "{{ route('appoinments.get-appointments-details') }}";
-    let fetch_doctor_time_slot = "{{ route('appoinments.fetch-time-slot') }}";
+    let mark_appointments = "{{ route('appointments.mark-appoitment') }}";
+    let reschedule_appointment = "{{ route('appointments.reschedule-appoitment') }}";
+    let fetch_appointments_details = "{{ route('appointments.get-appointments-details') }}";
+    let fetch_doctor_time_slot = "{{ route('appointments.fetch-time-slot') }}";
+    let saveAmount = "{{ route('appointments.save-amount') }}";
 </script>
 <script src="{{ asset('js/Appointments/appointments.js') }}"></script> 
 @endpush

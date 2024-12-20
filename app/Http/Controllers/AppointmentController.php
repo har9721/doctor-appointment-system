@@ -6,8 +6,10 @@ use App\Http\Requests\AppointmentRequest;
 use App\Models\Appointments;
 use App\Models\Doctor;
 use App\Models\DoctorTimeSlots;
+use App\Models\Patients;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 
 class AppointmentController extends Controller
 {
@@ -27,8 +29,9 @@ class AppointmentController extends Controller
         $myPendingAppointments = Appointments::getAppointmentList($from_date,$to_date,'pending');
         $myConfirmedAppointments = Appointments::getAppointmentList($from_date,$to_date,'confirmed');
         $myCancelledAppointments = Appointments::getAppointmentList($from_date,$to_date,'cancelled');
+        $completedAppointments = Appointments::getAppointmentList($from_date,$to_date,'completed');
 
-        return view('patients.myAppointments',compact('myPendingAppointments','myConfirmedAppointments','myCancelledAppointments','to_date'));
+        return view('patients.myAppointments',compact('myPendingAppointments','myConfirmedAppointments','myCancelledAppointments','to_date','completedAppointments'));
     }
 
     public function makrAppointments(AppointmentRequest $request)
@@ -36,14 +39,19 @@ class AppointmentController extends Controller
         if($request->ajax())
         {
             $updteStatus = $this->appoinments->markAppointment($request->all());
+            
+            // update has_payment_pending flag
+            Patients::updatePaymentStatus($request['patient_ID'],0);
+
+            $status = ($request['status'] == 'archived') ? 'archived' : $request['status'];
 
             if($updteStatus != null)
             {
                 $response['status'] = 'success';
-                $response['message'] = "Appointment ". $request['status']. " successfully.";
+                $response['message'] = "Appointment $status successfully.";
             }else{
                 $response['status'] = 'success';
-                $response['message'] = "Appointment not ".$request['status']." successfully.";
+                $response['message'] = "Appointment not $status successfully.";
             }
         }else{
             $response['status'] = 'error';
@@ -116,5 +124,37 @@ class AppointmentController extends Controller
         }
 
         return response()->json($response);
+    }
+
+    public function saveAmount(Request $request)
+    {
+        try {
+            $validated = Validator::make($request->all(),[
+                'appointment_id' => 'required',
+                'amount' => 'required|numeric|gt:0'
+            ]);
+
+            if($validated->fails())
+            {
+                $response['status'] = 'error';
+                $response['message'] = $validated->errors()->first('amount');
+            }else{
+                $updateAmount = Appointments::updateAmount($request->all());
+
+                if($updateAmount != null)
+                {
+                    $response['status'] = 'success';
+                    $response['message'] = "Amount added successfully.";
+                }else{
+                    $response['status'] = 'success';
+                    $response['message'] = "Amount not added successfully.";
+                }
+            }
+        } catch (\Throwable $th) {
+            $response['status'] = 'error';
+            $response['message'] = "Something went wrong.";
+        }
+
+        echo json_encode($response);
     }
 }

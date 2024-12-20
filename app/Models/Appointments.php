@@ -15,7 +15,7 @@ class Appointments extends Model
 
     public $timestamps = false;
 
-    protected $fillable = ['doctorTimeSlot_ID','status','patient_ID','appointmentDate','created_at','originalAppointmentDate','isRescheduled'];
+    protected $fillable = ['doctorTimeSlot_ID','status','patient_ID','appointmentDate','created_at','originalAppointmentDate','isRescheduled','archived_reason'];
 
     public static function bookPatientAppointment($data)
     {
@@ -77,6 +77,7 @@ class Appointments extends Model
             'appointments.isBooked',
             'appointments.status',
             'appointments.created_at',
+            'appointments.amount',
             'mst_specialties.specialtyName',
             DB::raw('CONCAT_WS(" ", p.first_name, p.last_name) as patient_full_name'),                
             DB::raw('CONCAT_WS(" ", d.first_name, d.last_name) as doctor_full_name'),
@@ -89,7 +90,8 @@ class Appointments extends Model
     public function markAppointment($data)
     {
         $appointments = Appointments::find($data['appointment_id']);
-        $appointments->status = ($data['status'] == 'confirm') ? 'confirmed' : 'cancelled';
+        $appointments->status = ($data['status'] == 'archived') ? 'pending' : $data['status'];
+        $appointments->archived_reason = (!empty($data['reason'])) ? $data['reason'] : null;
         $appointments->updated_at = now();
         $appointments->updatedBy = Auth::user()->id;
         
@@ -100,15 +102,18 @@ class Appointments extends Model
     public static function getEmailData($appointments)
     {
         $doctorDetails = Doctor::join('doctor_time_slots', 'doctor_time_slots.doctor_ID', 'doctors.id')
+        ->join('mst_specialties', 'mst_specialties.id', 'doctors.specialty_ID')
         ->join('users', 'users.id', 'doctors.user_ID')
         ->where('doctor_time_slots.id', $appointments->doctorTimeSlot_ID)
-        ->first(['users.first_name', 'users.last_name', 'users.email', 'doctor_time_slots.start_time', 'doctor_time_slots.end_time']);
+        ->first(['users.first_name', 'users.last_name', 'users.email', 'doctor_time_slots.start_time', 'doctor_time_slots.end_time','mst_specialties.specialtyName']);
 
         $emailData['doctor_name'] = $doctorDetails ? $doctorDetails->first_name . ' ' . $doctorDetails->last_name : null;
         $emailData['doctor_email'] = $doctorDetails ? $doctorDetails->email : null;
         $emailData['date'] = $appointments->appointmentDate;
         $emailData['time'] = $doctorDetails ? $doctorDetails->start_time : null;
         $emailData['isRescheduled'] = $appointments->isRescheduled;
+        $emailData['amount'] = $appointments->amount;
+        $emailData['specialty'] = $doctorDetails ? $doctorDetails->specialtyName : null;
 
         if (Auth::user()->role_ID == config('constant.doctor_role_ID') || Auth::user()->role_ID == config('constant.admin_role_ID')) {
             $appointments->load(['patients.user']);
@@ -136,5 +141,15 @@ class Appointments extends Model
         $appointments->updatedBy = Auth::user()->id;
 
         return $appointments->update();
+    }
+
+    public static function updateAmount($data)
+    {
+        return Appointments::where('id',$data['appointment_id'])
+            ->update([
+                'amount' => $data['amount'],
+                'updated_at' => now(),
+                'updatedBy' => Auth::user()->id
+            ]);    
     }
 }

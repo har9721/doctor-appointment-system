@@ -64,4 +64,13 @@ class Patients extends Model
     {
         return $this->hasOne(PatientsMedicalHistory::class,'patient_ID')->where('isActive',1)->select('id','patient_ID','illness','surgery','allergies','chronicDisease','medication');    
     }
+
+    public static function updatePaymentStatus($id,$pending_payment)
+    {
+        return Patients::where('id',$id)->update([
+            'has_pending_payment' => $pending_payment,
+            'updatedBy' => Auth::user()->id,
+            'updated_at' => now()
+        ]);
+    }
 }
