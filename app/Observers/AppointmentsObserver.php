@@ -5,9 +5,7 @@ namespace App\Observers;
 use App\Jobs\SendAppointmentStatus;
 use App\Jobs\sendBookingMail;
 use App\Models\Appointments;
-use App\Models\Doctor;
-use App\Models\User;
-use Illuminate\Support\Facades\Auth;
+use App\Models\Patients;
 
 class AppointmentsObserver
 {
@@ -20,11 +18,22 @@ class AppointmentsObserver
     {
         info('inside a update observer class');
 
-        if($appointments->wasChanged('status') || $appointments->wasChanged('isRescheduled'))
+        if ($appointments->wasChanged('status') || $appointments->wasChanged('isRescheduled')) 
         {
             $new_status = $appointments->status;
 
-            dispatch(new SendAppointmentStatus(Appointments::getEmailData($appointments),$new_status));
+            // Handle specific status change logic
+            if ($new_status === 'Pending') {
+                dispatch(new SendAppointmentStatus(Appointments::getEmailData($appointments), $new_status));
+            }
+
+            if ($new_status === 'completed' && !$appointments->getOriginal('status') === 'completed') {
+                // Update payment status only if newly completed
+                Patients::updatePaymentStatus($appointments->patient_ID, 1);
+            }
+
+            // Send email for all status changes
+            dispatch(new SendAppointmentStatus(Appointments::getEmailData($appointments), $new_status));
         }
     }
 

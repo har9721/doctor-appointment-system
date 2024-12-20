@@ -20,7 +20,8 @@ class AppointmentBooking extends FormRequest
             'date' => ['required','date_format:d-m-Y','after_or_equal:'.date('d-m-Y')],
             'timeSlot' => [
                 Rule::unique('appointments','doctorTimeSlot_ID')->where('appointmentDate',$this->date)->where('patient_ID',$this->patient_ID)->where('doctorTimeSlot_ID',$this->timeSlot)
-            ]
+            ],
+            'patient_ID' => 'required'
         ];
     }
 

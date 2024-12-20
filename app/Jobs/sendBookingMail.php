@@ -20,6 +20,8 @@ class sendBookingMail implements ShouldQueue
 
     public $failOnTimeout = false;
 
+    public $tries = 3;
+
     public $timeout = 120000;
 
     public function __construct($data)

@@ -18,6 +18,7 @@ class AddRecursiveTimeSlot implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     protected $timeSlot;
+    public $tries = 3;
 
     public function __construct($data)
     {
