@@ -141,7 +141,7 @@ class PatientsController extends Controller
 
         $heading = (Auth::user()->role->roleName === 'Admin') ? 'Edit Patient Details' : (Auth::user()->role->roleName === 'Petients' ? 'My Profile' : '');
 
-        $backUrl = (Auth::user()->role->roleName === 'Admin') ? 'admin.patients' : (Auth::user()->role->roleName === 'Petients' ? 'home' : '');
+        $backUrl = (Auth::user()->role->roleName === 'Admin') ? 'admin.patients' : (Auth::user()->role->roleName === 'Petients' ? 'home' : 'home');
 
         return view('admin.patients.editPatients',compact('patientsData','heading','backUrl'));
     }

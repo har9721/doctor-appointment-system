@@ -17,6 +17,8 @@ class SendMessage implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     public $data;
+
+    public $tries = 3;
     
     public function __construct($userData)
     {

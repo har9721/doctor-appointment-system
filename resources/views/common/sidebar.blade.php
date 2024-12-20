@@ -50,7 +50,7 @@
         </li>
 
         <li class="nav-item">
-            <a class="nav-link collapsed" href="{{ route('appoinments.my-appointments') }}" active>
+            <a class="nav-link collapsed" href="{{ route('appointments.my-appointments') }}" active>
                 <i class="fas fa-calendar"></i>
                 <span>Appointments</span>
             </a>
@@ -66,7 +66,7 @@
         </li>
 
         <li class="nav-item">
-            <a class="nav-link collapsed" href="{{ route('appoinments.my-appointments') }}" active>
+            <a class="nav-link collapsed" href="{{ route('appointments.my-appointments') }}" active>
                 <i class="fas fa-calendar"></i>
                 <span>Appointments</span>
             </a>
@@ -82,7 +82,7 @@
         </li>
 
         <li class="nav-item">
-            <a class="nav-link collapsed" href="{{ route('appoinments.my-appointments') }}" active>
+            <a class="nav-link collapsed" href="{{ route('appointments.my-appointments') }}" active>
                 <i class="fas fa-calendar"></i>
                 <span>My Appointments</span>
             </a>
