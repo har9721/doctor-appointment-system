@@ -46,7 +46,7 @@ class Appointments extends Model
         return date('d-m-Y',strtotime($value));
     }
 
-    public static function getAppointmentList($from_date,$to_date,$status)
+    public static function getAppointmentList($from_date = null,$to_date  = null,$status = null)
     {
         $getMyAppointments = Appointments::join('doctor_time_slots', 'doctor_time_slots.id', '=', 'appointments.doctorTimeSlot_ID')
         ->join('doctors', 'doctors.id', '=', 'doctor_time_slots.doctor_ID')
@@ -54,10 +54,12 @@ class Appointments extends Model
         ->join('users as d', 'd.id', '=', 'doctors.user_ID')
         ->join('users as p', 'p.id', '=', 'patients.user_ID')
         ->join('mst_specialties', 'mst_specialties.id', '=', 'specialty_ID')
-        ->whereBetween('appointmentDate', [
-            date('Y-m-d', strtotime($from_date)),
-            date('Y-m-d', strtotime($to_date))
-        ])
+        ->when((!empty($from_date)) || !empty($to_date), function($q) use($from_date, $to_date){     
+            $q->whereBetween('appointmentDate', [
+                date('Y-m-d', strtotime($from_date)),
+                date('Y-m-d', strtotime($to_date))
+            ]);
+        })
         ->when($status, function($query) use($status){
             $query->where('appointments.status',$status);
         })
@@ -78,6 +80,7 @@ class Appointments extends Model
             'appointments.status',
             'appointments.created_at',
             'appointments.amount',
+            'appointments.payment_status',
             'mst_specialties.specialtyName',
             DB::raw('CONCAT_WS(" ", p.first_name, p.last_name) as patient_full_name'),                
             DB::raw('CONCAT_WS(" ", d.first_name, d.last_name) as doctor_full_name'),
@@ -114,6 +117,7 @@ class Appointments extends Model
         $emailData['isRescheduled'] = $appointments->isRescheduled;
         $emailData['amount'] = $appointments->amount;
         $emailData['specialty'] = $doctorDetails ? $doctorDetails->specialtyName : null;
+        $emailData['payment_status'] = $appointments->payment_status;
 
         if (Auth::user()->role_ID == config('constant.doctor_role_ID') || Auth::user()->role_ID == config('constant.admin_role_ID')) {
             $appointments->load(['patients.user']);
@@ -151,5 +155,46 @@ class Appointments extends Model
                 'updated_at' => now(),
                 'updatedBy' => Auth::user()->id
             ]);    
+    }
+
+    public static function updatePaymentStatus($id)
+    {
+        $appointment = Appointments::findOrFail($id);
+
+        $appointment->payment_status = 'completed';
+        $appointment->updated_at = now();
+        $appointment->updatedBy = Auth()->user()->id;
+        $appointment->update();
+
+        return Patients::updatePaymentStatus($appointment->patient_ID,0);
+    }
+
+    public function paymentDetails()
+    {
+        return $this->hasOne(PaymentDetails::class,'appointment_ID');    
+    }
+
+    public static function getPaymentSummary($appointment_id)
+    {
+        $getPaymentSummary = PaymentDetails::with(['appointments.patients.user','appointments.doctorTimeSlot.doctor.user'])
+        ->where('appointment_ID',$appointment_id)
+        ->get();
+
+        $paymentSummary = $getPaymentSummary->map(function($details){
+
+            return [
+                'payment_status' => $details->appointments->payment_status,
+                'patientName' => $details->appointments->patients->user->full_name,
+                'email' => $details->appointments->patients->user->email,
+                'doctorName' => $details->appointments->doctorTimeSlot->doctor->user->full_name,
+                'appointmentDate' => date('d-m-Y',strtotime($details->appointments->appointmentDate)),
+                'time' => $details->appointments->doctorTimeSlot->time,
+                'transaction_id' => $details->res_payment_id,
+                'paymentDate' => date('d-m-Y',strtotime($details->created_at)),
+                'amount' => $details->appointments->amount
+            ];
+        });
+
+        return $paymentSummary;
     }
 }

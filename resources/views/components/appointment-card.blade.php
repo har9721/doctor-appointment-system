@@ -2,7 +2,11 @@
     <div class="card-header">
         @if(in_array(Auth::user()->role_ID,config('constant.admin_and_doctor_role_ids')))
             <div class="text-white d-flex justify-content-between align-items-center rounded">
-                <span class="fw-bold fs-4">Patient : {{ $appointment->patient_full_name }}</span>
+                @if(Auth::user()->role_ID == config('constant.admin_role_ID'))
+                    <span style="color: black;"><b>Dr. {{ $appointment->doctor_full_name }}</b></span>
+                @else 
+                    <span class="fw-bold fs-4">Patient : {{ $appointment->patient_full_name }}</span>
+                @endif
                 <span>
                     <span class="fw-bold fs-5 text-white" role="button" data-bs-toggle="modal" data-bs-target="#editAmountModal">
                         ₹  {{ $appointment->amount ?? 0 }}

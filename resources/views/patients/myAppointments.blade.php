@@ -171,7 +171,7 @@
 <x-reschedule-modal-component/>
 
 <!-- ----------include add amount modal---------------- -->
-@include('components.addAmount',['id' => $appointment->id]);
+<x-addAmount />
 
 @endsection
 @push('scripts')

@@ -88,6 +88,13 @@
             </a>
         </li>
 
+        <li class="nav-item">
+            <a class="nav-link collapsed" href="{{ route('appointments.completed-list') }}" active>
+                <i class="fas fa-calendar"></i>
+                <span>Completed Appointments</span>
+            </a>
+        </li>
+
     @endif
     <!-- Divider -->
     <hr class="sidebar-divider d-none d-md-block">

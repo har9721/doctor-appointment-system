@@ -19,9 +19,9 @@ class DoctorTimeSlots extends Model
 
     CONST DELETED_AT = 'deletedAt';
 
-    protected $appends = ['start','end','title','time'];
-
     protected $fillable = ['doctor_ID', 'availableDate' ,'start_time','end_time','created_at'];
+
+    protected $appends = ['start','end','title','time'];
 
     public static function addDoctorTimeSlot($data)
     {

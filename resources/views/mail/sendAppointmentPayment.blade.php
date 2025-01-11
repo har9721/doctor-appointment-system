@@ -13,7 +13,7 @@
         <li>Total Amount: <span>&#8377;</span>{{ $amount }}</li>
     </ul>
     
-    <a href="" style="background-color: #007bff; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Make Payment</a>
+    <a href="{{ route('appointments.completed-list') }}" style="background-color: #007bff; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Make Payment</a>
     
     <p>If you have any questions, contact us at harshal@gmail.com.</p>
     <p>Thank you for choosing our clinic.</p>
