@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AppointmentController;
+use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\DoctorController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PatientsController;
@@ -112,3 +113,9 @@ Route::middleware('auth')->group(function(){
 });
 
 Route::post('/payment/success', [PaymentController::class, 'handlePayment'])->name('payment.success');
+
+// forgot password
+Route::get('forgot-password',[ForgotPasswordController::class,'index'])->name('forgot-password');
+Route::post('forgot-password',[ForgotPasswordController::class,'forgetPassword'])->name('forgot-password');
+Route::get('reset-password/{token}',[ForgotPasswordController::class,'showResetPasswordForm'])->name('reset.password.get');
+Route::post('reset-password',[ForgotPasswordController::class,'submitResetPasswordForm'])->name('reset.password.post');
