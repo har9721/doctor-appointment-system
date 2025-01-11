@@ -10,7 +10,7 @@
             <div class="modal-body">
                 <div class="row mb-3">
                     <div class="col-md-6">
-                        <input type="hidden" id="appointment_id" value="{{ $id }}">
+                        <input type="hidden" id="appointment_id" value="">
 
                         <label for="amount"><b>Amount </b><span style="color: red;">*</span> :</label>
                         <input type="text" name="amount" id="amount" class="form-control" value="" placeholder="enter amount" autocomplete="off">

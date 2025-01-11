@@ -9,6 +9,7 @@
     <h1>Appointment Confirmation</h1>
     <p>Dear {{ $patientName }},</p>
     <p>Your appointment with Dr. {{ $name }} has been scheduled for {{ $date }} at {{ $time }}.</p>
+    <p>Please make sure to attend the appointment on time.</p>
     <p>Thank you for using our service!</p>
 </body>
 </html>
