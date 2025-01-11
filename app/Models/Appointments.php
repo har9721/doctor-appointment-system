@@ -15,7 +15,7 @@ class Appointments extends Model
 
     public $timestamps = false;
 
-    protected $fillable = ['doctorTimeSlot_ID','status','patient_ID','appointmentDate','created_at','originalAppointmentDate','isRescheduled','archived_reason'];
+    protected $fillable = ['doctorTimeSlot_ID','status','patient_ID','appointmentDate','created_at','originalAppointmentDate','isRescheduled','archived_reason','createdBy'];
 
     public static function bookPatientAppointment($data)
     {

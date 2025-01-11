@@ -25,6 +25,14 @@
     <body class="antialiased">
         <div class="box">
             <h2>Login</h2>
+            @if (Session::has('message'))
+                <div class="alert alert-block alert-success" id="pwd_msg">
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    {{ Session::get('message') }}
+                </div>
+            @endif
 
             @if ($message = Session::get('error'))
                 <div class="alert alert-danger alert-block" id="error-block">
@@ -50,7 +58,7 @@
                     <input type="submit" class="center" name="sign-in" value="Sign In">  
                 </div>
                 <a class="submit" href="{{ route('register') }}" style="color: white">Sign Up</a>
-                <a class="submit" href="{{ route('password.request') }}" style="color: white">Forgot Password</a>
+                <a class="submit" href="{{ route('forgot-password') }}" style="color: white">Forgot Password</a>
             </form>
         </div>
 
@@ -58,6 +66,7 @@
         <script type="text/javascript">
             $('.close').click(function (e) {    
                 $('#error-block').hide();
+                $('#pwd_msg').hide();
             });
         </script>
     </body>
