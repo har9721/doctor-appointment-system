@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Models\DoctorTimeSlots;
 use Carbon\Carbon;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
@@ -20,10 +21,17 @@ class AppointmentBooking extends FormRequest
         return [
             'date' => ['required','date_format:d-m-Y','after_or_equal:'.date('d-m-Y')],
             'timeSlot' => [
-                Rule::unique('appointments','doctorTimeSlot_ID')->where('appointmentDate',$this->date)->where('patient_ID',$this->patient_ID)->where('doctorTimeSlot_ID',$this->timeSlot)
-            ],
-            'timeSlot' => [
-                'after_or_equal:'.Carbon::now()->addHours(5)->addMinutes(30)->format('h:i:s')
+                Rule::unique('appointments','doctorTimeSlot_ID')->where('appointmentDate',$this->date)->where('patient_ID',$this->patient_ID)->where('doctorTimeSlot_ID',$this->timeSlot),
+                function($atttributes,$value,$fail){
+                    $timeSlot = DoctorTimeSlots::find($value);
+
+                    $currentTime = Carbon::now()->addHours(5)->addMinutes(30);
+
+                    if(($timeSlot->start_time <= $currentTime) && ($timeSlot->availableDate <= date('Y-m-d')))
+                    {
+                        $fail('The selected time slot must be greater than the current time.');
+                    }
+                }
             ],
             'patient_ID' => 'required'
         ];
