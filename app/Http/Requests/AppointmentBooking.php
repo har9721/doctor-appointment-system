@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use Carbon\Carbon;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
@@ -20,6 +21,9 @@ class AppointmentBooking extends FormRequest
             'date' => ['required','date_format:d-m-Y','after_or_equal:'.date('d-m-Y')],
             'timeSlot' => [
                 Rule::unique('appointments','doctorTimeSlot_ID')->where('appointmentDate',$this->date)->where('patient_ID',$this->patient_ID)->where('doctorTimeSlot_ID',$this->timeSlot)
+            ],
+            'timeSlot' => [
+                'after_or_equal:'.Carbon::now()->addHours(5)->addMinutes(30)->format('h:i:s')
             ],
             'patient_ID' => 'required'
         ];
