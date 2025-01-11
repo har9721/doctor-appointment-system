@@ -4,17 +4,14 @@ namespace App\View\Components;
 
 use Illuminate\View\Component;
 
-class addAmount extends Component
+class viewPaymentSummary extends Component
 {
-    public $id;
-
     public function __construct()
     {
-        // $this->id = $id;
     }
 
     public function render()
     {
-        return view('components.addAmount');
+        return view('components.view-payment-summary');
     }
 }

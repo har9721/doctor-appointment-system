@@ -5,10 +5,12 @@ namespace App\Providers;
 use App\Models\Appointments;
 use App\Models\Doctor;
 use App\Models\Patients;
+use App\Models\PaymentDetails;
 use App\Models\User;
 use App\Observers\AppointmentsObserver;
 use App\Observers\DoctorObserver;
 use App\Observers\PatientsObserver;
+use App\Observers\PaymentDetailsObserver;
 use App\Observers\UserObserver;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
@@ -39,6 +41,7 @@ class EventServiceProvider extends ServiceProvider
         Doctor::observe(DoctorObserver::class);
         User::observe(UserObserver::class);
         Appointments::observe(AppointmentsObserver::class);
+        PaymentDetails::observe(PaymentDetailsObserver::class);
     }
 
     /**

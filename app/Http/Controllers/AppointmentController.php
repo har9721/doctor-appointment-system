@@ -10,6 +10,7 @@ use App\Models\Patients;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+use Yajra\DataTables\Facades\DataTables;
 
 class AppointmentController extends Controller
 {
@@ -156,5 +157,63 @@ class AppointmentController extends Controller
         }
 
         echo json_encode($response);
+    }
+
+    public function viewCompletedList()
+    {
+        return view('patients.completedAppointmentList');    
+    }
+
+    public function getCompletedAppointment(Request $request)
+    {
+        $from_date = (!empty($request->from_date)) ? $request->from_date : date('01-m-Y');
+        $to_date = (!empty($request->to_date)) ? $request->to_date : date('d-m-Y',strtotime(date('t-m-Y')));
+
+        $completedAppointments = Appointments::getAppointmentList($from_date,$to_date,'completed');
+        
+        return DataTables::of($completedAppointments)
+            ->addIndexColumn()
+            ->editColumn('action', function($row){
+                $viewPaymentSummay = ($row['payment_status'] == 'completed') ? '<button name="Pay" class="mr-2 btn btn-sm btn-info border text-white payment_summary"  data-toggle="tooltip" data-id = "'.$row['id'].'" data-amount = "'. $row['amount'] .'" data-placement="bottom" title="View Payment Summary"  data-bs-toggle="modal" data-bs-target="#paymentSummaryModal">
+                    <i class="fas fa-eye"></i> 
+                </button>' : '' ;
+
+                $pay = ($row['payment_status'] == 'pending') ? '<button name="Pay" id="payment" class="mr-2 payment btn btn-sm success border text-white bg-dark" data-toggle="tooltip" data-id = "'.$row['id'].'" data-placement="bottom" title="Pay">
+                    <i class="fas fa-credit-card"></i> Pay Now
+                </button>' : '';
+
+                return $pay.$viewPaymentSummay;
+            })
+            ->editColumn('status', function($row){
+                return '<label class="badge bg-success text-white">'.ucfirst($row['status']).'</label>';
+            })
+            ->editColumn('payment_status', function($row){
+                return ($row['payment_status'] == 'pending') ? '<label class="badge bg-warning text-white">'.ucfirst($row['payment_status']).'</label>' : '<label class="badge bg-success text-white">'.ucfirst($row['payment_status']).'</label>';
+            })
+            ->rawColumns(['action','status','payment_status'])
+            ->make(true);
+    }
+
+    public function getAppointmentDetails(Request $request)
+    {
+        if($request->ajax())
+        {
+            $appointment_id = $request->appointment_id;
+
+            $getAppointmentDetails = Appointments::with(['doctorTimeSlot' => function($q){
+                $q->with(['doctor.user']);
+            }])
+            ->where('id',$appointment_id)
+            ->first(['id','doctorTimeSlot_ID','patient_ID','amount','status','isBooked','isCancel','created_at',DB::raw('DATE_FORMAT(appointments.appointmentDate,"%M %d, %Y") as appointmentDate')]);
+
+            $paymentData = (new PaymentController)->viewPaymentPage($appointment_id);
+
+            return [
+                'paymentsData' => (array)$paymentData,
+                'getApointmentDetails' => $getAppointmentDetails,
+            ];
+        }else{
+            return null;
+        }    
     }
 }
