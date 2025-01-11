@@ -104,15 +104,23 @@ class PatientsController extends Controller
     {
         $data = $request->validated();
 
-        $bookAppointment = Appointments::bookPatientAppointment($data);
+        $checkForOutstandingPayments = Appointments::checkForOutstandingPayments($data['patient_ID']);
 
-        if($bookAppointment != null)
+        if(empty($checkForOutstandingPayments))
         {
-            $response['status'] = 'success';
-            $response['message'] = 'Appointment book successfully.';
+            $bookAppointment = Appointments::bookPatientAppointment($data);
+    
+            if($bookAppointment != null)
+            {
+                $response['status'] = 'success';
+                $response['message'] = 'Appointment book successfully.';
+            }else{
+                $response['status'] = 'error';
+                $response['message'] = 'Appointment not book successfully.';
+            }
         }else{
-            $response['status'] = 'success';
-            $response['message'] = 'Appointment not book successfully.';
+            $response['status'] = 'error';
+            $response['message'] = 'Outstanding payments found. Please complete the payments to proceed.';
         }
 
         return response()->json($response);

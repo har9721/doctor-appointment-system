@@ -25,7 +25,7 @@
                         <span class="errorMessage" id="end_time_error" style="display: none; color:red">Please select end time</span>
                     </div>
                 </div>
-                <div class="row mb-3">
+                <div class="row mb-3 recurrenceDiv">
                     <div class="col-md-6">
                         <label for="recurrence"><b>Recurrence Pattern </b> :</label>
                         <select class="form-control" id="recurrence" name="recurrence">

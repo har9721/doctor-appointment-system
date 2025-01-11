@@ -174,7 +174,20 @@ $(document).on('click', '.book-btn',function(){
                         timer: 3000
                     });
                 }
-            }
+            },
+            error: function(response)
+            {
+                if(response.status === 422)
+                {
+                    var errors = response.responseJSON;
+                    Swal.fire({
+                        title: "Error",
+                        text: errors.message,
+                        icon: "error",
+                        timer: 5000
+                    });
+                }
+            },
         })
         
     }else{
