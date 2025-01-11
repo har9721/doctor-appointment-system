@@ -3,7 +3,7 @@
         @if(in_array(Auth::user()->role_ID,config('constant.admin_and_doctor_role_ids')))
             <div class="text-white d-flex justify-content-between align-items-center rounded">
                 @if(Auth::user()->role_ID == config('constant.admin_role_ID'))
-                    <span style="color: black;"><b>Dr. {{ $appointment->doctor_full_name }}</b></span>
+                    <span style="color: white;"><b>Dr. {{ $appointment->doctor_full_name }}</b></span>
                 @else 
                     <span class="fw-bold fs-4">Patient : {{ $appointment->patient_full_name }}</span>
                 @endif
@@ -20,7 +20,14 @@
                 </span>
             </div>
         @else
-            <h5 class="mb-0">Dr. {{ $appointment->doctor_full_name }}</h5>
+            <div class="text-white d-flex justify-content-between align-items-center rounded">
+                <span style="color: white;"><b>Dr. {{ $appointment->doctor_full_name }}</b></span>
+                <span>
+                    <span class="fw-bold fs-5 text-white" role="button">
+                        ₹  {{ $appointment->amount ?? 0 }}
+                    </span>&nbsp;
+                </span>
+            </div>
         @endif
     </div>
     <div class="appointment-details">

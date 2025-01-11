@@ -197,4 +197,12 @@ class Appointments extends Model
 
         return $paymentSummary;
     }
+
+    public static function checkForOutstandingPayments($patients_id)
+    {
+        return Appointments::where('patient_ID',$patients_id)
+            ->where('status','completed')
+            ->where('payment_status','pending')
+            ->exists();
+    }
 }

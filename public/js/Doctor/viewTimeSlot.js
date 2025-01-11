@@ -274,6 +274,7 @@ function editEventDetails(event)
     let endTime = convertTimestampToTime(enddate);
         
     // show manage availability modal
+    $('.recurrenceDiv').css('display','none');
     $('#manageAvailability').modal('show');
 
     // append data to input box
