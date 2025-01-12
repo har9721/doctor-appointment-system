@@ -41,6 +41,7 @@ Route::middleware('auth')->group(function(){
             Route::get('/get-all-patients','getAllPatients')->name('get-patients');
             Route::get('/edit-patients-details/{patients}','editPatient')->name('edit-patients');
             Route::post('/save-patients-details','updatePatientsDetails')->name('patientsUpdate');
+            Route::get('/view-patient-history/{patients}','viewPatientsHistory')->name('view-patient-history');
         });
 
         Route::controller(HomeController::class)->group(function(){

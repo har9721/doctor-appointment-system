@@ -151,7 +151,11 @@ class PatientsController extends Controller
 
         $backUrl = (Auth::user()->role->roleName === 'Admin') ? 'admin.patients' : (Auth::user()->role->roleName === 'Petients' ? 'home' : 'home');
 
-        return view('admin.patients.editPatients',compact('patientsData','heading','backUrl'));
+        $isHideSaveButton = 0;
+
+        $class = '';
+
+        return view('admin.patients.editPatients',compact('patientsData','heading','backUrl','isHideSaveButton','class'));
     }
     
     public function updatePatientsDetails(RegisterUserRequest $request)
@@ -177,5 +181,18 @@ class PatientsController extends Controller
         }
 
         echo json_encode($response);
+    }
+
+    public function viewPatientsHistory(Patients $patients)
+    {
+        $patientsData = $patients->load(['user','emergencyContact','lifeStyleInformation','medicalHistory']);
+
+        $backUrl = (Auth::user()->role->roleName === 'Admin') ? 'admin.patients' : (Auth::user()->role->roleName === 'Petients' ? 'home' : 'home');
+
+        $isHideSaveButton =  1;
+
+        $class = "readonly";
+
+        return view('admin.viewPatientsHistory',compact('patientsData','backUrl','isHideSaveButton','class'));
     }
 }
