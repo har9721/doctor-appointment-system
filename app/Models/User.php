@@ -151,9 +151,11 @@ class User extends Authenticatable
             'deletedBy' => Auth::user()->id
         ]);
 
-        if($deleteUser)
+        if($deleteUser && $data['role'] == config('constant.doctor_role_ID'))
         {
             return Doctor::deleteDoctor($data['id']);
+        }else{
+            return Patients::deletePatient($data['id']);
         }
     }
 

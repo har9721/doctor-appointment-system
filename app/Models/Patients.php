@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
 class Patients extends Model
@@ -71,6 +72,48 @@ class Patients extends Model
             'has_pending_payment' => $pending_payment,
             'updatedBy' => Auth::user()->id,
             'updated_at' => now()
+        ]);
+    }
+
+    public function appointments()
+    {
+        return $this->hasMany(Appointments::class,'patient_ID')->where('isActive',1)->select(['id','doctorTimeSlot_ID','patient_ID']);
+    }
+
+    public static function getPatientsList()
+    {
+        return Patients::leftJoin('appointments','appointments.patient_ID','patients.id')
+        ->leftJoin('doctor_time_slots','doctor_time_slots.id','appointments.doctorTimeSlot_ID')
+        ->leftJoin('doctors','doctors.id','doctor_time_slots.doctor_ID')
+        ->leftJoin('users','users.id','patients.user_ID')
+        ->join('mst_genders','mst_genders.id','users.gender_ID')
+        ->join('cities','cities.id','users.city_ID')
+        ->join('states','states.id','cities.state_id')
+        ->when(Auth::user()->role_ID === config('constant.doctor_role_ID'), function($query)
+        {
+            $query->where('doctors.user_ID',Auth::user()->id);
+        })
+        ->where('patients.isActive',1)
+        ->where('users.isActive',1)
+        ->groupBy('appointments.patient_ID')
+        ->get([ 
+            'patients.id',
+            'patients.user_ID',
+            'appointments.doctorTimeSlot_ID',
+            'appointments.patient_ID',
+            DB::raw('CONCAT_WS(" ", users.first_name, users.last_name) as patient_full_name'),
+            'email','mobile','age','address','gender','mst_genders.gender','cities.name AS city','states.name AS state', 'role_ID'
+        ])->toArray();
+    }
+
+    public static function deletePatient($id)
+    {
+        return Patients::where('id',$id)
+        ->update([
+            'isActive' => 0,
+            'isDeleted' => 1,
+            'deletedAt' => now(),
+            'deletedBy' => Auth::user()->id
         ]);
     }
 }

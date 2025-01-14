@@ -34,7 +34,11 @@
         @if(Auth::user()->role_ID == config('constant.admin_role_ID'))
             <p style="color: black;"><b>Patient Name:</b> {{ $appointment->patient_full_name }}</p>
         @endif
+        @if(
+            Auth::user()->role_ID == config('constant.admin_role_ID') || Auth::user()->role_ID == config('constant.patients_role_ID')
+        )
         <p><strong>Specialty:</strong> {{ $appointment->specialtyName }}</p>
+        @endif
         <p><strong>Date:</strong> {{ $appointment->appointmentDate }}</p>
         <p><strong>Time:</strong> {{ $appointment->time }}</p>
         <p><strong>Status:</strong> 
@@ -66,6 +70,11 @@
 
                 <button class="btn btn-danger appointmentButoon" id="cancel_button" data-id="{{ $appointment->id }}" data-status="cancelled" data-date="{{ $appointment->appointmentDate }}" data-patient_ID = "{{ $appointment->patient_ID }}">Cancel Appointment</button>
             @endif
+
+            <a href = "{{ route('admin.view-patient-history',['patients' => $appointment->patient_ID]) }}">
+                <button class="btn btn-info view" id="view_details" data-date="{{ $appointment->appointmentDate }}" data-id="{{ $appointment->id }}" data-status="archived" data-patient_ID = "{{ $appointment->patient_ID }}"><i class="fas fa-eye"></i>
+                View Patient Details</button>
+            </a>
         </div>
     </div>
 </div>
