@@ -17,10 +17,11 @@
                             <th>Mobile</th>
                             <th>Gender</th>
                             <th>Age</th>
+                            <th>State</th>
                             <th>City</th>
                             <th>Address</th>
-                            <th>Edit</th>
-                            <th>Delete</th>
+                            <th>Action</th>
+                            <!-- <th>Delete</th> -->
                         </tr>
                     </thead>
                     <tbody class="text-center">
@@ -41,7 +42,7 @@
     let getStates = "{{ route('get-state') }}";
     let smokingStatus = "{{ route('get-smoking-status') }}";
     let alcoholStatus = "{{ route('get-alcohol-status') }}";
-
+    let deletePatient = "{{ route('admin.delete-patients') }}";
 </script>
     <script src="{{ asset('js/Patient/patients.js') }}"></script>
 @endpush

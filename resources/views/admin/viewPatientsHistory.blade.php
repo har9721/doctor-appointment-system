@@ -21,9 +21,9 @@
 <div class="container-fluid">
     <div class="card shadow mb-4">
         <div class="card-header py-3 d-flex justify-content-between">
-            <h4 class="mt-2 font-weight-bold text-primary">{{ $heading }}</h4>
+            <h4 class="mt-2 font-weight-bold text-primary">Patients Details</h4>
             <div class="text-right">
-                <a href='{{ route("$backUrl") }}'>
+                <a href='{{ route("admin.patients") }}'>
                     <button type="button" class="btn btn-secondary mr-2">
                     <i class="fas fa-arrow-circle-left"></i>
                         Back

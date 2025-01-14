@@ -59,6 +59,13 @@
     @elseif(auth()->user()->role_ID == 2)
 
         <li class="nav-item">
+            <a class="nav-link" href="{{ route('admin.patients') }}">
+                <i class="fas fa-fw fa-user"></i>
+                <span>Patients</span>
+            </a>
+        </li>
+
+        <li class="nav-item">
             <a class="nav-link" href="{{ route('doctor.time-slot') }}">
                 <i class="fas fa-calendar-check"></i>
                 <span>Manage Availability</span>
