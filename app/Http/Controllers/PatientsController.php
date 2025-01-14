@@ -12,6 +12,7 @@ use App\Models\Person;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Yajra\DataTables\Facades\DataTables;
@@ -26,43 +27,50 @@ class PatientsController extends Controller
 
     public function getAllPatients(Request $request)
     {
-        $getPatientsData = Patients::with(['user.city','user.gender'])->where('isActive',1)->latest()->get(['id','user_ID'])->toArray();
+        // $getPatientsData = Patients::with(['user.city','user.gender'])->where('isActive',1)->latest()->get(['id','user_ID'])->toArray();
+        $getPatientsData = Patients::getPatientsList();
         
         if($request->ajax()){
             return DataTables::of($getPatientsData)
                 ->addIndexColumn()
                 ->editColumn('name', function($row){
-                    return (isset($row['user'])) ? $row['user']['full_name'] : "";
+                    return (isset($row)) ? $row['patient_full_name'] : "";
                 })
                 ->editColumn('email', function($row){
-                    return (isset($row['user'])) ? $row['user']['email'] : "";
+                    return (isset($row)) ? $row['email'] : "";
                 })
                 ->editColumn('mobile', function($row){
-                    return (isset($row['user'])) ? $row['user']['mobile'] : "";
+                    return (isset($row)) ? $row['mobile'] : "";
                 })
                 ->editColumn('age', function($row){
-                    return (isset($row['user'])) ? $row['user']['age'] : "";
+                    return (isset($row)) ? $row['age'] : "";
                 })
                 ->editColumn('address', function($row){
-                    return (isset($row['user'])) ? $row['user']['address'] : "";
+                    return (isset($row)) ? $row['address'] : "";
                 })
                 ->editColumn('gender', function($row){
-                    return (!empty($row['user']['gender'])) ? $row['user']['gender']['gender'] : '';
+                    return (!empty($row)) ? $row['gender'] : '';
                 })
                 ->editColumn('city', function($row){
-                    return (!empty($row['user']['city'])) ? $row['user']['city']['name'] : '';
+                    return (!empty($row)) ? $row['city'] : '';
                 })
-                ->editColumn('edit', function($row){
-                    return '<a href="'. route('admin.edit-patients',['patients' => $row['id']]) .'"><button name="edit" id="edit" class="editPatientsDetails mr-2" data-toggle="tooltip" data-id = "'.$row['id'].'" data-placement="bottom" title="Edit">
+                ->editColumn('action', function($row){
+                    $edit = (Auth::user()->role_ID !== config('constant.doctor_role_ID')) ? '<div class="d-flex justify-space-between"><a href="'. route('admin.edit-patients',['patients' => $row['id']]) .'"><button name="edit" id="edit" class="editPatientsDetails mr-2" data-toggle="tooltip" data-id = "'.$row['id'].'" data-placement="bottom" title="Edit">
                     <i class="fas fa-edit"  aria-hidden="true"></i>
-                    </button></a>';
-                })
-                ->editColumn('delete', function($row){
-                    return '<button name="delete" id="delete" class="mr-2 deleteUser" data-toggle="tooltip" data-id = "'.$row['id'].'" data-placement="bottom" title="Delete">
+                    </button></a>' : '';
+
+                    $delete = (Auth::user()->role_ID !== config('constant.doctor_role_ID')) ? '<button name="delete" id="delete" class="deleteUser" data-toggle="tooltip" data-id = "'.$row['id'].'"  data-user = "'. $row['user_ID'] .'" data-role = "'. $row['role_ID'] .'" data-placement="bottom" title="Delete">
                     <i class="fas fa-trash" aria-hidden="true"></i>
-                    </button>';
+                    </button></div>' : '';
+
+                    $view = (Auth::user()->role_ID === config('constant.doctor_role_ID')) ? '<a href="'. route('admin.view-patient-history',['patients' => $row['id']]) .'">
+                    <button name="view" id="view" class="viewPatientsDetails mr-2" data-toggle="tooltip" data-id = "'.$row['id'].'" data-placement="bottom" title="View Patients Details">
+                        <i class="fas fa-eye"  aria-hidden="true"></i>
+                    </button></a>' : '';
+
+                    return $edit.$delete.$view;
                 })
-                ->rawColumns(['name','city','gender','age','edit','delete'])
+                ->rawColumns(['name','city','gender','age','action'])
                 ->make(true);
         }
     }
@@ -194,5 +202,22 @@ class PatientsController extends Controller
         $class = "readonly";
 
         return view('admin.viewPatientsHistory',compact('patientsData','backUrl','isHideSaveButton','class'));
+    }
+
+    public function deletePatients(Request $request)
+    {
+        $deletePatients = User::deleteUser($request->all());
+
+        if($deletePatients != '')
+        {
+            $response['status'] = 'success';
+            $response['message'] = 'Patient deleted successfully.';
+        }else
+        {
+            $response['status'] = 'success';
+            $response['message'] = 'Patient not deleted successfully.';
+        }
+
+        echo json_encode($response);
     }
 }
