@@ -43,7 +43,7 @@ class Patients extends Model
 
     public function user()
     {
-        return $this->belongsTo(User::class,'user_ID')->where('isActive',1)->select('id','first_name','last_name','email','mobile','age','address','city_ID','gender_ID','isActive');
+        return $this->belongsTo(User::class,'user_ID')->where('isActive',1)->select('id','first_name','last_name','email','mobile','age','address','city_ID','gender_ID','isActive',DB::raw('CONCAT_WS(" ", first_name, last_name) as patients_name'));
     }
 
     public static function getLoginPatientsId()

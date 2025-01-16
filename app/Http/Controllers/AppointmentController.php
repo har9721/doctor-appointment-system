@@ -8,6 +8,7 @@ use App\Models\Doctor;
 use App\Models\DoctorTimeSlots;
 use App\Models\Patients;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Yajra\DataTables\Facades\DataTables;
@@ -168,8 +169,9 @@ class AppointmentController extends Controller
     {
         $from_date = (!empty($request->from_date)) ? $request->from_date : date('01-m-Y');
         $to_date = (!empty($request->to_date)) ? $request->to_date : date('d-m-Y',strtotime(date('t-m-Y')));
+        $status = (empty($request->status)) ? 'completed' : $request->status;
 
-        $completedAppointments = Appointments::getAppointmentList($from_date,$to_date,'completed');
+        $completedAppointments = Appointments::getAppointmentList($from_date,$to_date,$status);
         
         return DataTables::of($completedAppointments)
             ->addIndexColumn()
@@ -182,7 +184,20 @@ class AppointmentController extends Controller
                     <i class="fas fa-credit-card"></i> Pay Now
                 </button>' : '';
 
-                return $pay.$viewPaymentSummay;
+                if(
+                    in_array(Auth::user()->role_ID, config('constant.admin_and_doctor_role_ids')) 
+                    && 
+                    $row['payment_status'] == 'pending'
+                )
+                {
+                    $sendMail = '<button name="send_mail" id="send_mail" class="mr-2 sendMail btn btn-sm border text-white bg-dark" data-toggle="tooltip" data-id = "'.$row['id'].'" data-placement="bottom" title="Send Payment Mail">
+                        <i class="fa fa-envelope" aria-hidden="true"></i>
+                    </button>';
+                }else{
+                    $sendMail = '';
+                }
+
+                return $pay.$viewPaymentSummay.$sendMail;
             })
             ->editColumn('status', function($row){
                 return '<label class="badge bg-success text-white">'.ucfirst($row['status']).'</label>';
@@ -215,5 +230,10 @@ class AppointmentController extends Controller
         }else{
             return null;
         }    
+    }
+
+    public function viewAppointmentHistory()
+    {
+        return view('admin.viewAppointmentHistory');    
     }
 }

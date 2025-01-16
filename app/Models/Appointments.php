@@ -33,7 +33,7 @@ class Appointments extends Model
 
     public function doctorTimeSlot()
     {
-        return $this->belongsTo(DoctorTimeSlots::class,'doctorTimeSlot_ID')->select('id','doctor_ID','availableDate','start_time','end_time');    
+        return $this->belongsTo(DoctorTimeSlots::class,'doctorTimeSlot_ID')->select('id','doctor_ID','availableDate','start_time','end_time',DB::raw('CONCAT_WS("-", DATE_FORMAT(doctor_time_slots.start_time, "%H:%i %P"), DATE_FORMAT(doctor_time_slots.end_time, "%H:%i %P")) as time'));    
     }
 
     public function patients()
