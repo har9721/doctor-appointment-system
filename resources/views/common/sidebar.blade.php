@@ -103,6 +103,14 @@
         </li>
 
     @endif
+
+    <li class="nav-item">
+        <a class="nav-link collapsed" href="{{ route('appointments-history',['role' => strtolower(Auth::user()->role->roleName)]) }}" active>
+            <i class="fas fa-calendar"></i>
+            <span>Appointments History</span>
+        </a>
+    </li>
+
     <!-- Divider -->
     <hr class="sidebar-divider d-none d-md-block">
 

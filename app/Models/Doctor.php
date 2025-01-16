@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
 class Doctor extends Model
@@ -33,7 +34,7 @@ class Doctor extends Model
 
     public function user()
     {
-        return $this->belongsTo(User::class,'user_ID')->where('isActive',1)->select('id','first_name','last_name','email','mobile','age','city_ID','gender_ID');    
+        return $this->belongsTo(User::class,'user_ID')->where('isActive',1)->select('id','first_name','last_name','email','mobile','age','city_ID','gender_ID',DB::raw('CONCAT_WS(" ", first_name, last_name) as doctor_name'));    
     }
 
     public function specialty()
