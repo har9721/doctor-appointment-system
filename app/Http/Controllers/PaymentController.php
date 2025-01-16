@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\PaymentRequest;
+use App\Jobs\PaymentPendingJob;
 use App\Models\Appointments;
 use App\Models\PaymentDetails;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Razorpay\Api\Api;
 use Razorpay\Api\Utility;
 
@@ -121,5 +123,28 @@ class PaymentController extends Controller
         $paymentData = PaymentDetails::where('appointment_ID',$appointment_id)->first();
 
         return $paymentData;    
+    }
+
+    public function sendPaymentPedingMail(Request $request)
+    {
+        try {
+            $getAppointmenDetails = Appointments::with(['patients.user','doctorTimeSlot.doctor.user'])
+            ->where('id',$request->id)
+            ->first(['id','patient_ID',
+                DB::raw('DATE_FORMAT(appointmentDate,"%M %d, %Y") as appointmentDate'),'amount','doctorTimeSlot_ID'
+            ]);
+
+            if(!empty($getAppointmenDetails))
+            {
+                $email = (!empty($getAppointmenDetails->patients->user)) ? $getAppointmenDetails->patients->user->email : '';
+
+                if(!empty($email))
+                {
+                    dispatch(new PaymentPendingJob($email,$getAppointmenDetails));
+                }
+            }
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => $e->getMessage()]);
+        }
     }
 }

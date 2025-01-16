@@ -67,6 +67,12 @@ Route::middleware('auth')->group(function(){
         });
     });
 
+    Route::controller(AppointmentController::class)->group(function(){
+        Route::get('{role}/appointment-history','viewAppointmentHistory')
+        ->where('role','admin|doctor|patients')
+        ->name('appointments-history');
+    });
+
     Route::group(['prefix' => '/doctor', 'as' => 'doctor.'], function(){
         Route::controller(DoctorController::class)->group(function(){
             Route::get('time-slot','viewTimeSlot')->name('time-slot');
@@ -110,6 +116,7 @@ Route::middleware('auth')->group(function(){
             Route::post('save-payment','processPayment')->name('save-payment');
             Route::get('get-payment-summary','fetchPaymentSummary')->name('fetch-payment-summary');
             Route::get('/success-page','showPaymentSuccess')->name('success-page');
+            Route::post('/send-payment-pending-mail','sendPaymentPedingMail')->name('send-payment-mail');
         });
     });
 });
