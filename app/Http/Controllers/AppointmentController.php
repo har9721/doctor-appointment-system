@@ -146,10 +146,10 @@ class AppointmentController extends Controller
                 if($updateAmount != null)
                 {
                     $response['status'] = 'success';
-                    $response['message'] = "Amount added successfully.";
+                    $response['message'] = "Fees added successfully.";
                 }else{
                     $response['status'] = 'success';
-                    $response['message'] = "Amount not added successfully.";
+                    $response['message'] = "Fees not added successfully.";
                 }
             }
         } catch (\Throwable $th) {
@@ -180,7 +180,7 @@ class AppointmentController extends Controller
                     <i class="fas fa-eye"></i> 
                 </button>' : '' ;
 
-                $pay = ($row['payment_status'] == 'pending') ? '<button name="Pay" id="payment" class="mr-2 payment btn btn-sm success border text-white bg-dark" data-toggle="tooltip" data-id = "'.$row['id'].'" data-placement="bottom" title="Pay">
+                $pay = ($row['payment_status'] == 'pending' && (!in_array(Auth::user()->role_ID, config('constant.admin_and_doctor_role_ids')))) ? '<button name="Pay" id="payment" class="mr-2 payment btn btn-sm success border text-white bg-dark" data-toggle="tooltip" data-id = "'.$row['id'].'" data-placement="bottom" title="Pay">
                     <i class="fas fa-credit-card"></i> Pay Now
                 </button>' : '';
 
@@ -193,11 +193,16 @@ class AppointmentController extends Controller
                     $sendMail = '<button name="send_mail" id="send_mail" class="mr-2 sendMail btn btn-sm border text-white bg-dark" data-toggle="tooltip" data-id = "'.$row['id'].'" data-placement="bottom" title="Send Payment Mail">
                         <i class="fa fa-envelope" aria-hidden="true"></i>
                     </button>';
+
+                    $markPayment = '<button name="mark_payment" id="mark_pay_done" class="mr-2 markPayDone btn btn-sm border text-white bg-dark payment" data-toggle="tooltip" data-id = "'.$row['id'].'" data-placement="bottom" title="Mark Payment Done">
+                        <i class="fas fa-check"></i>
+                    </button>';
                 }else{
                     $sendMail = '';
+                    $markPayment = '';
                 }
 
-                return $pay.$viewPaymentSummay.$sendMail;
+                return $viewPaymentSummay.$pay.$sendMail.$markPayment;
             })
             ->editColumn('status', function($row){
                 return '<label class="badge bg-success text-white">'.ucfirst($row['status']).'</label>';

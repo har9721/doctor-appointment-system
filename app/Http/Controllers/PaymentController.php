@@ -147,4 +147,38 @@ class PaymentController extends Controller
             return response()->json(['success' => false, 'message' => $e->getMessage()]);
         }
     }
+
+    public function markPaymentDone(Request $request)
+    {
+        try {
+            // update the db
+            Appointments::updatePaymentStatus($request->appointment_id);
+
+            $randon_string = str()->random();
+
+            $paymentResponseData = [
+                'appointment_ID' => $request->appointment_id,
+                'order_id' => "order_$randon_string",
+                'res_payment_id' => $randon_string,
+                'transaction_id' => null,
+                'method' => 'offline',
+                'email' => $request->email,
+                'phone' => $request->contact,
+                'payment_signature' => null,
+                'amount' => $request->amount,
+                'currency' => 'INR',
+                'status' => 'completed',
+                'json_response' => null,
+                'createdBy' => auth()->user()->id
+            ];
+
+            PaymentDetails::create($paymentResponseData);
+
+            return response()->json(['success' => true, 'message' => 'Payment successful']);
+
+        } catch (\Exception $e) 
+        {
+            return response()->json(['success' => false, 'message' => $e->getMessage()]);
+        }
+    }
 }

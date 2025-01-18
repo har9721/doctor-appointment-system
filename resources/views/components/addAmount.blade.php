@@ -2,7 +2,7 @@
     <div class="modal-dialog modal-md" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title"><b>Add Amount</b></h5>
+                <h5 class="modal-title"><b>Add Fees</b></h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
                 </button>
@@ -12,7 +12,7 @@
                     <div class="col-md-6">
                         <input type="hidden" id="appointment_id" value="">
 
-                        <label for="amount"><b>Amount </b><span style="color: red;">*</span> :</label>
+                        <label for="amount"><b>Fees </b><span style="color: red;">*</span> :</label>
                         <input type="text" name="amount" id="amount" class="form-control" value="" placeholder="enter amount" autocomplete="off">
                     </div>
                 </div>

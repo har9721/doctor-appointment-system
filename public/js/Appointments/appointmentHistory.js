@@ -136,3 +136,55 @@ function reload_table() {
         Swal.fire("Please select the Date");
     }
 }
+
+$(document).on('click','#offline-pay', function()
+{
+    const appointment_id = $('#appointment_id').val();
+    const amount = $('#amount_hidden').val();
+
+    $.ajaxSetup({
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
+    });
+    $.ajax({
+        type : "post",
+        url : markPaymentDone,
+        data : {'appointment_id' : appointment_id,'amount' : amount,'email': 'johndoe@yopmail.com', 'name' : 'John Doe', 'contact' : '9857551454'},
+        success : function (response){
+            if(response['status'] == 'success'){
+                Swal.fire({
+                    title: "Success",
+                    text: response['message'],
+                    icon: "success",
+                    timer: 5000
+                });
+
+            }else{    
+                Swal.fire({
+                    title: "Success",
+                    text: response['message'],
+                    icon: "success",
+                    timer: 5000
+                });
+            }
+
+            setTimeout(function(){
+                window.location.reload();
+            },2000);
+        },
+        error : function(response)
+        {
+            if(response.status === 422)
+            {
+                var errors = response.responseJSON;
+                Swal.fire({
+                    title: "Error",
+                    text: errors.message,
+                    icon: "error",
+                    timer: 5000
+                });
+            }
+        }
+    })
+});
