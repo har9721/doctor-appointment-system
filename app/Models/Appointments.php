@@ -84,7 +84,7 @@ class Appointments extends Model
             'mst_specialties.specialtyName',
             DB::raw('CONCAT_WS(" ", p.first_name, p.last_name) as patient_full_name'),                
             DB::raw('CONCAT_WS(" ", d.first_name, d.last_name) as doctor_full_name'),
-            DB::raw('CONCAT_WS("-", DATE_FORMAT(doctor_time_slots.start_time, "%H:%i %P"), DATE_FORMAT(doctor_time_slots.end_time, "%H:%i %P")) as time'),
+            DB::raw('CONCAT_WS("-", DATE_FORMAT(doctor_time_slots.start_time, "%h:%i %p"), DATE_FORMAT(doctor_time_slots.end_time, "%h:%i %p")) as time'),
         ]);
 
         return $getMyAppointments;

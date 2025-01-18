@@ -33,7 +33,9 @@ class AppointmentController extends Controller
         $myCancelledAppointments = Appointments::getAppointmentList($from_date,$to_date,'cancelled');
         $completedAppointments = Appointments::getAppointmentList($from_date,$to_date,'completed');
 
-        return view('patients.myAppointments',compact('myPendingAppointments','myConfirmedAppointments','myCancelledAppointments','to_date','completedAppointments'));
+        $heading = (Auth::user()->role->roleName === 'Admin') ? 'Appointments' : 'My Appointments';
+
+        return view('patients.myAppointments',compact('myPendingAppointments','myConfirmedAppointments','myCancelledAppointments','to_date','completedAppointments','heading'));
     }
 
     public function makrAppointments(AppointmentRequest $request)

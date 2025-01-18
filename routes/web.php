@@ -97,7 +97,7 @@ Route::middleware('auth')->group(function(){
     //appointments related routes
     Route::group(['prefix' => '/appointments', 'as' => 'appointments.'],function(){
         Route::controller(AppointmentController::class)->group(function(){
-            Route::get('my-appointment','getAppointments')->name('my-appointments');
+            Route::get('appointment','getAppointments')->name('my-appointments');
             Route::post('mark-appoitment','makrAppointments')->name('mark-appoitment');
             Route::get('fetch-appointment-details','getAppointmentsDetails')->name('get-appointments-details');
             Route::get('get-doctor-available-time-slot','getDoctorAvailableTime')->name('fetch-time-slot');
