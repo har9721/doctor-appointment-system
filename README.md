@@ -51,14 +51,14 @@ git clone https://github.com/har9721/doctor-appointment-system.git
 cd doctor-management-system
 ```
 
-### **Step 2: Install Dependencies
+### **Step 2: Install Dependencies**
 ```sh
 composer install
 npm install
 npm run dev
 ```
 
-### **Step 3:Configure Environment
+### **Step 3:Configure Environment**
 ```sh
 cp .env.example .env
 php artisan key:generate
@@ -66,12 +66,12 @@ php artisan key:generate
 
 Edit **.env** and configure your database and razorpay payment gateway credentials.
 
-### **Step 4:Run Migrations & Seed Data
+### **Step 4:Run Migrations & Seed Data**
 ```sh
 php artisan migrate --seed
 ```
 
-### **Step 5:Start Development Server
+### **Step 5:Start Development Server**
 ```sh
 php artisan serve
 ```
@@ -104,31 +104,35 @@ php artisan serve
 
 ---
 
-## 📸 Screenshots
-
-### 1️⃣ Loin Page
-![Login](Screenshots/login.png)
-
-### 2️⃣ Patients Registration Form
-![Patients Registration Form](Screenshots/RegisterForm-1.png)
-![Patients Registration Form](Screenshots/RegisterForm-2.png)
-![Patients Registration Form](Screenshots/RegisterForm-3.png)
-![Patients Registration Form](Screenshots/RegisterForm-4.png)
-![Patients Registration Form](Screenshots/success.png)
-
-### 3️⃣ Admin Login
-👉 **Patients**
-![Patients](Screenshots/Admin/patients/patientList.png)
-![Patients](Screenshots/Admin/patients/editPatient.png)
-
----
-
-🔮 Upcoming Features
+## 🔮 Upcoming Features
 🚀 **Maintain Patient Medical History –** Store and track past diagnoses, treatments, and reports.
 🚀 **Doctor Prescriptions –** Doctors will be able to add prescriptions, and the system will automatically email them to patients.
 🚀 **Automated Appointment Reminders –** Patients will receive email/SMS reminders before their appointments.
 🚀 **Doctor Availability Calendar –** Patients can view real-time doctor availability before booking an appointment.
 🚀 **Admin Dashboard Enhancements –** Graphs and reports for better system insights.
+
+---
+
+## 📸 Screenshots
+
+### 1️⃣ Login Page
+![Login](Screenshots/login.png)
+
+---
+
+### 2️⃣ Patients Registration Form
+![Patients Registration Form](Screenshots/RegisterForm-1.png)
+![Patients Registration Form](Screenshots/registerForm-2.png)
+![Patients Registration Form](Screenshots/registerForm-3.png)
+![Patients Registration Form](Screenshots/registerForm-4.png)
+![Patients Registration Form](Screenshots/success.png)
+
+---
+
+### 3️⃣ Admin Login
+👉 **1️⃣ Patients**
+![Patients](Screenshots/Admin/patients/patientList.png)
+![Patients](Screenshots/Admin/patients/editPatient.png)
 
 ---
 
