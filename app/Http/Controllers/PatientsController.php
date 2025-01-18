@@ -136,7 +136,7 @@ class PatientsController extends Controller
 
     public function getAllPatientsList()
     {
-        return Patients::with('user')->get();   
+        return Patients::with('user')->get(['id','user_ID']);   
     }
 
     public function editPatient(Patients $patients)

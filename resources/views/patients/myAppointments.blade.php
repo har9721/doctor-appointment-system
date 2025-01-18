@@ -79,7 +79,7 @@
 <div class="container-fluid">
     <div class="card shadow mb-4">
         <div class="card-header py-3 d-flex justify-content-between">
-            <h4 class="mt-2 font-weight-bold text-primary">My Appointments</h4>
+            <h4 class="mt-2 font-weight-bold text-primary">{{ $heading }}</h4>
             <div class="text-right">
                 <a href="{{ route('patients.appointment-booking') }}"><button class="btn btn-info">Book Appointment</button></a>
             </div>

@@ -353,6 +353,8 @@ function getStateList(){
 }
 
 function getCityList(state_ID){
+    $('#city').empty();
+
     $.ajaxSetup({
         headers: {
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')

@@ -27,7 +27,7 @@
 <div class="row mb-3">
     <div class="col-md-12">
         <span style="color:red">Note : Please select date to see the available time slots.</span></br>
-        <div id="timeSlotDiv" class="d-flex flex-wrap align-content-start">
+        <div id="timeSlotDiv" class="d-flex flex-wrap align-content-start mt-2">
             <label for="timeSlotDiv" class="mt-2">Available Time Slots :</label>
         </div>
     </div>
