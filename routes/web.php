@@ -117,6 +117,7 @@ Route::middleware('auth')->group(function(){
             Route::get('get-payment-summary','fetchPaymentSummary')->name('fetch-payment-summary');
             Route::get('/success-page','showPaymentSuccess')->name('success-page');
             Route::post('/send-payment-pending-mail','sendPaymentPedingMail')->name('send-payment-mail');
+            Route::post('/mark-payment-done','markPaymentDone')->name('mark-payment');
         });
     });
 });
