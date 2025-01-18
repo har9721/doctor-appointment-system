@@ -64,12 +64,27 @@
         </div>
     </div>
 </div>
+
+<x-make-payment />
+
+<x-view-payment-summary />
 @endsection
 @push('scripts')
 <script>
     let getAppointmentList = "{{route('appointments.get-appointment-completed-list')}}";
     let sendMail = "{{ route('payments.send-payment-mail') }}";
     let roleName = "{{ Auth::user()->role->roleName }}";
+    let savePayment = "{{ route('payments.save-payment') }}";
+    let getAppointmentDetails = "{{ route('appointments.get-appointment-details') }}";
+    let razorpayKey = "{{ config('services.razorpay.key') }}";
+    let successRoute = "{{ route('payment.success') }}";
+    let successUrl = "{{ url('payment/success') }}";
+    let fetchPaymentSummary = "{{ route('payments.fetch-payment-summary') }}";
+    let successPage = "{{ route('payments.success-page') }}";
+    let markPaymentDone = "{{ route('payments.mark-payment') }}";
 </script>
-    <script src="{{ asset('js/Appointments/appointmentHistory.js') }}"></script>
+
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script src="{{ asset('js/Appointments/appointmentHistory.js') }}"></script>
+<script src="{{ asset('js/payment.js') }}"></script>
 @endpush

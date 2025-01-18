@@ -12,6 +12,7 @@
                 <form id="submitPaymentForm" enctype="multipart/form-data">
                     @csrf
                     <input type="hidden" id="appointment_id" name="appointment_id" value="">
+                    <input type="hidden" id="amount_hidden" name="amount" value="">
 
                     <div class="mb-3">
                         <label for="doctor_name" class="form-label>">Doctor Name</label>
@@ -30,7 +31,11 @@
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="button" title="Pay" class="btn btn-success" id="rzp-button">Pay</button>
+                @if(in_array(Auth::user()->role_ID,config('constant.admin_and_doctor_role_ids')))
+                    <button type="button" title="Pay" class="btn btn-success" id="offline-pay">Pay</button>
+                @else
+                    <button type="button" title="Pay" class="btn btn-success" id="rzp-button">Pay</button>
+                @endif
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
             </div>
         </div>
