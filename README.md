@@ -78,38 +78,49 @@ php artisan serve
 
 ---
 
-### **📌 Usage**
-1️⃣ **Login Credentials**
-👉 Admin: admin@yopmail.com/ 12345678. 
-👉 Doctor: create a new doctor from admin login and default password is 12345678.
-👉 Patient: register as a new patient and default password is 12345678. 
+### 📌 Usage
 
-2️⃣ **Booking Appointment**
-👉 Patients log in, apply filter according to their need and book an appintment. 
-👉 They can select a date and available time slot. 
-👉 Patient and Doctor both will receive mail. 
+1️⃣ **Login Credentials**  
+👉 Admin: admin@yopmail.com / 12345678.  
+👉 Doctor: create a new doctor from admin login and default password is 12345678.  
+👉 Patient: register as a new patient and default password is 12345678.  
 
-3️⃣ **Paymet System**
-👉 Patients can pay the fees online via Razorpay. 
-👉 Admin and Doctors can mark offline payments as completed.
-👉 Mailed patients to remind them to pay if he hadn't.
+2️⃣ **Booking Appointment**  
+👉 Patients log in, apply filters according to their needs, and book an appointment.  
+👉 They can select a date and an available time slot.  
+👉 Patient and Doctor both will receive an email.  
 
-4️⃣ **Appointment Management**
-👉 Doctors can approve/cancel/reschedule the appointment.
-👉 Admin can also approve/cancel/reschedule the appointment in the absence of doctors.
-👉 Patients can cancel appointments before confirmation.
+3️⃣ **Payment System**  
+👉 Patients can pay the fees online via Razorpay.  
+👉 Admin and Doctors can mark offline payments as completed.  
+👉 Patients will receive an email reminder if they haven't paid.  
 
-5️⃣ **Viewing Medical History**
-👉 Doctors can access patient details.
+4️⃣ **Appointment Management**  
+👉 Doctors can approve/cancel/reschedule the appointment.  
+👉 Admin can also approve/cancel/reschedule the appointment in the absence of doctors.  
+👉 Patients can cancel appointments before confirmation.  
+
+5️⃣ **Viewing Medical History**  
+👉 Doctors can access patient details.  
 
 ---
 
 ## 🔮 Upcoming Features
-🚀 **Maintain Patient Medical History –** Store and track past diagnoses, treatments, and reports.
-🚀 **Doctor Prescriptions –** Doctors will be able to add prescriptions, and the system will automatically email them to patients.
-🚀 **Automated Appointment Reminders –** Patients will receive email/SMS reminders before their appointments.
-🚀 **Doctor Availability Calendar –** Patients can view real-time doctor availability before booking an appointment.
-🚀 **Admin Dashboard Enhancements –** Graphs and reports for better system insights.
+
+🚀 **Maintain Patient Medical History –**  
+Store and track past diagnoses, treatments, and reports.  
+
+🚀 **Doctor Prescriptions –**  
+Doctors will be able to add prescriptions, and the system will automatically email them to patients.  
+
+🚀 **Automated Appointment Reminders –**  
+Patients will receive email/SMS reminders before their appointments.  
+
+🚀 **Doctor Availability Calendar –**  
+Patients can view real-time doctor availability before booking an appointment.  
+
+🚀 **Admin Dashboard Enhancements –**  
+Graphs and reports for better system insights.  
 
 ---
 
