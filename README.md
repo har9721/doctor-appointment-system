@@ -80,27 +80,27 @@ php artisan serve
 
 ### **📌 Usage**
 1️⃣ **Login Credentials**
-🔹 Admin: admin@yopmail.com/ 12345678. 
-🔹 Doctor: create a new doctor from admin login and default password is 12345678.
-🔹 Patient: register as a new patient and default password is 12345678. 
+👉 Admin: admin@yopmail.com/ 12345678. 
+👉 Doctor: create a new doctor from admin login and default password is 12345678.
+👉 Patient: register as a new patient and default password is 12345678. 
 
 2️⃣ **Booking Appointment**
-🔹 Patients log in, apply filter according to their need and book an appintment. 
-🔹 They can select a date and available time slot. 
-🔹 Patient and Doctor both will receive mail. 
+👉 Patients log in, apply filter according to their need and book an appintment. 
+👉 They can select a date and available time slot. 
+👉 Patient and Doctor both will receive mail. 
 
 3️⃣ **Paymet System**
-🔹 Patients can pay the fees online via Razorpay. 
-🔹 Admin and Doctors can mark offline payments as completed.
-🔹 Mailed patients to remind them to pay if he hadn't.
+👉 Patients can pay the fees online via Razorpay. 
+👉 Admin and Doctors can mark offline payments as completed.
+👉 Mailed patients to remind them to pay if he hadn't.
 
 4️⃣ **Appointment Management**
-🔹 Doctors can approve/cancel/reschedule the appointment.
-🔹 Admin can also approve/cancel/reschedule the appointment in the absence of doctors.
-🔹 Patients can cancel appointments before confirmation.
+👉 Doctors can approve/cancel/reschedule the appointment.
+👉 Admin can also approve/cancel/reschedule the appointment in the absence of doctors.
+👉 Patients can cancel appointments before confirmation.
 
 5️⃣ **Viewing Medical History**
-🔹 Doctors can access patient details.
+👉 Doctors can access patient details.
 
 ---
 
