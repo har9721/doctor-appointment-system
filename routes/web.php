@@ -91,6 +91,7 @@ Route::middleware('auth')->group(function(){
             Route::get('search-doctor','searchDoctor')->name('search-doctor');
             Route::post('book-appointment','bookAppointment')->name('book-appointment');
             Route::get('/get-patients-list','getAllPatientsList')->name('get-all-patients');
+            Route::get('/edit-patients-details/{patients}','editPatient')->name('edit-patients');
         });
     });
 

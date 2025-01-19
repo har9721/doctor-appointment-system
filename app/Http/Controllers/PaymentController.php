@@ -32,7 +32,7 @@ class PaymentController extends Controller
 
         $paymentData = [
             'receipt'         => uniqid(),
-            'amount'          => $appointments->amount * 100, // amount convert into paise (₹500)
+            'amount'          => $appointments->amount, // amount convert into paise (₹500)
             'currency'        => 'INR',
             'payment_capture' => 1
         ];

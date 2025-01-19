@@ -10,5 +10,7 @@
     <p>{{ $msg1 }}</p>
     <p>{{ $msg2 }}</p>
     <p>Thank You.</p>
+    <p>Regards,</p>
+    <p>Doctor Management System</p>
 </body>
 </html>

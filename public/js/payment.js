@@ -79,7 +79,10 @@ function fetchAppointmentDetails(appointment_id)
             $('#appointment_id').val(appointment_id);
             $('#amount_hidden').val(response.getApointmentDetails.amount);
 
-            razorPay(response.paymentsData);
+            if(response.paymentsData)
+            {
+                razorPay(response.paymentsData);
+            }
         },
         complete: function(){
             $('.payment').attr('disabled',false);

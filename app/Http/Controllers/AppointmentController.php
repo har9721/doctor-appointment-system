@@ -33,7 +33,7 @@ class AppointmentController extends Controller
         $myCancelledAppointments = Appointments::getAppointmentList($from_date,$to_date,'cancelled');
         $completedAppointments = Appointments::getAppointmentList($from_date,$to_date,'completed');
 
-        $heading = (Auth::user()->role->roleName === 'Admin') ? 'Appointments' : 'My Appointments';
+        $heading = (Auth::user()->role->roleName === 'Admin' || Auth::user()->role->roleName === 'Doctor') ? 'Appointments' : 'My Appointments';
 
         return view('patients.myAppointments',compact('myPendingAppointments','myConfirmedAppointments','myCancelledAppointments','to_date','completedAppointments','heading'));
     }
@@ -207,7 +207,18 @@ class AppointmentController extends Controller
                 return $viewPaymentSummay.$pay.$sendMail.$markPayment;
             })
             ->editColumn('status', function($row){
-                return '<label class="badge bg-success text-white">'.ucfirst($row['status']).'</label>';
+                if($row['status'] === 'pending')
+                {
+                    $color = '<label class="badge bg-warning text-white">'.ucfirst($row['status']).'</label>';
+                }else if($row['status'] === 'completed')
+                {
+                    $color = '<label class="badge bg-success text-white">'.ucfirst($row['status']).'</label>';
+                }else if($row['status'] === 'cancelled')
+                {
+                    $color = '<label class="badge bg-danger text-white">'.ucfirst($row['status']).'</label>';
+                }
+
+                return $color;
             })
             ->editColumn('payment_status', function($row){
                 return ($row['payment_status'] == 'pending') ? '<label class="badge bg-warning text-white">'.ucfirst($row['payment_status']).'</label>' : '<label class="badge bg-success text-white">'.ucfirst($row['payment_status']).'</label>';
@@ -228,10 +239,15 @@ class AppointmentController extends Controller
             ->where('id',$appointment_id)
             ->first(['id','doctorTimeSlot_ID','patient_ID','amount','status','isBooked','isCancel','created_at',DB::raw('DATE_FORMAT(appointments.appointmentDate,"%M %d, %Y") as appointmentDate')]);
 
-            $paymentData = (new PaymentController)->viewPaymentPage($appointment_id);
-
+            if(!in_array(Auth::user()->role_ID,config('constant.admin_and_doctor_role_ids')))
+            {
+                $paymentData = (new PaymentController)->viewPaymentPage($appointment_id);
+            }else{
+                $paymentData = '';
+            }
+            
             return [
-                'paymentsData' => (array)$paymentData,
+                'paymentsData' => ($paymentData) ? (array)$paymentData : '',
                 'getApointmentDetails' => $getAppointmentDetails,
             ];
         }else{
