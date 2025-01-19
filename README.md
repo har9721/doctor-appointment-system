@@ -25,7 +25,7 @@
 ✅ Mark Offline Payments  
 ✅ View Payment Summary  
 
-### **🛠️ For Admins**
+### **🛠️ For Admin**
 ✅ Manage Doctors Specialty  
 ✅ Manage Doctors & Patients  
 ✅ View All Appointments and Take Appropriate Action  
@@ -115,24 +115,7 @@ php artisan serve
 
 ## 📸 Screenshots
 
-### 1️⃣ Login Page
-![Login](Screenshots/login.png)
-
----
-
-### 2️⃣ Patients Registration Form
-![Patients Registration Form](Screenshots/RegisterForm-1.png)
-![Patients Registration Form](Screenshots/registerForm-2.png)
-![Patients Registration Form](Screenshots/registerForm-3.png)
-![Patients Registration Form](Screenshots/registerForm-4.png)
-![Patients Registration Form](Screenshots/success.png)
-
----
-
-### 3️⃣ Admin Login
-👉 **1️⃣ Patients**
-![Patients](Screenshots/Admin/patients/patientList.png)
-![Patients](Screenshots/Admin/patients/editPatient.png)
+[📸 View Full Screenshots](screenshots.md)
 
 ---
 

@@ -102,7 +102,7 @@
                     </div>
                 </form>
             @else
-                <x-patient-edit-detail  :patientsData="$patientsData" />
+                <x-patient-edit-detail  :patientsData="$patientsData" :isHideSaveButton="$isHideSaveButton" : class="$class"/>
             @endif
         </div>
     </div>

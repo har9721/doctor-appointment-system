@@ -366,7 +366,7 @@ $(document).on('click','#confirmAppointment', function(){
             },
             complete:function ()
             {
-                $('#confirmAppointment').attr('disabled','false');
+                $('#confirmAppointment').attr('disabled',false);
             }
         });
 

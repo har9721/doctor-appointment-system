@@ -6,5 +6,7 @@
     
     <p>If you have any questions, contact us at harshal@gmail.com.</p>
     <p>Thank you for choosing our clinic.</p>
+    <p>Regards,</p>
+    <p>Doctor Management System</p>
 </body>
 </html>

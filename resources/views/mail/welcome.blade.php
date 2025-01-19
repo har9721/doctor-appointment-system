@@ -4,3 +4,5 @@
 <p>Email : {{ $email }} </p>
 <p>Password : {{ $password }} </p>
 <p>Thank you!</p>
+<p>Regards,</p>
+<p>Doctor Management System</p>
