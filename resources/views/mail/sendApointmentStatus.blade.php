@@ -6,7 +6,7 @@
     <title>Appointment Confirmation</title>
 </head>
 <body>
-    <p>Dear {{ $patientName }},</p>
+    <h5>Dear {{ $patientName }},</h5>
     <p>{{ $msg1 }}</p>
     <p>{{ $msg2 }}</p>
     <p>Thank You.</p>
