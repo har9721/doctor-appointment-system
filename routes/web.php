@@ -6,6 +6,7 @@ use App\Http\Controllers\DoctorController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PatientsController;
 use App\Http\Controllers\PaymentController;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -119,6 +120,7 @@ Route::middleware('auth')->group(function(){
             Route::get('/success-page','showPaymentSuccess')->name('success-page');
             Route::post('/send-payment-pending-mail','sendPaymentPedingMail')->name('send-payment-mail');
             Route::post('/mark-payment-done','markPaymentDone')->name('mark-payment');
+            Route::get('download-invoice/{link?}','downloadInvoice')->name('download-invoice');
         });
     });
 });

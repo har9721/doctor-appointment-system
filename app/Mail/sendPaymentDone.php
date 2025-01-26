@@ -2,12 +2,15 @@
 
 namespace App\Mail;
 
+use Barryvdh\DomPDF\Facade\Pdf as PDF;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
+use Illuminate\Mail\Mailables\Attachment;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Storage;
 
 class sendPaymentDone extends Mailable
 {
@@ -45,6 +48,16 @@ class sendPaymentDone extends Mailable
 
     public function attachments()
     {
-        return [];
+        $pdf = PDF::loadView('invoices.invoice', ['invoiceData' => $this->mailData]);
+
+        $filePath = 'public/invoices/invoice_' . $this->mailData['transaction_id'] . '.pdf';
+    
+        Storage::put($filePath,$pdf->output());
+
+        $fullFilePath = storage_path('app/'.$filePath);
+
+        return [
+            Attachment::fromPath($fullFilePath)->as('invoice.pdf')->withMime('application/pdf'),
+        ];
     }
 }

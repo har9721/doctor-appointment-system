@@ -186,6 +186,14 @@ class AppointmentController extends Controller
                     <i class="fas fa-credit-card"></i> Pay Now
                 </button>' : '';
 
+                // $filePath = 'public/invoices/invoice_' . $row['transaction_id'] . '.pdf';
+
+                $downloadInvoice = ($row['payment_status'] == 'completed' && (!empty($row['res_payment_id']))) ? 
+                '<a href="'. route("payments.download-invoice",['link' => $row['res_payment_id']]) .'">
+                <button name="invoice" class="mr-2 btn btn-sm btn-dark border text-white download_invoice"  data-toggle="tooltip" data-id = "'.$row['id'].'" data-amount = "'. $row['amount'] .'" data-placement="bottom" title="View Payment Summary"  data-bs-toggle="modal">
+                    <i class="fas fa-download"></i> 
+                </button></a>' : '' ;
+
                 if(
                     in_array(Auth::user()->role_ID, config('constant.admin_and_doctor_role_ids')) 
                     && 
@@ -204,7 +212,7 @@ class AppointmentController extends Controller
                     $markPayment = '';
                 }
 
-                return $viewPaymentSummay.$pay.$sendMail.$markPayment;
+                return $viewPaymentSummay.$pay.$sendMail.$markPayment.$downloadInvoice;
             })
             ->editColumn('status', function($row){
                 if($row['status'] === 'pending')

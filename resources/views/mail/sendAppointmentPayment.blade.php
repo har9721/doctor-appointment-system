@@ -1,6 +1,6 @@
 <html>
 <body>
-    <h2>Dear {{ $patientName }},</h2>
+    <h5>Dear {{ $patientName }},</h5>
     <p>Your recent appointment with Dr. {{ $doctorName }} on {{ $date }} has been completed.</p>
     <p>To finalize this appointment, kindly complete the payment.</p>
     

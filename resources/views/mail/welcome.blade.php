@@ -1,4 +1,4 @@
-<p><b>Hello, {{ $name }} </b></p>
+<h5>Hello, {{ $name }} </h5>
 <p>Account created successfully. Please check below login details.</p>
 <p>Please use this url for login : <a href="{{ $url }}">URL</a></p>
 <p>Email : {{ $email }} </p>

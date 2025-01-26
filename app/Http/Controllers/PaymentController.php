@@ -8,6 +8,7 @@ use App\Models\Appointments;
 use App\Models\PaymentDetails;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Razorpay\Api\Api;
 use Razorpay\Api\Utility;
 
@@ -32,7 +33,7 @@ class PaymentController extends Controller
 
         $paymentData = [
             'receipt'         => uniqid(),
-            'amount'          => $appointments->amount, // amount convert into paise (₹500)
+            'amount'          => $appointments->amount * 100, // amount convert into paise (₹500)
             'currency'        => 'INR',
             'payment_capture' => 1
         ];
@@ -85,7 +86,7 @@ class PaymentController extends Controller
                 'email' => $fetchPaymentDetails->email,
                 'phone' => $fetchPaymentDetails->contact,
                 'payment_signature' => $request->razorpay_signature,
-                'amount' => $request->amount,
+                'amount' => ($request->amount) ? $request->amount/100 : 0.00,
                 'currency' => $request->currency,
                 'status' => 'completed',
                 'json_response' => json_encode((array)$fetchPaymentDetails),
@@ -180,5 +181,16 @@ class PaymentController extends Controller
         {
             return response()->json(['success' => false, 'message' => $e->getMessage()]);
         }
+    }
+
+    public function downloadInvoice($fileName)
+    {
+        $filePath = "public/invoices/invoice_$fileName.pdf";
+
+        if (!Storage::exists($filePath)) {
+            abort(404, "Invoice not found.");
+        }
+
+        return Storage::download($filePath, "invoice_$fileName.pdf");
     }
 }
