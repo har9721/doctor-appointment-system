@@ -96,7 +96,7 @@ php artisan serve
 3️⃣ **Payment System**  
 👉 Patients can pay the fees online via Razorpay.  
 👉 Admin and Doctors can mark offline payments as completed.  
-👉 Patiend will receive the invoice on email.  
+👉 Patients will receive the invoice on email.  
 👉 Patients will receive an email reminder if they haven't paid.  
 
 4️⃣ **Appointment Management**  
