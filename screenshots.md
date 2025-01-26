@@ -51,3 +51,4 @@
 <img src="Screenshots/Patients/makePayment-4.png" alt="Razorpay" width="300">
 <img src="Screenshots/Patients/paymentSummary.png" alt="Razorpay" width="300">
 <img src="Screenshots/Patients/viewSummary.png" alt="Razorpay" width="300">
+<img src="Screenshots/Patients/invoice.png" alt="Invoice" width="300">
