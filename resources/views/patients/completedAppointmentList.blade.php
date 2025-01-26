@@ -71,5 +71,5 @@
 </script>
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
     <script src="{{ asset('js/Appointments/appointmentComplete.js') }}"></script>
-    <script src="{{ asset('js/payment.js') }}"></script>
+<script src="{{ asset('js/payment.js') }}"></script>
 @endpush

@@ -8,8 +8,8 @@
                 </button>
             </div>
             <div class="modal-body">
-                <div class="row">
-                    <label for="start_time" class="ml-3">Please select action that you want to perform on the event<span style="color: red;">*</span> :</label>
+                <div class="row col-md-12">
+                    <label for="start_time" class="ml-3">Please select action that you want to perform on the availability<span style="color: red;">*</span> :</label>
                     <div class="col-md-6">
                         <select class="form-control" id="action">
                         </select>

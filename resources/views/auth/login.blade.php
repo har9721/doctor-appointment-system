@@ -8,13 +8,13 @@
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
         <title>Doctor Appointment System</title>
-        <link rel="shortcut icon" href="{{URL::to('assets/images/doctor.png')}}" />
+        <link rel="shortcut icon" href="{{url('assets/images/doctor.png')}}" />
 
         <!-- Fonts -->
         <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
 
         <link href="{{ asset('css/style.css') }}" rel="stylesheet">
-        <link href="{{URL::to('css/bootstrap.min.css')}}" rel="stylesheet">
+        <link href="{{url('css/bootstrap.min.css')}}" rel="stylesheet">
 
         <style>
             body {

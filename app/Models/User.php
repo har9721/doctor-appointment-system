@@ -163,4 +163,9 @@ class User extends Authenticatable
     {
         return $this->belongsTo(Role::class,'role_ID')->where('isActive',1)->select('id','roleName');
     }
+
+    public function patients()
+    {
+        return $this->belongsTo(Patients::class,'user_ID')->where('isActive',1)->select(['id','user_ID']);    
+    }
 }

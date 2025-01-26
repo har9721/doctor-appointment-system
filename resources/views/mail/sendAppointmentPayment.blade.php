@@ -1,6 +1,6 @@
 <html>
 <body>
-    <h2>Dear {{ $patientName }},</h2>
+    <h5>Dear {{ $patientName }},</h5>
     <p>Your recent appointment with Dr. {{ $doctorName }} on {{ $date }} has been completed.</p>
     <p>To finalize this appointment, kindly complete the payment.</p>
     
@@ -17,5 +17,7 @@
     
     <p>If you have any questions, contact us at harshal@gmail.com.</p>
     <p>Thank you for choosing our clinic.</p>
+    <p>Regards,</p>
+    <p>Doctor Management System</p>
 </body>
 </html>

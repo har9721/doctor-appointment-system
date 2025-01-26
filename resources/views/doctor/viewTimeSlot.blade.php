@@ -8,7 +8,7 @@
 <div class="container-fluid">
     <div class="card shadow mb-4">
         <div class="card-header py-3 d-flex justify-content-between">
-            <h4 class="mt-2 font-weight-bold text-primary">Time Slot</h4>
+            <h4 class="mt-2 font-weight-bold text-primary">Manage Availability</h4>
             <div class="text-right">
             </div>
         </div>

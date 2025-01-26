@@ -54,6 +54,7 @@ class Appointments extends Model
         ->join('users as d', 'd.id', '=', 'doctors.user_ID')
         ->join('users as p', 'p.id', '=', 'patients.user_ID')
         ->join('mst_specialties', 'mst_specialties.id', '=', 'specialty_ID')
+        ->leftJoin('payment_details','payment_details.appointment_ID','appointments.id')
         ->when((!empty($from_date)) || !empty($to_date), function($q) use($from_date, $to_date){     
             $q->whereBetween('appointmentDate', [
                 date('Y-m-d', strtotime($from_date)),
@@ -84,7 +85,8 @@ class Appointments extends Model
             'mst_specialties.specialtyName',
             DB::raw('CONCAT_WS(" ", p.first_name, p.last_name) as patient_full_name'),                
             DB::raw('CONCAT_WS(" ", d.first_name, d.last_name) as doctor_full_name'),
-            DB::raw('CONCAT_WS("-", DATE_FORMAT(doctor_time_slots.start_time, "%H:%i %P"), DATE_FORMAT(doctor_time_slots.end_time, "%H:%i %P")) as time'),
+            DB::raw('CONCAT_WS("-", DATE_FORMAT(doctor_time_slots.start_time, "%h:%i %p"), DATE_FORMAT(doctor_time_slots.end_time, "%h:%i %p")) as time'),
+            'payment_details.res_payment_id'
         ]);
 
         return $getMyAppointments;
@@ -186,12 +188,14 @@ class Appointments extends Model
                 'payment_status' => $details->appointments->payment_status,
                 'patientName' => $details->appointments->patients->user->full_name,
                 'email' => $details->appointments->patients->user->email,
+                'mobile' => $details->appointments->patients->user->mobile,
                 'doctorName' => $details->appointments->doctorTimeSlot->doctor->user->full_name,
                 'appointmentDate' => date('d-m-Y',strtotime($details->appointments->appointmentDate)),
                 'time' => $details->appointments->doctorTimeSlot->time,
                 'transaction_id' => $details->res_payment_id,
                 'paymentDate' => date('d-m-Y',strtotime($details->created_at)),
-                'amount' => $details->appointments->amount
+                'amount' => $details->appointments->amount,
+                'method' =>  $details->method
             ];
         });
 

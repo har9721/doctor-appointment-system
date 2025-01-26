@@ -136,7 +136,7 @@ class PatientsController extends Controller
 
     public function getAllPatientsList()
     {
-        return Patients::with('user')->get();   
+        return Patients::with('user')->get(['id','user_ID']);   
     }
 
     public function editPatient(Patients $patients)
@@ -155,7 +155,7 @@ class PatientsController extends Controller
             ]);
         }
 
-        $heading = (Auth::user()->role->roleName === 'Admin') ? 'Edit Patient Details' : (Auth::user()->role->roleName === 'Petients' ? 'My Profile' : '');
+        $heading = (Auth::user()->role->roleName === 'Admin') ? 'Edit Patient Details' : (Auth::user()->role->roleName === 'Patients' ? 'My Profile' : '');
 
         $backUrl = (Auth::user()->role->roleName === 'Admin') ? 'admin.patients' : (Auth::user()->role->roleName === 'Petients' ? 'home' : 'home');
 

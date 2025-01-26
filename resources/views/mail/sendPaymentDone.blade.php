@@ -5,17 +5,13 @@
     
     <h5>Appointment Details:</h5>
     <ul>
-        <li>Doctor's Name: Dr. {{ $doctorName }}</li>
+        <li>Doctor Name: Dr. {{ $doctorName }}</li>
         <li>Appointment Date: {{ $date }}</li>
         <li>Appointment Time: {{ $time }}</li>
     </ul>
 
-    <h5>Payment Details:</h5>
-    <ul>
-        <li>Transaction ID: {{ $transaction_id }}</li>
-        <li>Payment Date: {{ $paymentDate }}</li>
-        <li>Amount Paid <span>&#8377;</span>{{ $amount }}</li>
-    </ul>
+    <hr>
+    <p><strong>Invoice:</strong> The invoice for this payment is attached to this email.</p>
     
     <p>Thank you for completing the payment. Please keep this email for your records. If you have any questions or require further assistance, feel free to contact us.</p>
 

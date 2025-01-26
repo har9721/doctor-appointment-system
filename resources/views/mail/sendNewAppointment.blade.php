@@ -6,10 +6,11 @@
     <title>New Appointment</title>
 </head>
 <body>
-    <h1>New Appointment</h1>
-    <p>Dear Dr. {{ $name }},</p>
+    <h5>Dear Dr. {{ $name }},</h5>
     <p>You have a new appointment with {{ $patientName }} scheduled for {{ $date }} at {{ $time }}.</p>
     <p>Please make sure to attend the appointment on time.</p>
     <p>Thank you!.</p>
+    <p>Regards,</p>
+    <p>Doctor Management System</p>
 </body>
 </html>

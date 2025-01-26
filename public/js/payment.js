@@ -79,7 +79,10 @@ function fetchAppointmentDetails(appointment_id)
             $('#appointment_id').val(appointment_id);
             $('#amount_hidden').val(response.getApointmentDetails.amount);
 
-            razorPay(response.paymentsData);
+            if(response.paymentsData)
+            {
+                razorPay(response.paymentsData);
+            }
         },
         complete: function(){
             $('.payment').attr('disabled',false);
@@ -102,7 +105,7 @@ $(document).on('click','.payment_summary', function(){
                 <ul>
                     <li><strong>Payment ID:</strong> ${response.res_payment_id}</li>
                     <li><strong>Order ID:</strong> ${response.order_id}</li>
-                    <li><strong>Amount:</strong> ₹ ${response.amount}</li>
+                    <li><strong>Amount:</strong> ₹ ${response.amount}.00</li>
                     <li><strong>Status:</strong> ${response.status}</li>
                     <li><strong>Transaction Date:</strong> ${response.formatted_date}</li>
                 </ul>`;

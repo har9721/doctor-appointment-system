@@ -33,7 +33,9 @@ class AppointmentController extends Controller
         $myCancelledAppointments = Appointments::getAppointmentList($from_date,$to_date,'cancelled');
         $completedAppointments = Appointments::getAppointmentList($from_date,$to_date,'completed');
 
-        return view('patients.myAppointments',compact('myPendingAppointments','myConfirmedAppointments','myCancelledAppointments','to_date','completedAppointments'));
+        $heading = (Auth::user()->role->roleName === 'Admin' || Auth::user()->role->roleName === 'Doctor') ? 'Appointments' : 'My Appointments';
+
+        return view('patients.myAppointments',compact('myPendingAppointments','myConfirmedAppointments','myCancelledAppointments','to_date','completedAppointments','heading'));
     }
 
     public function makrAppointments(AppointmentRequest $request)
@@ -184,6 +186,14 @@ class AppointmentController extends Controller
                     <i class="fas fa-credit-card"></i> Pay Now
                 </button>' : '';
 
+                // $filePath = 'public/invoices/invoice_' . $row['transaction_id'] . '.pdf';
+
+                $downloadInvoice = ($row['payment_status'] == 'completed' && (!empty($row['res_payment_id']))) ? 
+                '<a href="'. route("payments.download-invoice",['link' => $row['res_payment_id']]) .'">
+                <button name="invoice" class="mr-2 btn btn-sm btn-dark border text-white download_invoice"  data-toggle="tooltip" data-id = "'.$row['id'].'" data-amount = "'. $row['amount'] .'" data-placement="bottom" title="View Payment Summary"  data-bs-toggle="modal">
+                    <i class="fas fa-download"></i> 
+                </button></a>' : '' ;
+
                 if(
                     in_array(Auth::user()->role_ID, config('constant.admin_and_doctor_role_ids')) 
                     && 
@@ -202,10 +212,21 @@ class AppointmentController extends Controller
                     $markPayment = '';
                 }
 
-                return $viewPaymentSummay.$pay.$sendMail.$markPayment;
+                return $viewPaymentSummay.$pay.$sendMail.$markPayment.$downloadInvoice;
             })
             ->editColumn('status', function($row){
-                return '<label class="badge bg-success text-white">'.ucfirst($row['status']).'</label>';
+                if($row['status'] === 'pending')
+                {
+                    $color = '<label class="badge bg-warning text-white">'.ucfirst($row['status']).'</label>';
+                }else if($row['status'] === 'completed')
+                {
+                    $color = '<label class="badge bg-success text-white">'.ucfirst($row['status']).'</label>';
+                }else if($row['status'] === 'cancelled')
+                {
+                    $color = '<label class="badge bg-danger text-white">'.ucfirst($row['status']).'</label>';
+                }
+
+                return $color;
             })
             ->editColumn('payment_status', function($row){
                 return ($row['payment_status'] == 'pending') ? '<label class="badge bg-warning text-white">'.ucfirst($row['payment_status']).'</label>' : '<label class="badge bg-success text-white">'.ucfirst($row['payment_status']).'</label>';
@@ -226,10 +247,15 @@ class AppointmentController extends Controller
             ->where('id',$appointment_id)
             ->first(['id','doctorTimeSlot_ID','patient_ID','amount','status','isBooked','isCancel','created_at',DB::raw('DATE_FORMAT(appointments.appointmentDate,"%M %d, %Y") as appointmentDate')]);
 
-            $paymentData = (new PaymentController)->viewPaymentPage($appointment_id);
-
+            if(!in_array(Auth::user()->role_ID,config('constant.admin_and_doctor_role_ids')))
+            {
+                $paymentData = (new PaymentController)->viewPaymentPage($appointment_id);
+            }else{
+                $paymentData = '';
+            }
+            
             return [
-                'paymentsData' => (array)$paymentData,
+                'paymentsData' => ($paymentData) ? (array)$paymentData : '',
                 'getApointmentDetails' => $getAppointmentDetails,
             ];
         }else{

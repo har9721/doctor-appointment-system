@@ -282,7 +282,7 @@ class DoctorController extends Controller
 
         $doctorDetails = (!empty($getDoctorDetails)) ? $getDoctorDetails[0] : null;
 
-        $heading = (Auth::user()->role->roleName === 'Admin') ? 'Doctor Registration Form' : (Auth::user()->role->roleName === 'Doctor' ? 'My Profile' : '');
+        $heading = (Auth::user()->role->roleName === 'Admin') ? 'Edit Doctor Details' : (Auth::user()->role->roleName === 'Doctor' ? 'My Profile' : '');
 
         $backUrl = (Auth::user()->role->roleName === 'Admin') ? 'admin.doctor' : (Auth::user()->role->roleName === 'Doctor' ? 'home' : '');
 

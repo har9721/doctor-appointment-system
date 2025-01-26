@@ -43,7 +43,7 @@
                         $param = 'doctor';
                     }else{
                         $id = App\Models\Patients::getLoginPatientsId(); 
-                        $routeName = 'admin.edit-patients';
+                        $routeName = 'patients.edit-patients';
                         $param = 'patients';
                     }
                 @endphp

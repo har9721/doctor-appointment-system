@@ -6,6 +6,7 @@ use App\Http\Controllers\DoctorController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PatientsController;
 use App\Http\Controllers\PaymentController;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -91,13 +92,14 @@ Route::middleware('auth')->group(function(){
             Route::get('search-doctor','searchDoctor')->name('search-doctor');
             Route::post('book-appointment','bookAppointment')->name('book-appointment');
             Route::get('/get-patients-list','getAllPatientsList')->name('get-all-patients');
+            Route::get('/edit-patients-details/{patients}','editPatient')->name('edit-patients');
         });
     });
 
     //appointments related routes
     Route::group(['prefix' => '/appointments', 'as' => 'appointments.'],function(){
         Route::controller(AppointmentController::class)->group(function(){
-            Route::get('my-appointment','getAppointments')->name('my-appointments');
+            Route::get('appointment','getAppointments')->name('my-appointments');
             Route::post('mark-appoitment','makrAppointments')->name('mark-appoitment');
             Route::get('fetch-appointment-details','getAppointmentsDetails')->name('get-appointments-details');
             Route::get('get-doctor-available-time-slot','getDoctorAvailableTime')->name('fetch-time-slot');
@@ -118,6 +120,7 @@ Route::middleware('auth')->group(function(){
             Route::get('/success-page','showPaymentSuccess')->name('success-page');
             Route::post('/send-payment-pending-mail','sendPaymentPedingMail')->name('send-payment-mail');
             Route::post('/mark-payment-done','markPaymentDone')->name('mark-payment');
+            Route::get('download-invoice/{link?}','downloadInvoice')->name('download-invoice');
         });
     });
 });

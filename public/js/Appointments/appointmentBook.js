@@ -366,7 +366,7 @@ $(document).on('click','#confirmAppointment', function(){
             },
             complete:function ()
             {
-                $('#confirmAppointment').attr('disabled','false');
+                $('#confirmAppointment').attr('disabled',false);
             }
         });
 
@@ -381,6 +381,9 @@ $(document).on('click','#confirmAppointment', function(){
 });
 
 function getCityList(){
+    $('#city').empty();
+    $("#city").append($("<option value='' disabled selected>Select City</option>"));
+
     $.ajaxSetup({
         headers: {
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -406,6 +409,9 @@ function getCityList(){
 }
 
 function getSpecialtyList(){
+    $('#speciality').empty();
+    $("#speciality").append($("<option value='' disabled selected>Select Speciality</option>"));
+
     $.ajaxSetup({
         headers: {
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -426,6 +432,9 @@ function getSpecialtyList(){
 }
 
 function getPatientsList(){
+    $('#patients').empty();
+    $("#patients").append($("<option value='' disabled selected>Select Patients</option>"));
+
     $.ajaxSetup({
         headers: {
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -437,9 +446,12 @@ function getPatientsList(){
         success : function (response){
             $.each(response, function (key, val) 
             { 
-                $('#patients').append($("<option></option>")
-                .attr("value", response[key].id)
-                .text(val.user.full_name));
+                if(val.user)
+                {
+                    $('#patients').append($("<option></option>")
+                    .attr("value", response[key].id)
+                    .text(val.user.full_name));
+                }
             });
         }
     });
@@ -450,6 +462,9 @@ function getPatientsList(){
 }
 
 function getDoctorList(speciality_id){
+    $('#doctor').empty();
+    $("#doctor").append($("<option value='' disabled selected>Select Doctor</option>"));
+
     $.ajaxSetup({
         headers: {
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
