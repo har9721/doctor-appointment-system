@@ -17,6 +17,7 @@
 ✅ Book Appointments Online  
 ✅ View & Cancel Appointments  
 ✅ Online Payment via Razorpay    
+✅ View and Download Invoices    
 
 ### **👨‍⚕️ For Doctors**
 ✅ View & Manage Appointments  
@@ -24,12 +25,14 @@
 ✅ Approve or Cancel Appointments  
 ✅ Mark Offline Payments  
 ✅ View Payment Summary  
+✅ View and Download Invoices  
 
 ### **🛠️ For Admin**
 ✅ Manage Doctors Specialty  
 ✅ Manage Doctors & Patients  
 ✅ View All Appointments and Take Appropriate Action  
 ✅ Mark Offline Payments 
+✅ View and Download Invoices  
 
 ---
 
@@ -93,6 +96,7 @@ php artisan serve
 3️⃣ **Payment System**  
 👉 Patients can pay the fees online via Razorpay.  
 👉 Admin and Doctors can mark offline payments as completed.  
+👉 Patiend will receive the invoice on email.  
 👉 Patients will receive an email reminder if they haven't paid.  
 
 4️⃣ **Appointment Management**  
@@ -114,7 +118,7 @@ Store and track past diagnoses, treatments, and reports.
 Doctors will be able to add prescriptions, and the system will automatically email them to patients.  
 
 🚀 **Automated Appointment Reminders –**  
-Patients will receive email/SMS reminders before their appointments.  
+Patients will receive email reminders before their appointments.  
 
 🚀 **Doctor Availability Calendar –**  
 Patients can view real-time doctor availability before booking an appointment.  
