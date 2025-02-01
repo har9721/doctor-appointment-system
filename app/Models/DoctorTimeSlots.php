@@ -7,11 +7,12 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Auth;
 
 class DoctorTimeSlots extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     protected $table = 'doctor_time_slots';
 
@@ -29,14 +30,30 @@ class DoctorTimeSlots extends Model
         {
             if($data['isEdit'] == 0)
             {
-                $addOrEditTimeSlot = DoctorTimeSlots::create([
+                $isDeletedTimestamp = DoctorTimeSlots::withTrashed()->where([
                     'doctor_ID' => $data['doctor_ID'],
                     'availableDate' => date('Y-m-d',strtotime($data['date'])),
                     'start_time' => $data['startTime'],
-                    'end_time' => $data['endTime'],
-                    'created_at' => now(),
-                    'createdBy' => Auth::user()->id
-                ]);
+                ])
+                ->first();
+
+                if($isDeletedTimestamp)
+                {
+                    $isDeletedTimestamp->isDeleted = 0;
+                    $isDeletedTimestamp->deletedAt = null;
+
+                    $addOrEditTimeSlot = $isDeletedTimestamp->save();
+                }else
+                {
+                    $addOrEditTimeSlot = DoctorTimeSlots::create([
+                        'doctor_ID' => $data['doctor_ID'],
+                        'availableDate' => date('Y-m-d',strtotime($data['date'])),
+                        'start_time' => $data['startTime'],
+                        'end_time' => $data['endTime'],
+                        'created_at' => now(),
+                        'createdBy' => Auth::user()->id
+                    ]);
+                }
             }else{
                 $addOrEditTimeSlot = DoctorTimeSlots::where('id', $data['hidden_timeslot_id'])->update([
                     'start_time' => $data['startTime'],

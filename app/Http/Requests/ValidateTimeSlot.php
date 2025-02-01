@@ -23,7 +23,7 @@ class ValidateTimeSlot extends FormRequest
             return [
                 'date' => ['required','date_format:Y-m-d','after_or_equal:'.date('Y-m-d')],
                 'startTime' => ['required','date_format:H:i',
-                    Rule::unique('doctor_time_slots','start_time')->where('availableDate', $this->date)->where('start_time', $this->startTime)->where('doctor_ID', $this->doctor_ID),
+                    Rule::unique('doctor_time_slots','start_time')->where('availableDate', $this->date)->where('start_time', $this->startTime)->where('doctor_ID', $this->doctor_ID)->whereNull('deletedAt'),
                 ],
             ];
         }else{
@@ -32,7 +32,7 @@ class ValidateTimeSlot extends FormRequest
                 return [
                     'date' => ['required','date_format:Y-m-d','after_or_equal:'.date('Y-m-d')],
                     'startTime' => ['required','date_format:H:i',
-                        Rule::unique('doctor_time_slots','start_time')->where('availableDate', $this->date)->where('start_time', $this->startTime)->where('doctor_ID', $this->doctor_ID)->ignore($this->hidden_timeslot_id),
+                        Rule::unique('doctor_time_slots','start_time')->where('availableDate', $this->date)->where('start_time', $this->startTime)->where('doctor_ID', $this->doctor_ID)->ignore($this->hidden_timeslot_id)->whereNull('deletedAt'),
                     ],
                     'endTime' => 'required|date_format:H:i|after:startTime'
                 ];
@@ -41,7 +41,7 @@ class ValidateTimeSlot extends FormRequest
                 return [
                     'date' => ['required','date_format:Y-m-d','after_or_equal:'.date('Y-m-d')],
                     'startTime' => ['required','date_format:H:i',
-                        Rule::unique('doctor_time_slots','start_time')->where('availableDate', $this->date)->where('start_time', $this->startTime)->where('doctor_ID', $this->doctor_ID)->where('isDeleted',0),
+                        Rule::unique('doctor_time_slots','start_time')->where('availableDate', $this->date)->where('start_time', $this->startTime)->where('doctor_ID', $this->doctor_ID)->whereNull('deletedAt'),
                     ],
                     'endTime' => 'required|date_format:H:i|after:startTime'
                 ];
