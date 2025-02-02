@@ -83,6 +83,7 @@ Route::middleware('auth')->group(function(){
             Route::post('update-time-slot','updateTimeSlot')->name('updateTimeSlot');
             Route::get('/get-doctor-list','getAllDoctorList')->name('get-all-doctor');
             Route::get('/fetch-time-slot','fetchTimeSlotForDate')->name('fetch-time-slot');
+            Route::get('/get-doctor-details','getDoctorListForEdit')->name('get-octor-details');
         });
     });
 
@@ -108,6 +109,7 @@ Route::middleware('auth')->group(function(){
             Route::get('completed-appointment-list','viewCompletedList')->name('completed-list');
             Route::get('get-completed-appointment','getCompletedAppointment')->name('get-appointment-completed-list');
             Route::get('get-appointment-details','getAppointmentDetails')->name('get-appointment-details');
+            Route::post('/edit-appointments','updateAppointments')->name('edit-appointments-details');
         });
     });
 

@@ -70,7 +70,7 @@
         }
 
         .selected {
-            background-color: #007bff !important;
+            background-color:rgb(108, 228, 108) !important;
             color: white !important;
         }
 

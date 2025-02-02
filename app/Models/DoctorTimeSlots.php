@@ -101,7 +101,7 @@ class DoctorTimeSlots extends Model
     public function title() : Attribute
     {
         return new Attribute(
-            get : fn () => ($this->isBooked == 0) ? 'Available' : 'Not Available'
+            get : fn () => ($this->isBooked == 0) ? 'Available' : 'Booked'
         );    
     }
 
