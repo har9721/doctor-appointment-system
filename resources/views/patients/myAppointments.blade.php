@@ -71,8 +71,13 @@
         }
         
         .selected {
-            background-color: #007bff !important;
+            background-color:rgb(108, 228, 108) !important;
             color: white !important;
+        }
+
+        .select2-container .select2-selection--single
+        {
+            height: 36px !important;
         }
     </style>
 @section('content')
@@ -173,6 +178,9 @@
 <!-- ----------include add amount modal---------------- -->
 <x-addAmount />
 
+<!-- -------------include edit appointment modal------- -->
+ <x-appointment-edit-modal />
+
 @endsection
 @push('scripts')
 <script>
@@ -181,6 +189,11 @@
     let fetch_appointments_details = "{{ route('appointments.get-appointments-details') }}";
     let fetch_doctor_time_slot = "{{ route('appointments.fetch-time-slot') }}";
     let saveAmount = "{{ route('appointments.save-amount') }}";
+    let getCity = "{{ route('get-city') }}";
+    let getSpecialty = "{{ route('admin.specialtyList') }}";
+    let doctorList = "{{ route('doctor.get-all-doctor') }}";
+    let getAvailableTimeSlot = "{{ route('doctor.get-octor-details') }}";
+    let updateAppointments = "{{ route('appointments.edit-appointments-details') }}";
 </script>
 <script src="{{ asset('js/Appointments/appointments.js') }}"></script> 
 @endpush

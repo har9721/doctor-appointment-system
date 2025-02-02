@@ -11,7 +11,7 @@ class AppointmentsObserver
 {
     public function created(Appointments $appointments)
     {
-        dispatch(new sendBookingMail(Appointments::getEmailData($appointments)));
+        dispatch(new sendBookingMail(Appointments::getEmailData($appointments),'create'));
     }
 
     public function updated(Appointments $appointments)
@@ -34,6 +34,11 @@ class AppointmentsObserver
 
             // Send email for all status changes
             dispatch(new SendAppointmentStatus(Appointments::getEmailData($appointments), $new_status));
+        }
+
+        if($appointments->wasChanged(['appointmentDate','patient_ID', 'doctorTimeSlot_ID']))
+        {
+            dispatch(new sendBookingMail(Appointments::getEmailData($appointments),'update'));
         }
     }
 

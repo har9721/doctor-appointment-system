@@ -374,4 +374,33 @@ class DoctorController extends Controller
 
         $this->editDoctorForm($getDoctorId->id);
     }
+
+    public function getDoctorListForEdit(Request $request)
+    {
+        $date = ($request->date != '') ? date('Y-m-d',strtotime($request->date)) : '';
+
+        $getDoctorDetails = Doctor::when(
+            $request->doctor_ID, function($query) use($request) {
+                $query->where('id',$request->doctor_ID);
+            })
+            ->when($request->speciality_ID, function($query) use($request) {
+                $query->where('specialty_ID',$request->speciality_ID);
+            })
+            ->when($request->city_id, function($query) use($request) {
+                $query->whereHas('user.city', function ($q) use($request) {
+                    $q->where('id',$request->city_id);
+                });   
+            })
+            ->when($request->date, function($query) use($date) {
+                $query->whereHas('timeSlot', function($q) use($date) {
+                    $q->where('availableDate', $date);
+                });
+            })
+            ->with(['user.city','timeSlot' => function($query) use($date) {
+                $query->where('availableDate', $date);
+            }])
+            ->first(); 
+
+        return response()->json($getDoctorDetails);
+    }
 }

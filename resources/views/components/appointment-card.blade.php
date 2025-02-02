@@ -54,21 +54,43 @@
         </p>
         <div class="text-right">
             @if($status == 'pending' && (in_array(Auth::user()->role_ID,config('constant.admin_and_doctor_role_ids'))))
-                <button class="btn btn-success appointmentButoon" id="confirm_button" data-id="{{ $appointment->id }}" data-status="confirmed" data-date="{{ $appointment->appointmentDate }}" data-patient_ID = "{{ $appointment->patient_ID }}">Confirm Appointment</button>
+                <button class="btn btn-success appointmentButoon" id="confirm_button" data-id="{{ $appointment->id }}" data-status="confirmed" data-date="{{ $appointment->appointmentDate }}" data-patient_ID = "{{ $appointment->patient_ID }}">
+                    <i class="fas fa-check"></i>
+                    Confirm Appointment
+                </button>
+            @endif
+
+            @if($status == 'pending' && (Auth::user()->role_ID == config('constant.patients_role_ID') || Auth::user()->role_ID == config('constant.admin_role_ID')))
+                <button style="background-color: #86a1ce;color:white" class="btn appointmentEditButton" id="edit_button" data-id="{{ $appointment->id }}" data-status="pending" data-date="{{ $appointment->appointmentDate }}" data-patient_ID = "{{ $appointment->patient_ID }}">
+                    <i class="fas fa-edit"></i>
+                    Edit Appointment
+                </button>
             @endif
 
             @if($status === 'completed')
-                <button class="btn btn-dark unComplete" id="archieve_button" data-date="{{ $appointment->appointmentDate }}" data-id="{{ $appointment->id }}" data-status="archived" data-patient_ID = "{{ $appointment->patient_ID }}">Archieve Appointment</button>
+                <button class="btn btn-dark unComplete" id="archieve_button" data-date="{{ $appointment->appointmentDate }}" data-id="{{ $appointment->id }}" data-status="archived" data-patient_ID = "{{ $appointment->patient_ID }}">
+                    <i class="fas fa-box-archive"></i>
+                    Archieve Appointment
+                </button>
             @endif
             
             @if($status != 'canceled' && $status != 'completed')
-                <button class="btn btn-dark rescheduleAppointment" id="reshedule_button" data-date="{{ $appointment->appointmentDate }}" data-id="{{ $appointment->id }}" data-status="reshedule" data-patient_ID = "{{ $appointment->patient_ID }}">Reschedule Appointment</button>
+                <button class="btn btn-dark rescheduleAppointment" id="reshedule_button" data-date="{{ $appointment->appointmentDate }}" data-id="{{ $appointment->id }}" data-status="reshedule" data-patient_ID = "{{ $appointment->patient_ID }}">
+                    <i class="fas fa-calendar"></i>
+                    Reschedule Appointment
+                </button>
             @endif
 
             @if($status == 'confirmed' && (in_array(Auth::user()->role_ID,config('constant.admin_and_doctor_role_ids'))))
-                <button class="btn btn-info appointmentButoon" id="complete_button" data-id="{{ $appointment->id }}" data-status="completed" data-date="{{ $appointment->appointmentDate }}" data-patient_ID = "{{ $appointment->patient_ID }}">Mark As Complete</button>
+                <button class="btn btn-info appointmentButoon" id="complete_button" data-id="{{ $appointment->id }}" data-status="completed" data-date="{{ $appointment->appointmentDate }}" data-patient_ID = "{{ $appointment->patient_ID }}">
+                    <i class="fas fa-check"></i>
+                    Mark As Complete
+                </button>
 
-                <button class="btn btn-danger appointmentButoon" id="cancel_button" data-id="{{ $appointment->id }}" data-status="cancelled" data-date="{{ $appointment->appointmentDate }}" data-patient_ID = "{{ $appointment->patient_ID }}">Cancel Appointment</button>
+                <button class="btn btn-danger appointmentButoon" id="cancel_button" data-id="{{ $appointment->id }}" data-status="cancelled" data-date="{{ $appointment->appointmentDate }}" data-patient_ID = "{{ $appointment->patient_ID }}">
+                    <i class="fa-sharp fa-solid fa-rectangle-xmark"></i>
+                    Cancel Appointment
+                </button>
             @endif
 
             <a href = "{{ route('admin.view-patient-history',['patients' => $appointment->patient_ID]) }}">

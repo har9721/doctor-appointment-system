@@ -209,4 +209,26 @@ class Appointments extends Model
             ->where('payment_status','pending')
             ->exists();
     }
+
+    public static function checkForAppointments($patients_id,$date = null)
+    {
+        return Appointments::join('doctor_time_slots','doctor_time_slots.id','appointments.doctorTimeSlot_ID')
+            ->where('patient_ID',$patients_id)
+            ->where('appointmentDate',date('Y-m-d',strtotime($date)))
+            ->where('isActive',1)
+            ->get(['appointments.id','appointments.doctorTimeSlot_ID','doctor_time_slots.start_time','doctor_time_slots.availableDate','doctor_time_slots.end_time']);
+    }
+
+    public static function updateAppointmentsDetails($data)
+    {
+        $appointment = Appointments::findOrFail($data['appointment_id']);
+        
+        $appointment->doctorTimeSlot_ID = $data['timeSlot'];
+        $appointment->patient_ID = $data['patient_ID'];
+        $appointment->appointmentDate = date('Y-m-d',strtotime($data['date']));
+        $appointment->updated_at = now();
+        $appointment->updatedBy = Auth()->user()->id;
+
+        return $appointment->update();
+    }
 }

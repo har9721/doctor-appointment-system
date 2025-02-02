@@ -30,12 +30,12 @@ class HomeController extends Controller
 
         return city::when($stateID != null, function($query) use($stateID){
             $query->where('state_id',$stateID);
-        })->orderBy('id','desc')->get(['id','name']);   
+        })->orderBy('name','asc')->get(['id','name']);   
     }
 
     public function getState()
     {
-        return state::get(['id','name']);   
+        return state::get(['id','name'])->orderBy('name','asc');   
     }
 
     public function getGender()
