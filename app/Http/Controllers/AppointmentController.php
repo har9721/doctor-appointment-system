@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\AppointmentBooking;
 use App\Http\Requests\AppointmentRequest;
 use App\Models\Appointments;
 use App\Models\Doctor;
@@ -72,7 +73,7 @@ class AppointmentController extends Controller
             $appoinment_id = $request->appointment_id;
             $appointment_date = date('Y-m-d',strtotime($request->appointment_date));
 
-            $getAppointmentData = Appointments::with(['doctorTimeSlot'])
+            $getAppointmentData = Appointments::with(['doctorTimeSlot.doctor.user'])
                                 ->where('id',$appoinment_id)
                                 ->first(['id','doctorTimeSlot_ID','patient_ID',DB::raw('DATE_FORMAT(appointmentDate,"%d-%m-%Y") as appointmentDate'),'status','isBooked','isCancel','created_at']);
 
@@ -81,6 +82,7 @@ class AppointmentController extends Controller
             $availableTimeSlots = DoctorTimeSlots::where('doctor_ID',$doctor_id)
                                 // ->where('id','!=',$getAppointmentData->doctorTimeSlot_ID)
                                 ->where('availableDate',$appointment_date)
+                                ->where('isBooked',0)
                                 ->get(['id','doctor_ID','start_time','end_time']);
             $data = [
                 'availableTimeSlot' => $availableTimeSlots,
@@ -266,5 +268,29 @@ class AppointmentController extends Controller
     public function viewAppointmentHistory()
     {
         return view('admin.viewAppointmentHistory');    
+    }
+
+    public function updateAppointments(AppointmentBooking $request)
+    {
+        try {
+            $data = $request->validated();
+    
+            $updateAppointmentsDetails = Appointments::updateAppointmentsDetails($data);
+
+            if($updateAppointmentsDetails != null)
+            {
+                $response['status'] = 'success';
+                $response['message'] = "Appointments details updated successfully.";
+            }else{
+                $response['status'] = 'success';
+                $response['message'] = "Appointments details not updated successfully.";
+            }
+
+        } catch (\Exception $e) {
+            $response['status'] = 'error';
+            $response['message'] = $e->getMessage();
+        }
+
+        echo json_encode($response);
     }
 }

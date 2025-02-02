@@ -32,6 +32,17 @@ $(document).ready(function () {
         scrollInput : false,
     });
 
+    // appointment_date
+    $('#appointment_date_for_edit').datetimepicker({
+        format:"d-m-Y",
+        timepicker: false,
+        datepicker : true,
+        changeMonth:true,
+        changeYear:true,
+        minDate : "-1",
+        scrollInput : false,
+    });
+
 });
 
 $(document).on('click','.appointmentButoon', function()
@@ -470,4 +481,411 @@ $(document).on('click','.addAmount', function(){
             $('#addAmount').attr('disabled',false);
         }
     });
-})
+});
+
+$(document).on('click','.appointmentEditButton', function(){
+
+    let appointment_id = $(this).data('id');
+    let appointment_date = $(this).data('date');
+    let speciality_id = '';
+    let doctor_id = '';
+    let city_id = '';
+    let patient_ID = '';
+
+    if(appointment_id)
+    {
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
+        $.ajax({
+            type : "get",
+            url : fetch_appointments_details,
+            data : {'appointment_id' : appointment_id, 'appointment_date' : appointment_date},
+            success : function (response){
+                $('#appointment_id').val(appointment_id);
+
+                if(response)
+                {
+                    speciality_id = (response.bookedSlot.doctor_time_slot.doctor) ? response.bookedSlot.doctor_time_slot.doctor.specialty_ID : '';
+                    
+                    doctor_id = (response.bookedSlot.doctor_time_slot) ? response.bookedSlot.doctor_time_slot.doctor_ID : '';                    
+
+                    city_id = (response.bookedSlot.doctor_time_slot.doctor.user) ? response.bookedSlot.doctor_time_slot.doctor.user.city_ID : '';
+
+                    $('#appointment_date_for_edit').val(response.bookedSlot.appointmentDate);
+                    
+                    patient_ID = (response.bookedSlot) ? response.bookedSlot.patient_ID : '';
+
+                    $('#patient_ID').val(patient_ID);
+
+                    if(response.availableTimeSlot)
+                    {
+                        $(`#timeSlotDivForEdit`).empty();
+
+                        response.availableTimeSlot.forEach(element => {
+                            
+                            if(element)
+                            {
+                                // if(element.id == response.bookedSlot.doctorTimeSlot_ID)
+                                // {
+                                //     element.classList.add('selected');
+                                // }
+
+                                const available_time_slot = `<div class="time-slot mr-1" style="background-color=black" onclick="clickOnTimeSlot(this)" data-time_slot_id ="${element.id}">${element.time}</div>`;
+
+                                $(`#timeSlotDivForEdit`).append(available_time_slot);
+                            }
+                        });
+                    }
+                }
+            },
+            complete :  function()
+            {
+                getSpecialtyList(speciality_id);
+                getCityList(city_id);
+                getDoctorList(speciality_id,city_id,doctor_id);
+
+                $('#edit_appointment').modal('show');
+            }
+        });
+    }
+});
+
+function getCityList(id){
+    $('#city').empty();
+    $("#city").append($("<option value='' disabled selected>Select City</option>"));
+    let selectedTrue = false;
+
+    $.ajaxSetup({
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
+    });
+    $.ajax({
+        type : "get",
+        url : getCity,
+        data : {'state_Id' : ''},
+        success : function (response){
+            $.each(response, function (key, val) 
+            { 
+                if(response[key].id == id)
+                {
+                    selectedTrue = true;
+                }else{
+                    selectedTrue = false;
+                }
+
+                $('#city').append($("<option></option>")
+                .attr("value", response[key].id)
+                .text(val.name)
+                .prop('selected',selectedTrue));
+            });
+        }
+    });
+
+    $("#city").select2({
+        placeholder: "Select city name",
+        dropdownParent: $("#edit_appointment")
+    });	
+}
+
+function getSpecialtyList(id = null){
+    
+    $('#speciality').empty();
+    $("#speciality").append($("<option value='' disabled selected>Select Speciality</option>"));
+    let selectedTrue = false;
+
+    $.ajaxSetup({
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
+    });
+    $.ajax({
+        type : "get",
+        url : getSpecialty,
+        success : function (response){
+            $.each(response, function (key, val) 
+            { 
+                if(response[key].id == id)
+                {
+                    selectedTrue = true;
+                }else{
+                    selectedTrue = false;
+                }
+
+                $('#speciality').append($("<option></option>")
+                .attr("value", response[key].id)
+                .text(val.specialtyName)
+                .prop('selected',selectedTrue));
+            });
+        }
+    });
+}
+
+$(document).on('change','#city', function(){
+    getSpecialtyList();
+    $('#doctor').empty();
+});
+
+$(document).on('change','#speciality', function(){
+    let speciality_id = $(this).val();
+    let city_ID = $('#city').val();
+
+    if(speciality_id)
+    {
+        getDoctorList(speciality_id,city_ID,null);
+    }
+});
+
+function getDoctorList(speciality_id,city_ID,id){
+    $('#doctor').empty();
+    $("#doctor").append($("<option value='' disabled selected>Select Doctor</option>"));
+    let selectedTrue = false;
+
+    $.ajaxSetup({
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
+    });
+    $.ajax({
+        type : "get",
+        url : doctorList,
+        data : {'speciality_id' : speciality_id,'city_ID' : city_ID},
+        success : function (response){
+            $('#doctor').append(`<option value=""></option`);
+            $.each(response, function (key, val) 
+            { 
+                if(response[key].id == id)
+                {
+                    selectedTrue = true;
+                }else{
+                    selectedTrue = false;
+                }
+
+                if(val.user != null)
+                {
+                    $('#doctor').append($("<option></option>")
+                        .attr("value", response[key].id)
+                        .text(val.user.full_name)
+                        .prop('selected',selectedTrue)
+                    );
+                }
+            });
+        }
+    });
+
+    $("#doctor").select2({
+        placeholder: "Select doctor name",
+        dropdownParent: $("#edit_appointment")
+    });
+}
+
+function clickOnTimeSlot(timeSlot)
+{
+    selectedTimeSlot = $(timeSlot).data('time_slot_id');
+
+    $('.time-slot').removeClass('selected');
+
+    timeSlot.classList.add('selected');
+}
+
+$(document).off('click', '#searchForTimeslot').on('click','#searchForTimeslot',function(){
+    const doctor = $('#doctor').val();
+    const date = $('#appointment_date_for_edit').val();
+    const city = $('#city').val();
+    const speciality = $('#speciality').val();
+    selectedTimeSlot = null;
+    
+    if(!Number(city))
+    {
+        return Swal.fire({
+            title : 'error',
+            text : 'Please select city name.',
+            icon : 'error',
+            timer : 3000
+        });
+    }
+
+    if(!Number(speciality))
+    {
+        return Swal.fire({
+            title : 'error',
+            text : 'Please select specialty.',
+            icon : 'error',
+            timer : 3000
+        });
+    }
+
+    if(!Number(doctor))
+    {
+        return Swal.fire({
+            title : 'error',
+            text : 'Please select doctor.',
+            icon : 'error',
+            timer : 3000
+        });
+    }
+
+    if(date == '')
+    {
+        return Swal.fire({
+            title : 'error',
+            text : 'Please select a date',
+            icon : 'error',
+            timer : 3000
+        });
+    }
+
+    $.ajaxSetup({
+        headers:{
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
+    })
+
+    $.ajax({
+        type : 'GET',
+        url : getAvailableTimeSlot,
+        data : {'doctor_ID' : doctor, 'date' : date, 'city_id' : city, 'speciality_ID' : speciality},
+        success : function(response)
+        {
+            if(Object.keys(response).length !== 0)
+            {
+                $(`#timeSlotDivForEdit`).empty();
+
+                if(Object.keys(response.time_slot).length !== 0)
+                {                    
+                    response.time_slot.forEach(element => {
+                        if(element)
+                        {
+                            const available_time_slot = `<div class="time-slot mr-1" onclick="clickOnTimeSlot(this)" data-time_slot_id ="${element.id}">${element.time}</div>`;
+    
+                            $(`#timeSlotDivForEdit`).append(available_time_slot);
+                        }
+                    });
+                }else{
+                    const text = `<div class="mr-1" style="text-align:center"><h4>No slot available....</h4></div>`;
+    
+                    $(`#timeSlotDivForEdit`).append(text);
+                }
+            }else{
+                $(`#timeSlotDivForEdit`).empty();
+
+                const text = `<div class="mr-1" style="text-align:center"><h4>No slot available....</h4></div>`;
+
+                $(`#timeSlotDivForEdit`).append(text);
+            }
+        },
+        complete:function ()
+        {
+            $('#confirmAppointment').css('visibility','visible');
+        }
+    });
+});
+
+$(document).on('click','#confirmAppointment', function(){
+    const doctor = $('#doctor').val();
+    const appointment_id = $('#appointment_id').val();
+    const date = $('#appointment_date_for_edit').val();
+    const speciality = $('#speciality').val();
+    const patient_ID = $('#patient_ID').val();
+
+    if(!Number(speciality))
+    {
+        return Swal.fire({
+            title : 'error',
+            text : 'Please select specialty.',
+            icon : 'error',
+            timer : 3000
+        });
+    }
+
+    if(!Number(doctor))
+    {
+        return Swal.fire({
+            title : 'error',
+            text : 'Please select doctor.',
+            icon : 'error',
+            timer : 3000
+        });
+    }
+
+    if(date == '')
+    {
+        return Swal.fire({
+            title : 'error',
+            text : 'Please select a date',
+            icon : 'error',
+            timer : 3000
+        });
+    }
+
+    if(selectedTimeSlot)
+    {
+        $.ajaxSetup({
+            headers:{
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            }
+        })
+        $.ajax({
+            type : 'POST',
+            url : updateAppointments,
+            beforeSend : function(){ 
+                $('#confirmAppointment').attr('disabled',true);
+            },
+            data : {
+                'doctor_ID' : doctor, 'date' : date, 'appointment_id' : appointment_id, 'timeSlot' : selectedTimeSlot, 'patient_ID' : patient_ID
+            },
+            success : function(response)
+            {
+                var data = JSON.parse(response)
+                
+                if(data.status == 'success'){
+                    Swal.fire({
+                        title: "Success",
+                        text: data.message,
+                        icon: "success",
+                        timer: 3000
+                    });
+    
+                    setTimeout(function(){
+                        window.location.reload();
+                    },2000);
+                }else{    
+                    Swal.fire({
+                        title: "Error",
+                        text: data.message,
+                        icon: "error",
+                        timer: 3000
+                    });
+                }
+            },
+            error: function(response)
+            {
+                if(response.status === 422)
+                {
+                    var errors = response.responseJSON;
+                    Swal.fire({
+                        title: "Error",
+                        text: errors.message,
+                        icon: "error",
+                        timer: 5000
+                    });
+                }
+            },
+            complete:function ()
+            {
+                $('#confirmAppointment').attr('disabled',false);
+            }
+        });
+
+    }else{
+        return Swal.fire({
+            title : 'error',
+            text : 'Please select time slot',
+            icon : 'error',
+            timer : 3000
+        });
+    }
+});
