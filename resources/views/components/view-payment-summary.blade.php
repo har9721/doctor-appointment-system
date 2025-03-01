@@ -1,5 +1,5 @@
 <div class="modal fade" id="paymentSummaryModal" tabindex="-1" aria-labelledby="paymentSummaryModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
+    <div class="modal-dialog modal-md">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="paymentSummaryModalLabel">Payment Summary</h5>

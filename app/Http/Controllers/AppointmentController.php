@@ -181,7 +181,11 @@ class AppointmentController extends Controller
             ->addIndexColumn()
             ->editColumn('action', function($row){
                 $viewPaymentSummay = ($row['payment_status'] == 'completed') ? '<button name="Pay" class="mr-2 btn btn-sm btn-info border text-white payment_summary"  data-toggle="tooltip" data-id = "'.$row['id'].'" data-amount = "'. $row['amount'] .'" data-placement="bottom" title="View Payment Summary"  data-bs-toggle="modal" data-bs-target="#paymentSummaryModal">
-                    <i class="fas file-invoice-dollar"></i> 
+                    <i class="fas fa-file-invoice-dollar"></i> 
+                </button>' : '' ;
+
+                $viewPrescriptions = (isset($row['prescriptions_ID']) && !empty($row['prescriptions_ID'])) ? '<button name="View Prescriptions" class="mr-2 btn btn-sm btn-info border text-white prescription_summary"  data-toggle="tooltip" data-prescriptions_id = "'.$row['prescriptions_ID'].'" data-placement="bottom" title="View Prescriptions"  data-bs-toggle="modal" data-bs-target="#paymentSummaryModal">
+                    <i class="fas fa-receipt"></i> 
                 </button>' : '' ;
 
                 $pay = ($row['payment_status'] == 'pending' && (!in_array(Auth::user()->role_ID, config('constant.admin_and_doctor_role_ids')))) ? '<button name="Pay" id="payment" class="mr-2 payment btn btn-sm success border text-white bg-dark" data-toggle="tooltip" data-id = "'.$row['id'].'" data-placement="bottom" title="Pay">
@@ -192,7 +196,13 @@ class AppointmentController extends Controller
 
                 $downloadInvoice = ($row['payment_status'] == 'completed' && (!empty($row['res_payment_id']))) ? 
                 '<a href="'. route("payments.download-invoice",['link' => $row['res_payment_id']]) .'">
-                <button name="invoice" class="mr-2 btn btn-sm btn-dark border text-white download_invoice"  data-toggle="tooltip" data-id = "'.$row['id'].'" data-amount = "'. $row['amount'] .'" data-placement="bottom" title="View Payment Summary"  data-bs-toggle="modal">
+                <button name="invoice" class="mr-2 btn btn-sm btn-dark border text-white download_invoice"  data-toggle="tooltip" data-id = "'.$row['id'].'" data-amount = "'. $row['amount'] .'" data-placement="bottom" title="Download Payment Summary"  data-bs-toggle="modal">
+                    <i class="fas fa-download"></i> 
+                </button></a>' : '' ;
+
+                $downloadPrescriptions = (isset($row['prescriptions_ID']) && !empty($row['prescriptions_ID'])) ? 
+                '<a href="'. route("appointments.prescription-download",['id' => $row['prescriptions_ID']]) .'">
+                <button name="prescriptions" class="mr-2 btn btn-sm btn-dark border text-white download_prescriptions"  data-toggle="tooltip" data-prescriptions_id = "'.$row['prescriptions_ID'].'" data-placement="bottom" title="Download Prescriptions Summary"  data-bs-toggle="modal">
                     <i class="fas fa-download"></i> 
                 </button></a>' : '' ;
 
@@ -214,7 +224,7 @@ class AppointmentController extends Controller
                     $markPayment = '';
                 }
 
-                return $viewPaymentSummay.$pay.$sendMail.$markPayment.$downloadInvoice;
+                return $viewPaymentSummay.$pay.$sendMail.$markPayment.$downloadInvoice.$viewPrescriptions.$downloadPrescriptions;
             })
             ->editColumn('status', function($row){
                 if($row['status'] === 'pending')
