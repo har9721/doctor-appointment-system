@@ -6,6 +6,8 @@ use App\Http\Requests\validatePrescriptions;
 use App\Jobs\SendPrescriptionMail;
 use App\Models\Prescriptions;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class PrescriptionsController extends Controller
 {
@@ -55,5 +57,18 @@ class PrescriptionsController extends Controller
 
             return (!empty($prescription_details) && isset($prescription_details[0])) ? response()->json($prescription_details[0]) : '';
         }
+    }
+
+    public function downloadPrescriptions($prescription_id)
+    {
+        $filePath = "public/Prescriptions/prescrip_$prescription_id.pdf";
+
+        if (!Storage::exists($filePath)) {
+            abort(404, "Prescription not found.");
+        }
+
+        $random_str = Str::random(5);
+
+        return Storage::download($filePath, "invoice_$random_str.pdf");
     }
 }

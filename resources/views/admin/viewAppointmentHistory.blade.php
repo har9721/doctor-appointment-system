@@ -1,5 +1,24 @@
 @extends('layouts.app')
 
+<style>
+    .invoice-box {
+        max-width: 800px;
+        margin: auto;
+        padding: 30px;
+        border: 1px solid #eee;
+        /* box-shadow: 0 0 10px rgba(0, 0, 0, 0.15); */
+    }
+
+    .details {
+        width: 100%;
+        margin-bottom: 20px;
+    }
+    .details td {
+        padding: 8px;
+        border-bottom: 1px solid #ddd;
+    }
+</style>
+
 @section('content')
 <div class="container-fluid">
     <div class="card shadow mb-4">
@@ -68,6 +87,8 @@
 <x-make-payment />
 
 <x-view-payment-summary />
+
+<x-view-prescription-summary />
 @endsection
 @push('scripts')
 <script>
@@ -82,6 +103,7 @@
     let fetchPaymentSummary = "{{ route('payments.fetch-payment-summary') }}";
     let successPage = "{{ route('payments.success-page') }}";
     let markPaymentDone = "{{ route('payments.mark-payment') }}";
+    let fetchPrescriptionsDetails = "{{ route('appointments.prescription.get') }}";
 </script>
 
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
