@@ -6,6 +6,7 @@ use App\Http\Controllers\DoctorController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PatientsController;
 use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\PrescriptionsController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -110,6 +111,11 @@ Route::middleware('auth')->group(function(){
             Route::get('get-completed-appointment','getCompletedAppointment')->name('get-appointment-completed-list');
             Route::get('get-appointment-details','getAppointmentDetails')->name('get-appointment-details');
             Route::post('/edit-appointments','updateAppointments')->name('edit-appointments-details');
+        });
+
+        Route::controller(PrescriptionsController::class)->group(function(){
+            Route::post('/prescription.store','addPrescriptions')->name('prescription.store');
+            Route::get('/fetch-prescriptions','fetchPrescriptions')->name('prescription.get');
         });
     });
 
