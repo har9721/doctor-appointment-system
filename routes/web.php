@@ -116,6 +116,7 @@ Route::middleware('auth')->group(function(){
         Route::controller(PrescriptionsController::class)->group(function(){
             Route::post('/prescription.store','addPrescriptions')->name('prescription.store');
             Route::get('/fetch-prescriptions','fetchPrescriptions')->name('prescription.get');
+            Route::get('/download-prescriptions/{id?}','downloadPrescriptions')->name('prescription-download');
         });
     });
 

@@ -123,3 +123,44 @@ $(document).on('click','.payment_summary', function(){
         }
     });
 });
+
+$(document).on('click','.prescription_summary', function(){
+    const prescription_id = $(this).data('prescriptions_id');
+    $('#loader').css('display','block');
+
+    $('#prescriptions_details tbody.details').empty();
+
+    $.ajax({
+        type : 'get',
+        url : fetchPrescriptionsDetails,
+        data : {prescription_id:prescription_id},
+        success: function(response)
+        {
+            let details;
+            let i = 1;
+            response.medicines.forEach(medicine => {
+                details = `
+                    <tr>
+                        <td>${i}</td>
+                        <td>${medicine.medicine}</td>
+                        <td>${medicine.dosage}</td>
+                        <td>${medicine.instruction}</td>
+                    </tr>
+                `;
+                i++;
+
+                $('#prescriptions_details tbody.details').append(details);
+            });
+
+            $('#prescriptionSummaryModal').modal('show');
+        },
+        error: function () {
+            $('#prescriptionSummaryModal .modal-body').html('<p>Unable to fetch details. Please try again later.</p>');
+            $('#prescriptionSummaryModal').modal('show');
+        },
+        complete: function(){
+            $('.prescription_summary').attr('disabled',false);
+            $('#loader').css('display','none');
+        }
+    });
+});
