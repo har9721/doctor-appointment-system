@@ -107,10 +107,12 @@
                 </button>
             @endif
 
-            <a href = "{{ route('admin.view-patient-history',['patients' => $appointment->patient_ID]) }}">
-                <button class="btn btn-info view" id="view_details" data-date="{{ $appointment->appointmentDate }}" data-id="{{ $appointment->id }}" data-status="archived" data-patient_ID = "{{ $appointment->patient_ID }}"><i class="fas fa-eye"></i>
-                View Patient Details</button>
-            </a>
+            @if(in_array(Auth::user()->role_ID,config('constant.admin_and_doctor_role_ids')))
+                <a href = "{{ route('admin.view-patient-history',['patients' => $appointment->patient_ID]) }}">
+                    <button class="btn btn-info view" id="view_details" data-date="{{ $appointment->appointmentDate }}" data-id="{{ $appointment->id }}" data-status="archived" data-patient_ID = "{{ $appointment->patient_ID }}"><i class="fas fa-eye"></i>
+                    View Patient Details</button>
+                </a>
+            @endif
         </div>
     </div>
 </div>

@@ -39,7 +39,7 @@ class AppointmentController extends Controller
         return view('patients.myAppointments',compact('myPendingAppointments','myConfirmedAppointments','myCancelledAppointments','to_date','completedAppointments','heading','from_date'));
     }
 
-    public function makrAppointments(AppointmentRequest $request)
+    public function markAppointments(AppointmentRequest $request)
     {
         if($request->ajax())
         {
@@ -181,7 +181,7 @@ class AppointmentController extends Controller
             ->addIndexColumn()
             ->editColumn('action', function($row){
                 $viewPaymentSummay = ($row['payment_status'] == 'completed') ? '<button name="Pay" class="mr-2 btn btn-sm btn-info border text-white payment_summary"  data-toggle="tooltip" data-id = "'.$row['id'].'" data-amount = "'. $row['amount'] .'" data-placement="bottom" title="View Payment Summary"  data-bs-toggle="modal" data-bs-target="#paymentSummaryModal">
-                    <i class="fas fa-eye"></i> 
+                    <i class="fas file-invoice-dollar"></i> 
                 </button>' : '' ;
 
                 $pay = ($row['payment_status'] == 'pending' && (!in_array(Auth::user()->role_ID, config('constant.admin_and_doctor_role_ids')))) ? '<button name="Pay" id="payment" class="mr-2 payment btn btn-sm success border text-white bg-dark" data-toggle="tooltip" data-id = "'.$row['id'].'" data-placement="bottom" title="Pay">
