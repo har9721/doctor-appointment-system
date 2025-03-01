@@ -18,6 +18,7 @@
 ✅ View & Cancel Appointments  
 ✅ Online Payment via Razorpay    
 ✅ View and Download Invoices    
+✅ View and Download Prescriptions    
 
 ### **👨‍⚕️ For Doctors**
 ✅ View & Manage Appointments  
@@ -26,6 +27,7 @@
 ✅ Mark Offline Payments  
 ✅ View Payment Summary  
 ✅ View and Download Invoices  
+✅ Manage Prescriptions  
 
 ### **🛠️ For Admin**
 ✅ Manage Doctors Specialty  
@@ -38,7 +40,7 @@
 
 ## 🛠️ Technology Stack
 
-- **Backend:** Laravel 10 (PHP 8.1)  
+- **Backend:** Laravel 9 (PHP 8.0)  
 - **Database:** MySQL 8.0  
 - **Frontend:** Blade Templates, Bootstrap, Javascript, Jquery
 - **Payment Gateway:** Razorpay  
@@ -113,9 +115,6 @@ php artisan serve
 
 🚀 **Maintain Patient Medical History –**  
 Store and track past diagnoses, treatments, and reports.  
-
-🚀 **Doctor Prescriptions –**  
-Doctors will be able to add prescriptions, and the system will automatically email them to patients.  
 
 🚀 **Automated Appointment Reminders –**  
 Patients will receive email reminders before their appointments.  

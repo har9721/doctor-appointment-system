@@ -52,3 +52,11 @@
 <img src="Screenshots/Patients/paymentSummary.png" alt="Razorpay" width="300">
 <img src="Screenshots/Patients/viewSummary.png" alt="Razorpay" width="300">
 <img src="Screenshots/Patients/invoice.png" alt="Invoice" width="300">
+
+## 📜 Prescriptions
+<img src="Screenshots/Doctor/prescription.png" alt="Prescriptions Button" width="300">
+<img src="Screenshots/Doctor/prescription-01.png" alt="Prescriptions Modal" width="300">
+<img src="Screenshots/Doctor/prescription-02.png" alt="Prescriptions Modal" width="300">
+<img src="Screenshots/Doctor/prescription-03.png" alt="Prescriptions Button" width="300">
+<img src="Screenshots/Doctor/prescription-04.png" alt="Prescriptions Edit" width="300">
+<img src="Screenshots/Doctor/prescription-05.png" alt="Prescriptions Summary" width="300">
