@@ -51,59 +51,72 @@ $(document).on('click','.appointmentButoon', function()
     const appointment_status = $(this).data('status');
     const appointment_date = $(this).data('date');
     const patient_ID = $(this).data('patient_id');
+    const amount = $(`#hidden_amount-${appointment_id}`).val();
+    // const status = (appointment_status == 'completed') ? 'confirmed' : appointment_status;
 
-    $.ajaxSetup({
-        headers:{
-            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-        }
-    })
-    $.ajax({
-        type : "post",
-        url : mark_appointments,
-        data : {'appointment_id' : appointment_id, 'status' : appointment_status,'appointment_date' : appointment_date, 'patient_ID' : patient_ID},
-        beforeSend : function(){
-            $('#confirm_button').attr('disabled',true)
-            $('#cancel_button').attr('disabled',true)
-        },
-        success: function (response){
-            if(response['status'] == 'success'){
-                Swal.fire({
-                    title: "Success",
-                    text: response['message'],
-                    icon: "success",
-                    timer: 3000
-                });
+    if(appointment_status == 'completed' && amount == 0)
+    {
+        return Swal.fire({
+            title: "Error",
+            text: "Please add fees first.",
+            icon: "error",
+            timer: 3000
+        });
+    }else{
 
-                setTimeout(function(){
-                    window.location.reload();
-                },2000);
-            }else{    
-                Swal.fire({
-                    title: "Error",
-                    text: response['message'],
-                    icon: "error",
-                    timer: 3000
-                });
+        $.ajaxSetup({
+            headers:{
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             }
-        },
-        error: function(response)
-        {
-            if(response.status === 422)
+        }); 
+        $.ajax({
+            type : "post",
+            url : mark_appointments,
+            data : {'appointment_id' : appointment_id, 'status' : appointment_status,'appointment_date' : appointment_date, 'patient_ID' : patient_ID},
+            beforeSend : function(){
+                $('#confirm_button').attr('disabled',true)
+                $('#cancel_button').attr('disabled',true)
+            },
+            success: function (response){
+                if(response['status'] == 'success'){
+                    Swal.fire({
+                        title: "Success",
+                        text: response['message'],
+                        icon: "success",
+                        timer: 3000
+                    });
+    
+                    setTimeout(function(){
+                        window.location.reload();
+                    },2000);
+                }else{    
+                    Swal.fire({
+                        title: "Error",
+                        text: response['message'],
+                        icon: "error",
+                        timer: 3000
+                    });
+                }
+            },
+            error: function(response)
             {
-                var errors = response.responseJSON;
-                Swal.fire({
-                    title: "Error",
-                    text: errors.message,
-                    icon: "error",
-                    timer: 4000
-                });
+                if(response.status === 422)
+                {
+                    var errors = response.responseJSON;
+                    Swal.fire({
+                        title: "Error",
+                        text: errors.message,
+                        icon: "error",
+                        timer: 4000
+                    });
+                }
+            },
+            complete : function(){
+                $('#confirm_button').attr('disabled',false);
+                $('#cancel_button').attr('disabled',false);
             }
-        },
-        complete : function(){
-            $('#confirm_button').attr('disabled',false);
-            $('#cancel_button').attr('disabled',false);
-        }
-    })
+        })
+    }
 });
 
 $(document).on('click','.unComplete', function()
@@ -889,3 +902,148 @@ $(document).on('click','#confirmAppointment', function(){
         });
     }
 });
+
+$(document).on('click','.add_prescriptions', function(){
+    const id = $(this).data('id');
+    const patient_ID = $(this).data('patient_id');
+    const doctor_ID = $(this).data('doctor_id');
+    const prescriptions_ID = $(this).data('priscription_id');
+
+    if(prescriptions_ID !== '')
+    {
+        $('#hidden_mode').val('edit');
+        fetchPrescriptionsDetails(prescriptions_ID);
+        $('#add_prescription_modal').modal('show');
+    }else{
+        $('#add_prescription_modal').modal('show');
+        $('#hidden_mode').val('add');
+    }
+
+    $('#appointmentID').val(id);
+    $('#patient_id').val(patient_ID);
+    $('#doctor_id').val(doctor_ID);
+    $('#presciptionsID').val(prescriptions_ID);
+});
+
+$("#add-medicine").click(function () {
+    $("#medicine-fields").append(`
+        <fieldset class="border border-warning p-2 rounded mb-2 medicine-group">
+            <legend class="float-none w-auto px-3 text-success">Medicine:</legend>
+            <div>
+                <input type="text" name="medicines[]" class="form-control mb-2" placeholder="Medicine Name" autocomplete="off">
+                <input type="text" name="dosage[]" class="form-control mb-2" placeholder="Dosage (e.g., 1 tablet)" autocomplete="off">
+                <input type="text" name="instructions[]" class="form-control mb-2" placeholder="Instructions (e.g., After food)" autocomplete="off">
+                <button type="button" class="btn btn-danger remove-medicine">Remove</button>
+            </div>
+        </fieldset>
+    `);
+});
+
+$(document).on("click", ".remove-medicine", function () {
+    $(this).closest(".medicine-group").remove();
+});
+
+$('#addPrescriptions').on("submit", function (e) {
+    e.preventDefault();
+
+    const formData = new FormData(this);
+
+    $.ajaxSetup({
+        headers:{
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
+    })
+    $.ajax({
+        type : 'post',
+        url : savePrescriptions,
+        data : formData,
+        processData : false,
+        contentType : false,
+        beforeSend : function(){
+            $('.addPrescriptions').attr('disabled',true);
+        },
+        success: function(response)
+        {
+            let data = JSON.parse(response);
+            
+            if(data.status == 'success'){
+                Swal.fire({
+                    title: "Success",
+                    text: data.message,
+                    icon: "success",
+                    timer: 4000
+                });
+
+                setTimeout(function(){
+                    window.location.reload();
+                },4000);
+
+            }else{    
+                Swal.fire({
+                    title: "Success",
+                    text: data.message,
+                    icon: "success",
+                    timer: 4000
+                });
+            }
+        },
+        error: function(response)
+        {
+            if(response.status === 422)
+            {
+                var errors = response.responseJSON;
+                Swal.fire({
+                    title: "Error",
+                    text: errors.message,
+                    icon: "error",
+                    timer: 4000
+                });
+            }
+        },
+        complete : function(){
+            $('.addPrescriptions').attr('disabled',false);
+            $("#addPrescriptions").trigger("reset");
+        }
+    });
+});
+
+function fetchPrescriptionsDetails(prescriptionsID){
+    
+    $.ajaxSetup({
+        headers:{
+            'X-CSRF-TOKEN' : $('meta[name="csrf-token"]').attr('content')
+        }
+    });
+    $.ajax({
+        type : "get",
+        url : fetchParticularPresciptions,
+        data : {
+            'prescription_id' : prescriptionsID
+        },
+        success : function(response)
+        {
+            if(response)
+            {
+                $('#modal_heading').text('Edit Prescription');
+                $('#medicine-fields').empty();
+
+                response.medicines.forEach(medicine => {
+                    let fieldset = `<fieldset class="border border-warning p-2 rounded mb-2 medicine-group">
+                            <legend class="float-none w-auto px-2 text-success">Medicine :</legend>
+                            <div class="">
+                                <input type="text" name="medicines[]" class="form-control mb-2" placeholder="Medicine Name" autocomplete="off" value="${medicine.medicine}">
+                                <input type="text" name="dosage[]" class="form-control mb-2" placeholder="Dosage (e.g., 1 tablet)" autocomplete="off" value="${medicine.dosage}">
+                                <input type="text" name="instructions[]" class="form-control mb-2" placeholder="Instructions (e.g., After food)" autocomplete="off" value="${medicine.instruction}">
+
+                                <button type="button" class="btn btn-danger remove-medicine">Remove</button>
+                            </div>
+                        </fieldset>`;
+
+                    $('#medicine-fields').append(fieldset);
+                });
+
+                $('#general_instructions').val(response.instructions)
+            }
+        }
+    });
+}

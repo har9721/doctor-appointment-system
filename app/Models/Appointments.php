@@ -55,6 +55,7 @@ class Appointments extends Model
         ->join('users as p', 'p.id', '=', 'patients.user_ID')
         ->join('mst_specialties', 'mst_specialties.id', '=', 'specialty_ID')
         ->leftJoin('payment_details','payment_details.appointment_ID','appointments.id')
+        ->leftJoin('prescriptions','prescriptions.appointment_ID','appointments.id')
         ->when((!empty($from_date)) || !empty($to_date), function($q) use($from_date, $to_date){     
             $q->whereBetween('appointmentDate', [
                 date('Y-m-d', strtotime($from_date)),
@@ -86,7 +87,7 @@ class Appointments extends Model
             DB::raw('CONCAT_WS(" ", p.first_name, p.last_name) as patient_full_name'),                
             DB::raw('CONCAT_WS(" ", d.first_name, d.last_name) as doctor_full_name'),
             DB::raw('CONCAT_WS("-", DATE_FORMAT(doctor_time_slots.start_time, "%h:%i %p"), DATE_FORMAT(doctor_time_slots.end_time, "%h:%i %p")) as time'),
-            'payment_details.res_payment_id'
+            'payment_details.res_payment_id','doctor_time_slots.doctor_ID','prescriptions.id as prescriptions_ID'
         ]);
 
         return $getMyAppointments;
@@ -230,5 +231,10 @@ class Appointments extends Model
         $appointment->updatedBy = Auth()->user()->id;
 
         return $appointment->update();
+    }
+
+    public function prescriptions()
+    {
+        return $this->hasOne(Prescriptions::class,'appointment_ID');    
     }
 }

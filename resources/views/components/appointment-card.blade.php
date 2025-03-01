@@ -7,6 +7,7 @@
                 @else 
                     <span class="fw-bold fs-4">Patient : {{ $appointment->patient_full_name }}</span>
                 @endif
+                <input type="hidden" id="hidden_amount-{{ $appointment->id }}" value="{{ $appointment->amount ?? 0 }}">
                 <span>
                     <span class="fw-bold fs-5 text-white" role="button" data-bs-toggle="modal" data-bs-target="#editAmountModal">
                         ₹  {{ $appointment->amount ?? 0 }}
@@ -22,6 +23,7 @@
         @else
             <div class="text-white d-flex justify-content-between align-items-center rounded">
                 <span style="color: white;"><b>Dr. {{ $appointment->doctor_full_name }}</b></span>
+                <input type="hidden" id="hidden_amount-{{ $appointment->id }}" value="{{ $appointment->amount ?? 0 }}">
                 <span>
                     <span class="fw-bold fs-5 text-white" role="button">
                         ₹  {{ $appointment->amount ?? 0 }}
@@ -72,6 +74,18 @@
                     <i class="fas fa-box-archive"></i>
                     Archieve Appointment
                 </button>
+
+                @if(empty($appointment->prescriptions_ID))
+                    <button class="btn btn-primary add_prescriptions" id="prescriptions" data-id="{{ $appointment->id }}" data-status="completed" data-patient_ID = "{{ $appointment->patient_ID }}" data-doctor_id = "{{ $appointment->doctor_ID }}" data-priscription_id = "{{ $appointment->prescriptions_ID }}">
+                        <i class="fas fa-comment-medical"></i>
+                        Add Prescriptions 
+                    </button>
+                @else
+                    <button class="btn btn-primary add_prescriptions" id="edit_prescriptions" data-id="{{ $appointment->id }}" data-status="completed" data-patient_ID = "{{ $appointment->patient_ID }}" data-doctor_id = "{{ $appointment->doctor_ID }}" data-priscription_id = "{{ $appointment->prescriptions_ID }}">
+                        <i class="fas fa-comment-medical"></i>
+                        Edit Prescriptions 
+                    </button>
+                @endif
             @endif
             
             @if($status != 'canceled' && $status != 'completed')

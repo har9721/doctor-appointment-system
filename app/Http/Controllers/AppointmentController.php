@@ -36,7 +36,7 @@ class AppointmentController extends Controller
 
         $heading = (Auth::user()->role->roleName === 'Admin' || Auth::user()->role->roleName === 'Doctor') ? 'Appointments' : 'My Appointments';
 
-        return view('patients.myAppointments',compact('myPendingAppointments','myConfirmedAppointments','myCancelledAppointments','to_date','completedAppointments','heading'));
+        return view('patients.myAppointments',compact('myPendingAppointments','myConfirmedAppointments','myCancelledAppointments','to_date','completedAppointments','heading','from_date'));
     }
 
     public function makrAppointments(AppointmentRequest $request)
