@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>Invoice</title>
+    <title>Prescriptions</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -70,42 +70,34 @@
             </tr>
         </table>
 
-        <h2 class="invoice-title">Invoice</h2>
+        <h2 class="invoice-title">Prescribed Medicines</h2>
 
         <table class="details">
-            <tr>
-                <td><strong>Payment ID:</strong></td>
-                <td>{{ $invoiceData['transaction_id'] }}</td>
-            </tr>
-            <tr>
-                <td><strong>Amount:</strong></td>
-                <td>&#8377; {{ number_format($invoiceData['amount'], 2) }}</td>
-            </tr>
-            <tr>
-                <td><strong>Status:</strong></td>
-                <td>{{ ucfirst($invoiceData['payment_status']) }}</td>
-            </tr>
-            <tr>
-                <td><strong>Payment Method:</strong></td>
-                <td>{{ ucfirst($invoiceData['method']) }}</td>
-            </tr>
-            <tr>
-                <td><strong>Email:</strong></td>
-                <td>{{ $invoiceData['email'] }}</td>
-            </tr>
-            <tr>
-                <td><strong>Contact:</strong></td>
-                <td>{{ $invoiceData['mobile'] }}</td>
-            </tr>
-            <tr>
-                <td><strong>Date:</strong></td>
-                <td>{{ $invoiceData['paymentDate'] }}</td>
-            </tr>
+            <thead>
+                <tr>
+                    <th>SrNo.</th>
+                    <th>Medicine Name</th>
+                    <th>Dosage</th>
+                    <th>Instructions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php $i = 1;?>
+                @foreach($data as $medicine)
+                <tr>
+                    <td>{{ $i }}</td>
+                    <td>{{ $medicine['medicine'] }}</td>
+                    <td>{{ $medicine['dosage'] }}</td>
+                    <td>{{ $medicine['instruction'] }}</td>
+                </tr>
+                <?php $i++; ?>
+                @endforeach
+            </tbody>
         </table>
 
         <div class="footer">
-            Thank you for your payment!<br>
-            <small>This is an auto-generated invoice. No signature required.</small>
+            Thank you for using our service!<br>
+            <small>This is an auto-generated prescription. No signature required.</small>
         </div>
     </div>
 </body>

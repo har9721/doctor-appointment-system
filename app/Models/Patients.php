@@ -116,4 +116,9 @@ class Patients extends Model
             'deletedBy' => Auth::user()->id
         ]);
     }
+
+    public function prescriptions()
+    {
+        return $this->hasOne(Patients::class,'patient_ID');    
+    }
 }

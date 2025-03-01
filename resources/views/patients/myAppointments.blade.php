@@ -94,7 +94,7 @@
                 <div class="row">
                     <div class="col-md-3">
                         <label for="date">From Date : <span style="color: red;">*</span></label>
-                        <input type="text" id="from_date" name="from_date" class="datetimepicker form-control" value="<?php echo date('01-m-Y') ?>" onkeydown="return false;">
+                        <input type="text" id="from_date" name="from_date" class="datetimepicker form-control" value="<?php echo $from_date ?>" onkeydown="return false;">
                     </div>
                     <div class="col-md-3">
                         <label for="date">To Date : <span style="color: red;">*</span></label>
@@ -179,7 +179,10 @@
 <x-addAmount />
 
 <!-- -------------include edit appointment modal------- -->
- <x-appointment-edit-modal />
+<x-appointment-edit-modal />
+
+<!-- -------------include add prescriptions modal------ -->
+<x-add-prescriptions />
 
 @endsection
 @push('scripts')
@@ -194,6 +197,8 @@
     let doctorList = "{{ route('doctor.get-all-doctor') }}";
     let getAvailableTimeSlot = "{{ route('doctor.get-octor-details') }}";
     let updateAppointments = "{{ route('appointments.edit-appointments-details') }}";
+    let savePrescriptions = "{{ route('appointments.prescription.store') }}";
+    let fetchParticularPresciptions = "{{ route('appointments.prescription.get') }}"
 </script>
 <script src="{{ asset('js/Appointments/appointments.js') }}"></script> 
 @endpush

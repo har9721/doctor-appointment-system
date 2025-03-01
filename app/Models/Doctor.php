@@ -76,4 +76,9 @@ class Doctor extends Model
             'deletedBy' => Auth::user()->id
         ]);
     }
+
+    public function prescriptions()
+    {
+        return $this->hasOne(Prescriptions::class,'doctor_ID');    
+    }
 }
