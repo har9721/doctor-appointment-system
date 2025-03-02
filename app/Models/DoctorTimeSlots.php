@@ -58,6 +58,7 @@ class DoctorTimeSlots extends Model
                 $addOrEditTimeSlot = DoctorTimeSlots::where('id', $data['hidden_timeslot_id'])->update([
                     'start_time' => $data['startTime'],
                     'end_time' => $data['endTime'],
+                    'status' => $data['status'],
                     'updated_at' => now(),
                     'updatedBy' => Auth::user()->id
                 ]);
@@ -78,7 +79,7 @@ class DoctorTimeSlots extends Model
     {
         $loginUserId = Doctor::getLoginDoctorID();
 
-        return DoctorTimeSlots::where(['doctor_ID' => $loginUserId->id, 'isDeleted' => 0])->get(['id','start_time','end_time','availableDate'])
+        return DoctorTimeSlots::where(['doctor_ID' => $loginUserId->id, 'isDeleted' => 0])->get(['id','start_time','end_time','availableDate','status'])
         ->toArray();
     }
 
@@ -148,5 +149,10 @@ class DoctorTimeSlots extends Model
     public function appointments()
     {
         return $this->hasOne(Appointments::class,'doctorTimeSlot_ID')->select('id','doctorTimeSlot_ID','patient_ID','appointmentDate','isBooked','created_at');
+    }
+
+    public function getStatusAttribute($value)
+    {
+        return str_replace("_"," ",ucfirst($value));    
     }
 }

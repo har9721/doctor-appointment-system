@@ -49,7 +49,7 @@ class Doctor extends Model
 
     public function timeSlot()
     {
-        return $this->hasMany(DoctorTimeSlots::class,'doctor_ID')->where('isDeleted',0)->select('id','availableDate','start_time','end_time','doctor_ID');
+        return $this->hasMany(DoctorTimeSlots::class,'doctor_ID')->where('isDeleted',0)->where('status','available')->select('id','availableDate','start_time','end_time','doctor_ID');
     }
 
     public static function updateDoctorInfo($data)
