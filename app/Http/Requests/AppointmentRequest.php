@@ -22,7 +22,7 @@ class AppointmentRequest extends FormRequest
                 {
                     $currentDate = Carbon::now()->format('d-m-Y');
 
-                    if($value >= $currentDate)
+                    if($value >= $currentDate && $this->status === 'completed')
                     {
                         $fail("The appointment cannot be marked as complete before the scheduled appointment date.");
                     }

@@ -32,12 +32,13 @@ Route::get('/get-state',[HomeController::class,'getState'])->name('get-state');
 Route::get('/get-gender',[HomeController::class,'getGender'])->name('get-gender');
 Route::get('/get-smoking-status',[HomeController::class,'getSmokingStatus'])->name('get-smoking-status');
 Route::get('/get-alcohol-status',[HomeController::class,'getAlcoholStatus'])->name('get-alcohol-status');
+Route::get('get-specialty',[DoctorController::class,'fetchSpecialtyList'])->name('specialtyList');
 
 Route::middleware('auth')->group(function(){
 
     Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
-    Route::group(['prefix' => '/admin', 'as' => 'admin.'], function(){
+    Route::middleware(['can:isAuthorized'])->prefix('/admin')->as('admin.')->group(function(){
         Route::controller(PatientsController::class)->group(function(){
             Route::get('/patients','patientView')->name('patients');
             Route::get('/get-all-patients','getAllPatients')->name('get-patients');
@@ -60,7 +61,6 @@ Route::middleware('auth')->group(function(){
             Route::get('specialty','getAllSpecialty')->name('specialty');
             Route::post('save-specialty','saveSpecialty')->name('save-specialty');
             Route::get('fetch-specialty','fetchAllSpecialty')->name('get-specialty');
-            Route::get('get-specialty','fetchSpecialtyList')->name('specialtyList');
             Route::post('delete-specialty','deleteSpecialty')->name('delete-specialty');
             Route::get('/edit-doctor-details/{doctor}','editDoctorForm')->name('editDoctorDetails');
             Route::post('/update-doctor-details','doctorUpdate')->name('doctorUpdate');
