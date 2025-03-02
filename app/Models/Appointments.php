@@ -191,6 +191,7 @@ class Appointments extends Model
                 'email' => $details->appointments->patients->user->email,
                 'mobile' => $details->appointments->patients->user->mobile,
                 'doctorName' => $details->appointments->doctorTimeSlot->doctor->user->full_name,
+                'doctorEmail' => $details->appointments->doctorTimeSlot->doctor->user->email,
                 'appointmentDate' => date('d-m-Y',strtotime($details->appointments->appointmentDate)),
                 'time' => $details->appointments->doctorTimeSlot->time,
                 'transaction_id' => $details->res_payment_id,
