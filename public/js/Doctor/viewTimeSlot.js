@@ -22,6 +22,9 @@ document.addEventListener('DOMContentLoaded', function() {
         scrollInput : false,
     });
 
+    // change the heading of modal
+    $('#modal_title').text('Add Doctor Availability');
+
     var calendarEl = document.getElementById('calendar');
  
     $.ajaxSetup({
@@ -59,12 +62,28 @@ document.addEventListener('DOMContentLoaded', function() {
         },
         dateClick: function(info) {            
             let date = info.dateStr;
-            const newDate = convertTimestampToDate(date);
-            $('#hidden_date').val(newDate);
+            let clickedDate = new Date(info.date);
+            let dayOfWeek = clickedDate.toLocaleString('en-us', { weekday: 'long' });
 
-            $('#manageAvailability').modal('show');
-            $('#start_time').val('');
-            $('#end_time').val('');
+            if(dayOfWeek === 'Sunday')
+            {
+                return Swal.fire({
+                    title: "Error",
+                    text: "You cannot add a time slot because the clinic remains closed on Sundays. Please choose another day.",
+                    icon: "error",
+                    timer: 4000
+                });
+            }else{
+                const newDate = convertTimestampToDate(date);
+                $('#hidden_date').val(newDate);
+    
+                // restructure the modal
+                $('.recurrenceDiv').css('display','block');
+                $('#modal_title').text('Add Doctor Availability');
+                $('#manageAvailability').modal('show');
+                $('#start_time').val('');
+                $('#end_time').val('');
+            }
         },
 
         editable : true,
@@ -86,6 +105,12 @@ document.addEventListener('DOMContentLoaded', function() {
         eventDrop : function(info)
         {
             let date = new Date(info.event.start);
+            let clickedDate = new Date(info.event.start);
+            console.log(clickedDate);
+            
+            let dayOfWeek = clickedDate.toLocaleString('en-us', { weekday: 'long' });
+            console.log(dayOfWeek);
+            
             
             if (date < new Date()) {
                 info.revert();
@@ -95,6 +120,19 @@ document.addEventListener('DOMContentLoaded', function() {
                     icon: "warning",
                     timer: 2000
                 });
+            }
+            else if(dayOfWeek === 'Sunday')
+            {
+                Swal.fire({
+                    title: "Error",
+                    text: "You cannot add a time slot because the clinic remains closed on Sundays. Please choose another day.",
+                    icon: "error",
+                    timer: 4000
+                });
+
+                return setTimeout(function(){
+                    window.location.reload();
+                },2000);
             }else{
 
                 const dropdown = [
@@ -112,6 +150,26 @@ document.addEventListener('DOMContentLoaded', function() {
         eventRemove : function()
         {
             console.log('remove');
+        },
+        eventContent: function (event) {
+            let status = event.event.extendedProps.status;
+            let time = event.event.extendedProps.time;
+
+            let customTitle = document.createElement("div");
+            customTitle.innerHTML = `<b>${time}</b> <br> ${status}`;
+
+            return { domNodes: [customTitle] };
+        },
+        eventDidMount: function (info) {
+            let status = info.event.extendedProps.status;
+
+            if (status === 'Available') {
+                info.el.style.backgroundColor = '#4e73df'; 
+                info.el.style.color = 'white'; 
+            } else {
+                info.el.style.backgroundColor = '#e11509';
+                info.el.style.color = 'white';
+            }
         }
     });
 
@@ -138,6 +196,7 @@ submitBtn.addEventListener('click', function(){
     let hidden_timeslot_id = $('#hidden_timeslot_id').val();
     let isEdit = (hidden_timeslot_id !== '') ? '1' : '0';
     let recurrence = $('#recurrence').val();
+    let status = $('#status').val();
 
     const days = [];
 
@@ -174,7 +233,7 @@ submitBtn.addEventListener('click', function(){
                 $('#start_time_error').css('display','none');
                 $('#submit').attr('disabled',true);
             },
-            data : {'date' : eventDate, 'startTime' : startTime, 'endTime': endTime,'doctor_ID': doctor_ID, 'hidden_timeslot_id' : hidden_timeslot_id, 'isEdit' : isEdit, 'days' : days, 'recurrence': recurrence},
+            data : {'date' : eventDate, 'startTime' : startTime, 'endTime': endTime,'doctor_ID': doctor_ID, 'hidden_timeslot_id' : hidden_timeslot_id, 'isEdit' : isEdit, 'days' : days, 'recurrence': recurrence, 'status' : status},
             success : function(response)
             {
                 if(response['status'] == 'success'){
@@ -265,6 +324,7 @@ function editEventDetails(event)
     let startHours = date.getHours();
     let startMinutes = date.getMinutes();
     let startTime = convertTimestampToTime(date);
+    let status = event.event._def.extendedProps.status;
 
     const newDate = convertTimestampToDate(date);
 
@@ -275,6 +335,9 @@ function editEventDetails(event)
         
     // show manage availability modal
     $('.recurrenceDiv').css('display','none');
+    $('#modal_title').text('Edit Doctor Availability');
+    $('#statusesDiv').css('display','block');
+    $('#status').val(status);
     $('#manageAvailability').modal('show');
 
     // append data to input box
