@@ -57,6 +57,8 @@
 
 <x-view-payment-summary />
 
+<x-view-prescription-summary />
+
 @endsection
 @push('scripts')
 <script>
@@ -68,6 +70,7 @@
     let successUrl = "{{ url('payment/success') }}";
     let fetchPaymentSummary = "{{ route('payments.fetch-payment-summary') }}";
     let successPage = "{{ route('payments.success-page') }}";
+    let fetchPrescriptionsDetails = "{{ route('appointments.prescription.get') }}";
 </script>
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
     <script src="{{ asset('js/Appointments/appointmentComplete.js') }}"></script>

@@ -76,7 +76,8 @@
                 </button>
 
                 @if(empty($appointment->prescriptions_ID))
-                    <button class="btn btn-primary add_prescriptions" id="prescriptions" data-id="{{ $appointment->id }}" data-status="completed" data-patient_ID = "{{ $appointment->patient_ID }}" data-doctor_id = "{{ $appointment->doctor_ID }}" data-priscription_id = "{{ $appointment->prescriptions_ID }}">
+                    <button class="btn btn-primary add_prescriptions" id="prescriptions" data-id="{{ $appointment->id }}" data-status="completed" data-patient_ID = "{{ $appointment->patient_ID }}" data-doctor_id = "{{ $appointment->doctor_ID }}" data-priscription_id = "{{ $appointment->prescriptions_ID }}"
+                    @if($appointment->payment_status == 'pending') disabled @endif >
                         <i class="fas fa-comment-medical"></i>
                         Add Prescriptions 
                     </button>
