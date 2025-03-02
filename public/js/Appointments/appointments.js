@@ -52,6 +52,8 @@ $(document).on('click','.appointmentButoon', function()
     const appointment_date = $(this).data('date');
     const patient_ID = $(this).data('patient_id');
     const amount = $(`#hidden_amount-${appointment_id}`).val();
+    console.log(appointment_status);
+    
     // const status = (appointment_status == 'completed') ? 'confirmed' : appointment_status;
 
     if(appointment_status == 'completed' && amount == 0)

@@ -129,7 +129,7 @@
 @push('scripts')
 <script>
     let getCity = "{{ route('get-city') }}";
-    let getSpecialty = "{{ route('admin.specialtyList') }}";
+    let getSpecialty = "{{ route('specialtyList') }}";
     let searchDoctor = "{{ route('patients.search-doctor') }}";
     let bookingUrl = "{{ route('patients.book-appointment') }}";
     let patientsList = "{{ route('patients.get-all-patients') }}";

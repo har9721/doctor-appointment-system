@@ -98,7 +98,7 @@
     let getGender = "{{ route('get-gender') }}";
     let getCity = "{{ route('get-city') }}";
     let getStates = "{{ route('get-state') }}";
-    let getSpecialty = "{{ route('admin.specialtyList') }}"
+    let getSpecialty = "{{ route('specialtyList') }}"
     let getDoctorList = "{{ route('admin.doctor') }}"
 </script>
 <script src="{{ asset('js/userProfile.js') }}"></script>

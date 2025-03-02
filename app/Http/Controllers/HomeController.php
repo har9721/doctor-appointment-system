@@ -35,7 +35,7 @@ class HomeController extends Controller
 
     public function getState()
     {
-        return state::get(['id','name'])->orderBy('name','asc');   
+        return state::orderBy('name','asc')->get(['id','name']);   
     }
 
     public function getGender()

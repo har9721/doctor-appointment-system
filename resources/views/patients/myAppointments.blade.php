@@ -193,7 +193,7 @@
     let fetch_doctor_time_slot = "{{ route('appointments.fetch-time-slot') }}";
     let saveAmount = "{{ route('appointments.save-amount') }}";
     let getCity = "{{ route('get-city') }}";
-    let getSpecialty = "{{ route('admin.specialtyList') }}";
+    let getSpecialty = "{{ route('specialtyList') }}";
     let doctorList = "{{ route('doctor.get-all-doctor') }}";
     let getAvailableTimeSlot = "{{ route('doctor.get-octor-details') }}";
     let updateAppointments = "{{ route('appointments.edit-appointments-details') }}";
