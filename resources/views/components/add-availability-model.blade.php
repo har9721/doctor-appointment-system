@@ -3,7 +3,7 @@
     <div class="modal-dialog modal-md" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title"><b>Add Doctor Availability</b></h5>
+                <h5 class="modal-title" id="modal_title"><b>Add Doctor Availability</b></h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
                 </button>
@@ -23,6 +23,16 @@
                         <label for="end_time"><b>End Time </b><span style="color: red;">*</span> :</label>
                         <input type="text" name="end_time" id="end_time" class="form-control datetimepicker" value="" placeholder="select time..." autocomplete="off" onkeydown="return false;">
                         <span class="errorMessage" id="end_time_error" style="display: none; color:red">Please select end time</span>
+                    </div>
+                </div>
+                <div class="row mb-3" id="statusesDiv" style="display: none;">
+                    <div class="col-md-6">
+                        <label for="status"><b>Status </b><span style="color: red;">*</span> :</label>
+                        <select class="form-control" id="status" name="status">
+                            <option value="" selected>Select Status</option>
+                            <option value="available">Available</option>
+                            <option value="not_available">Not Available</option>
+                        </select>
                     </div>
                 </div>
                 <div class="row mb-3 recurrenceDiv">

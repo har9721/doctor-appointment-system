@@ -41,49 +41,51 @@ document.addEventListener('DOMContentLoaded', function() {
                     {
                         response.forEach(doctor => {
                             const timeSlot = doctor.time_slot;
-                            const baseUrl = window.location.origin;
-                            const fileName = doctor.fileName;
-
-                            // Access the image URL
-                            const imageUrl = baseUrl + '/storage/doctorProfilePictures/'+fileName;
-
-                            let doctorCard = `
-                            <div class="col-md-6">
-                                <div class="doctor-card">
-                                    <img src="${imageUrl}" atr="${doctor.first_name}">
-                                    <div class="doctor-info">
-                                        <h4 style="color:black">Dr.${doctor.first_name}</h4>
-                                        <p>${doctor.specialtyName}</p>
-                                        <p>${doctor.gender}</p>
-                                    </div>
-                                    <div class="accordion" id="accordion${doctor.id}">
-                                        <div class="card">
-                                            <div class="card-header" id="heading${doctor.id}">
-                                                <h5 class="mb-0">
-                                                    <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapse${doctor.id}" aria-expanded="true" aria-controls="collapse${doctor.id}">
-                                                        View Available Time Slots
-                                                    </button>
-                                                </h5>
-                                            </div>
-                                            <div id="collapse${doctor.id}" class="collapse" aria-labelledby="heading${doctor.id}" data-parent="#accordion${doctor.id}">
-                                                <div class="card-body accordion-body">
-                                                    <div id="timeSlotsContainer${doctor.id}" class="time-slots-container">
-                                                    </div>
-                                                    <div class="text-center">
-                                                        <button class="book-btn" data-doctor-id="${doctor.id}">Book Appointment</button>
+                            if(timeSlot.length != 0)
+                            {
+                                const baseUrl = window.location.origin;
+                                const fileName = doctor.fileName;
+    
+                                // Access the image URL
+                                const imageUrl = baseUrl + '/storage/doctorProfilePictures/'+fileName;
+    
+                                let doctorCard = `
+                                <div class="col-md-6">
+                                    <div class="doctor-card">
+                                        <img src="${imageUrl}" atr="${doctor.first_name}">
+                                        <div class="doctor-info">
+                                            <h4 style="color:black">Dr.${doctor.first_name}</h4>
+                                            <p>${doctor.specialtyName}</p>
+                                            <p>${doctor.gender}</p>
+                                        </div>
+                                        <div class="accordion" id="accordion${doctor.id}">
+                                            <div class="card">
+                                                <div class="card-header" id="heading${doctor.id}">
+                                                    <h5 class="mb-0">
+                                                        <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapse${doctor.id}" aria-expanded="true" aria-controls="collapse${doctor.id}">
+                                                            View Available Time Slots
+                                                        </button>
+                                                    </h5>
+                                                </div>
+                                                <div id="collapse${doctor.id}" class="collapse" aria-labelledby="heading${doctor.id}" data-parent="#accordion${doctor.id}">
+                                                    <div class="card-body accordion-body">
+                                                        <div id="timeSlotsContainer${doctor.id}" class="time-slots-container">
+                                                        </div>
+                                                        <div class="text-center">
+                                                            <button class="book-btn" data-doctor-id="${doctor.id}">Book Appointment</button>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
-                            </div>`;
-
-                            $('#searchResults').append(doctorCard);
-
-                            // append time slot
-                            getTimeSlot(doctor.id,timeSlot);
-                            
+                                </div>`;
+    
+                                $('#searchResults').append(doctorCard);
+    
+                                // append time slot
+                                getTimeSlot(doctor.id,timeSlot);
+                            }
                         });
                         
                     }else{
@@ -191,7 +193,12 @@ $(document).on('click', '.book-btn',function(){
         })
         
     }else{
-        return Swal.fire('Please select a time slot.');
+        return Swal.fire({
+            title: "Error",
+            text: "Please select a time slot.",
+            icon: "error",
+            timer: 5000
+        });
     }
     
 });

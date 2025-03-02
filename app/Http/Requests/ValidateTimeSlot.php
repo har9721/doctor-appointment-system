@@ -34,7 +34,8 @@ class ValidateTimeSlot extends FormRequest
                     'startTime' => ['required','date_format:H:i',
                         Rule::unique('doctor_time_slots','start_time')->where('availableDate', $this->date)->where('start_time', $this->startTime)->where('doctor_ID', $this->doctor_ID)->ignore($this->hidden_timeslot_id)->whereNull('deletedAt'),
                     ],
-                    'endTime' => 'required|date_format:H:i|after:startTime'
+                    'endTime' => 'required|date_format:H:i|after:startTime',
+                    'status' => 'required'
                 ];
             }else
             {
