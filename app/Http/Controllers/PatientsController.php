@@ -88,7 +88,12 @@ class PatientsController extends Controller
         $date = isset($request->date) ? date('Y-m-d',strtotime($request->date)) : null;
         $city_ID = isset($request->city) ? $request->city : null;
 
-        $getDoctorDetails = Doctor::with(['timeSlot' => function($q) use($date){
+        $getDoctorDetails = Doctor::whereHas('timeSlot', function($q) use($date){
+            $q->when(!empty($date), function($query) use($date){
+                $query->where('availableDate',$date)->where('isBooked',0);
+            });
+        })
+        ->with(['timeSlot' => function($q) use($date){
             $q->when(!empty($date), function($query) use($date){
                 $query->where('availableDate',$date)->where('isBooked',0);
             });
