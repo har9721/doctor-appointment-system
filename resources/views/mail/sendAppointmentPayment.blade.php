@@ -14,9 +14,8 @@
     </ul>
     
     <a href="{{ route('appointments.completed-list') }}" style="background-color: #007bff; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Make Payment</a>
-    
-    <p>If you have any questions, contact us at harshal@gmail.com.</p>
-    <p>Thank you for choosing our clinic.</p>
+
+    <p>Thank you for using our service.</p>
     <p>Regards,</p>
     <p>Doctor Management System</p>
 </body>

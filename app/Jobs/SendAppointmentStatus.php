@@ -5,6 +5,7 @@ namespace App\Jobs;
 use App\Mail\AppointmentPaymentNotification;
 use App\Mail\AppointmentRevertMail;
 use App\Mail\AppointmentStatusMail;
+use App\Mail\sendAppointmentCancelledMail;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -34,11 +35,17 @@ class SendAppointmentStatus implements ShouldQueue
 
     public function handle()
     {
-        if($this->status == 'pending' && $this->mailData['isRescheduled'] == 0)
-            Mail::to($this->mailData['patientsEmail'])->send(new AppointmentRevertMail($this->mailData,$this->status));
-        else if($this->status != 'completed')
+        if($this->status == 'cancelled')
+        {
+            Mail::to($this->mailData['doctor_email'])->send(new sendAppointmentCancelledMail($this->mailData,$this->status));
+
             Mail::to($this->mailData['patientsEmail'])->send(new AppointmentStatusMail($this->mailData,$this->status));
-        else
+        }else if($this->status == 'pending' && $this->mailData['isRescheduled'] == 0){
+            Mail::to($this->mailData['patientsEmail'])->send(new AppointmentRevertMail($this->mailData,$this->status));
+        }else if($this->status != 'completed'){
+            Mail::to($this->mailData['patientsEmail'])->send(new AppointmentStatusMail($this->mailData,$this->status));
+        }else{
             Mail::to($this->mailData['patientsEmail'])->send(new AppointmentPaymentNotification($this->mailData));
+        }
     }
 }
