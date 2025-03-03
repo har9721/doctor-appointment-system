@@ -106,11 +106,8 @@ document.addEventListener('DOMContentLoaded', function() {
         {
             let date = new Date(info.event.start);
             let clickedDate = new Date(info.event.start);
-            console.log(clickedDate);
             
             let dayOfWeek = clickedDate.toLocaleString('en-us', { weekday: 'long' });
-            console.log(dayOfWeek);
-            
             
             if (date < new Date()) {
                 info.revert();
@@ -325,6 +322,7 @@ function editEventDetails(event)
     let startMinutes = date.getMinutes();
     let startTime = convertTimestampToTime(date);
     let status = event.event._def.extendedProps.status;
+    let showSelectedStatus = (status === 'Available') ? 'available' : 'not_available';
 
     const newDate = convertTimestampToDate(date);
 
@@ -337,7 +335,7 @@ function editEventDetails(event)
     $('.recurrenceDiv').css('display','none');
     $('#modal_title').text('Edit Doctor Availability');
     $('#statusesDiv').css('display','block');
-    $('#status').val(status);
+    $('#status').val(showSelectedStatus);
     $('#manageAvailability').modal('show');
 
     // append data to input box

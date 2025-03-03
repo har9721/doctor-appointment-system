@@ -35,17 +35,17 @@ class Handler extends ExceptionHandler
         $this->renderable(function(Throwable $exception)
         {
             if ($exception instanceof NotFoundHttpException) {
-                return response()->view('errors.404', [], 404);
+                return response()->json(['message' => $exception->getMessage(), 'status' => $exception->getStatusCode()], 405);
             }
         
             // Handle Invalid Route Method (405)
             if ($exception instanceof MethodNotAllowedHttpException) {
-                return response()->json(['error' => 'Method not allowed'], 405);
+                return response()->json(['message' => $exception->getMessage(), 'status' => $exception->getStatusCode()], 405);
             }
         
             // Handle Model Not Found Exception
             if ($exception instanceof ModelNotFoundException) {
-                return response()->view('errors.404', [], 404);
+                return response()->json(['message' => $exception->getMessage()], 404);
             }
 
             // Validation Exception

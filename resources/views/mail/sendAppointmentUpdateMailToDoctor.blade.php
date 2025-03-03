@@ -12,7 +12,6 @@
     <p><b>Date </b>: {{ $date }}</p>
     <p><b>Time </b>: {{ $time }}</p>
     <p>Please make sure to attend the appointment on time.</p>
-    <p>Thank you for using our service!</p>
     <p>Regards,</p>
     <p>Doctor Management System</p>
 </body>

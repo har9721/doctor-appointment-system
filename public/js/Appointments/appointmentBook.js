@@ -41,6 +41,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     {
                         response.forEach(doctor => {
                             const timeSlot = doctor.time_slot;
+
                             if(timeSlot.length != 0)
                             {
                                 const baseUrl = window.location.origin;
