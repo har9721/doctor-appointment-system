@@ -9,8 +9,6 @@ $(document).on('click','.payment', function(){
 
 function razorPay(order)
 {
-    console.log(order);
-    
     const options = {   
         key: razorpayKey, // Razorpay API Key
         amount: order.amount, // Amount in paise
@@ -39,7 +37,6 @@ function razorPay(order)
                 },
                 body: JSON.stringify(data) // Convert data to JSON
             }).then(response => response.json()).then(data => {
-                console.log(data);
                 
                 if (data.success) {
                     Swal.fire('Payment successful!');
