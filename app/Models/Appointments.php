@@ -28,7 +28,7 @@ class Appointments extends Model
             'createdBy' => Auth::user()->id
         ]);
 
-        return DoctorTimeSlots::updateIsBookTimeSlot($data);
+        return DoctorTimeSlots::updateIsBookTimeSlot($data,1);
     }
 
     public function doctorTimeSlot()

@@ -137,10 +137,10 @@ class DoctorTimeSlots extends Model
         );  
     }
 
-    public static function updateIsBookTimeSlot($data)
+    public static function updateIsBookTimeSlot($data, $isActive)
     {
         return DoctorTimeSlots::where('id',$data['timeSlot'])->update([
-            'isBooked' => 1,
+            'isBooked' => $isActive,
             'updatedBy' => Auth::user()->id,
             'updated_at' => now()
         ]);

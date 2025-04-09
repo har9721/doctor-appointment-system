@@ -75,18 +75,21 @@ Route::middleware('auth')->group(function(){
         ->name('appointments-history');
     });
 
-    Route::group(['prefix' => '/doctor', 'as' => 'doctor.'], function(){
+    Route::middleware(['can:isAuthorized'])->prefix('/doctor')->as('doctor.')->group(function(){
         Route::controller(DoctorController::class)->group(function(){
             Route::get('time-slot','viewTimeSlot')->name('time-slot');
             Route::get('fetch-time-slot-list','getTimeSlot')->name('getTimeSlot');
             Route::post('add-time-slot','addTimeSlot')->name('addTimeSlot');
             Route::post('delete-time-slot','deleteTimeSlot')->name('deleteTimeSlot');
             Route::post('update-time-slot','updateTimeSlot')->name('updateTimeSlot');
-            Route::get('/get-doctor-list','getAllDoctorList')->name('get-all-doctor');
             Route::get('/fetch-time-slot','fetchTimeSlotForDate')->name('fetch-time-slot');
             Route::get('/get-doctor-details','getDoctorListForEdit')->name('get-octor-details');
         });
     });
+
+    Route::prefix('/doctor')
+    ->as('doctor.')
+    ->get('/get-doctor-list',[DoctorController::class,'getAllDoctorList'])->name('get-all-doctor');
 
     Route::group(['prefix' => '/patients', 'as' => 'patients.'], function(){
         Route::controller(PatientsController::class)->group(function(){

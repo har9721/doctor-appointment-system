@@ -52,8 +52,8 @@ $(document).on('click','.appointmentButoon', function()
     const appointment_date = $(this).data('date');
     const patient_ID = $(this).data('patient_id');
     const amount = $(`#hidden_amount-${appointment_id}`).val();
-    console.log(appointment_status);
-    
+    const timeslot_ID = $(this).data('timeslot_id');
+
     // const status = (appointment_status == 'completed') ? 'confirmed' : appointment_status;
 
     if(appointment_status == 'completed' && amount == 0)
@@ -74,7 +74,7 @@ $(document).on('click','.appointmentButoon', function()
         $.ajax({
             type : "post",
             url : mark_appointments,
-            data : {'appointment_id' : appointment_id, 'status' : appointment_status,'appointment_date' : appointment_date, 'patient_ID' : patient_ID},
+            data : {'appointment_id' : appointment_id, 'status' : appointment_status,'appointment_date' : appointment_date, 'patient_ID' : patient_ID, 'timeSlot' : timeslot_ID},
             beforeSend : function(){
                 $('#confirm_button').attr('disabled',true)
                 $('#cancel_button').attr('disabled',true)
@@ -367,7 +367,7 @@ $(document).on('click','#submit', function(){
             $.ajax({
                 type : "get",
                 url : reschedule_appointment,
-                data : {'appointment_date' : appointment_date,'doctor_ID' : doctor_ID, 'appointment_id' : appointment_id, 'patient_ID' : patient_ID,'new_time_slot' : selectedTimeSlot},
+                data : {'appointment_date' : appointment_date,'doctor_ID' : doctor_ID, 'appointment_id' : appointment_id, 'patient_ID' : patient_ID,'new_time_slot' : selectedTimeSlot, 'hidden_timeslot_id' : hidden_timeslot_id},
                 beforeSend : function()
                 {
                     $('#submit').attr('disabled',true);
