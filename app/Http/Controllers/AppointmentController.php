@@ -101,6 +101,10 @@ class AppointmentController extends Controller
 
     public function getDoctorAvailableTime(AppointmentRequest $request)
     {
+        $request->validate([
+            'timeSlot' => $request->routeIs('appointments.fetch-time-slot') ? 'nullable' : 'required',
+        ]);
+
         $appointment_date = date('Y-m-d',strtotime($request->appointment_date));
         $doctor_id = $request->doctor_ID;
 

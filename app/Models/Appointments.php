@@ -98,6 +98,7 @@ class Appointments extends Model
         $appointments = Appointments::find($data['appointment_id']);
         $appointments->status = ($data['status'] == 'archived') ? 'pending' : $data['status'];
         $appointments->archived_reason = (!empty($data['reason'])) ? $data['reason'] : null;
+        $appointments->isCancel = ($data['status'] == 'cancelled') ? 1 : 0;
         $appointments->updated_at = now();
         $appointments->updatedBy = Auth::user()->id;
         
