@@ -29,7 +29,8 @@ class AppointmentRequest extends FormRequest
                 }
             ],
             'patient_ID' => 'required',
-            'reason' => 'nullable'
+            'reason' => 'nullable',
+            'timeSlot' => 'sometimes',
         ];
     }
 

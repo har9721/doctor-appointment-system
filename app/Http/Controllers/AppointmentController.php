@@ -45,6 +45,9 @@ class AppointmentController extends Controller
         {
             $updteStatus = $this->appoinments->markAppointment($request->all());
             
+            // update isbooked time slot
+            DoctorTimeSlots::updateIsBookTimeSlot($request->all(),1);
+
             // update has_payment_pending flag
             Patients::updatePaymentStatus($request['patient_ID'],0);
 
@@ -98,6 +101,10 @@ class AppointmentController extends Controller
 
     public function getDoctorAvailableTime(AppointmentRequest $request)
     {
+        $request->validate([
+            'timeSlot' => $request->routeIs('appointments.fetch-time-slot') ? 'nullable' : 'required',
+        ]);
+
         $appointment_date = date('Y-m-d',strtotime($request->appointment_date));
         $doctor_id = $request->doctor_ID;
 
@@ -115,6 +122,12 @@ class AppointmentController extends Controller
         if($request->ajax())
         {
             $markIsReschedule = Appointments::markIsRescheduleAppointment($request->all());
+
+            $request->merge([
+                'timeSlot' => $request->doctorTimeSlot_ID,
+            ]);
+
+            DoctorTimeSlots::updateIsBookTimeSlot($request->all(),0);
 
             if($markIsReschedule != null)
             {

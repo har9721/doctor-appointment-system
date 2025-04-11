@@ -10,7 +10,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Razorpay\Api\Api;
-use Razorpay\Api\Utility;
 
 class PaymentController extends Controller
 {
@@ -21,26 +20,34 @@ class PaymentController extends Controller
 
     public function __construct()
     {
-        $this->keyId = env('RAZORPAY_KEY_ID');
-        $this->secretKey = env('RAZORPAY_SECRET_KEY');
+        $this->keyId = config('services.razorpay.RAZORPAY_KEY_ID');
+        $this->secretKey = config('services.razorpay.RAZORPAY_SECRET_KEY');
         $this->api = new Api($this->keyId,$this->secretKey);
     }
 
     public function viewPaymentPage($id)
     {
-        $appointments = Appointments::find($id);
-        // $appointmentData = $appointments->load(['doctorTimeSlot','patients']);
+        try {
+            $appointments = Appointments::find($id);
+            // $appointmentData = $appointments->load(['doctorTimeSlot','patients']);
 
-        $paymentData = [
-            'receipt'         => uniqid(),
-            'amount'          => $appointments->amount * 100, // amount convert into paise (₹500)
-            'currency'        => 'INR',
-            'payment_capture' => 1
-        ];
+            $paymentData = [
+                'receipt'         => uniqid(),
+                'amount'          => $appointments->amount * 100, // amount convert into paise (₹500)
+                'currency'        => 'INR',
+                'payment_capture' => 1
+            ];
 
-        $razorPayResponse = $this->api->order->create($paymentData);
+            $razorPayResponse = $this->api->order->create($paymentData);
 
-        return $razorPayResponse->toArray();
+            return $razorPayResponse->toArray();
+
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => false,
+                'message' => $th->getMessage(),
+            ], 500);
+        }
     }
 
     public function processPayment(PaymentRequest $request)

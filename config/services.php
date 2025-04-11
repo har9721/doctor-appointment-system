@@ -31,4 +31,9 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
+    'razorpay' => [
+        "RAZORPAY_KEY_ID" => "rzp_test_Npew1mjEBTru2j",
+        "RAZORPAY_SECRET_KEY" => "oQ4D02tms1Pcjfy6eQ1EjOs0"
+    ]
+
 ];

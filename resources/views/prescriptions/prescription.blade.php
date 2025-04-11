@@ -25,6 +25,7 @@
             text-align: right;
         }
         .invoice-title {
+            text-align: center;
             font-size: 24px;
             margin-bottom: 10px;
             color: #333;
@@ -94,6 +95,10 @@
                 @endforeach
             </tbody>
         </table>
+
+        <div class="information">
+            <strong>Additional Instructions:</strong> ₹ {{ $data['instructions'] }}
+        </div>
 
         <div class="footer">
             Thank you for using our service!<br>

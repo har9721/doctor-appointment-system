@@ -90,7 +90,12 @@ document.addEventListener('DOMContentLoaded', function() {
                         });
                         
                     }else{
-                        return 'No results found.';
+                        return Swal.fire({
+                            title: "error",
+                            text: "No records found. Plese try again.",
+                            icon: "error",
+                            timer: 3000
+                        });
                     }
                 },
                 error: function(response)
@@ -416,7 +421,7 @@ function getCityList(){
     });	
 }
 
-function getSpecialtyList(){
+function getSpecialtyList(){    
     $('#speciality').empty();
     $("#speciality").append($("<option value='' disabled selected>Select Speciality</option>"));
 
@@ -484,11 +489,15 @@ function getDoctorList(speciality_id){
         data : {'speciality_id' : speciality_id},
         success : function (response){
             $('#doctor').append(`<option value=""></option`);
+
             $.each(response, function (key, val) 
             { 
-                $('#doctor').append($("<option></option>")
-                .attr("value", response[key].id)
-                .text(val.user.full_name));
+                if(val.user)
+                {
+                    $('#doctor').append($("<option></option>")
+                    .attr("value", response[key].id)
+                    .text(val.user.full_name));
+                }
             });
         }
     });

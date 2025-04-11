@@ -37,6 +37,7 @@ function razorPay(order)
                 },
                 body: JSON.stringify(data) // Convert data to JSON
             }).then(response => response.json()).then(data => {
+
                 if (data.success) {
                     Swal.fire('Payment successful!');
                     let successUrl = `${successPage}?appointment_id=${document.getElementById('appointment_id').value}`;
