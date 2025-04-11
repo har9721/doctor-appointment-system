@@ -99,7 +99,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // append values to dropdown
             appendValuesToDropdown(dropdown);
 
-            showEditAndDeleteActionModal(event);
+            showEditAndDeleteActionModal(event,0);
         },
 
         eventDrop : function(info)
@@ -140,7 +140,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 // append values to dropdown
                 appendValuesToDropdown(dropdown);
 
-                showEditAndDeleteActionModal(info);
+                showEditAndDeleteActionModal(info,1);
             }  
         },
 
@@ -284,7 +284,7 @@ submitBtn.addEventListener('click', function(){
     }
 });
 
-function showEditAndDeleteActionModal(event)
+function showEditAndDeleteActionModal(event,isRevert)
 {
     $('#actionModal').modal('show');
 
@@ -310,6 +310,12 @@ function showEditAndDeleteActionModal(event)
                 timer: 3000
             });
         }
+    });
+
+    document.getElementById('closeAction').addEventListener('click', function(){
+        $('#actionModal').modal('hide');
+
+        (isRevert === 1) ? event.revert() : '';
     });
 }
 

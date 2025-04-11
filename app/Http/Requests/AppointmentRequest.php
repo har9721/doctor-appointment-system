@@ -30,7 +30,7 @@ class AppointmentRequest extends FormRequest
             ],
             'patient_ID' => 'required',
             'reason' => 'nullable',
-            'timeSlot' => 'required|exists:doctor_time_slots,id',
+            'timeSlot' => 'sometimes',
         ];
     }
 

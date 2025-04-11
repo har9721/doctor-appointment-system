@@ -421,7 +421,7 @@ function getCityList(){
     });	
 }
 
-function getSpecialtyList(){
+function getSpecialtyList(){    
     $('#speciality').empty();
     $("#speciality").append($("<option value='' disabled selected>Select Speciality</option>"));
 
