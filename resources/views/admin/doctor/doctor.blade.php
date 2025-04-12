@@ -28,8 +28,8 @@
                             <th>Speciality</th>
                             <th>License Number</th>
                             <th>Experience</th>
-                            <th>Edit</th>
-                            <th>Delete</th>
+                            <th>TimeSlot</th>
+                            <th>Action</th>
                         </tr>
                     </thead>
                     <tbody class="text-center">
@@ -46,6 +46,8 @@
 <script>
     let getDoctorList = "{{ route('admin.doctor-list') }}";
     let deleteDoctor = "{{ route('admin.deleteDoctor') }}";
+    let sendMail = "{{ route('admin.send-time-slot-mail',':id') }}";
+    const csrfToken = "{{ csrf_token() }}";
 </script>
 <script src="{{ asset('js/Doctor/doctor.js') }}"></script>
 @endpush

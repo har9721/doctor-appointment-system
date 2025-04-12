@@ -20,8 +20,8 @@ var table = $('#doctorList').DataTable({
         {data: 'specialty', name:'specialty',"sortable": true, "searchable": true},
         {data: 'licenseNumber', name:'licenseNumber',"sortable": true, "searchable": true},
         {data: 'experience', name:'experience',"sortable": true, "searchable": true},
-        {data: 'edit', name: 'action', orderable: false, searchable: false},
-        {data: 'delete', name: 'delete', orderable: false, searchable: false},
+        {data: 'timeSlot', name:'timeSlot',"sortable": true, "searchable": true},
+        {data: 'action', name: 'action', orderable: false, searchable: false}
     ],
 });
 
@@ -86,3 +86,53 @@ $(document).on('click','.deleteDoctor', function(){
         }
     });
 });
+
+$(document).on('click','.sendMail', function(){
+    let id = $(this).data('id');
+
+    let finalRoute = sendMail.replace(':id', id);
+
+    Swal.fire({
+        title: "Are you sure?",
+        text: "You really want to send mail",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Yes, send it!"
+    }).then((result) => {
+        if (result.isConfirmed) {
+            $.ajax({
+                url : finalRoute,
+                type : 'post',
+                data : { 'id' : id, '_token' : csrfToken},
+                beforeSend : function(){
+                    $('sendMail').attr('disabled',true);
+                },
+                success : function(response)
+                {
+                    if(response['status'] == 'success')
+                    {
+                        Swal.fire({
+                            title : "Success",
+                            text : response['message'],
+                            icon : "success",
+                            timer : 2000
+                        });
+                    }else{
+                        Swal.fire({
+                            title : "Error",
+                            text : response['message'],
+                            icon : "error",
+                            timer : 2000
+                        })
+                    }
+                },
+                complete :  function()
+                {
+                    $('sendMail').attr('disabled',false)
+                }
+            });
+        }
+    });
+})

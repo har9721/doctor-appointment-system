@@ -32,11 +32,11 @@ Route::get('/get-state',[HomeController::class,'getState'])->name('get-state');
 Route::get('/get-gender',[HomeController::class,'getGender'])->name('get-gender');
 Route::get('/get-smoking-status',[HomeController::class,'getSmokingStatus'])->name('get-smoking-status');
 Route::get('/get-alcohol-status',[HomeController::class,'getAlcoholStatus'])->name('get-alcohol-status');
-Route::get('get-specialty',[DoctorController::class,'fetchSpecialtyList'])->name('specialtyList');
 
 Route::middleware('auth')->group(function(){
 
     Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+    Route::get('get-specialty',[DoctorController::class,'fetchSpecialtyList'])->name('specialtyList');
 
     Route::middleware(['can:isAuthorized'])->prefix('/admin')->as('admin.')->group(function(){
         Route::controller(PatientsController::class)->group(function(){
@@ -66,6 +66,7 @@ Route::middleware('auth')->group(function(){
             Route::post('/update-doctor-details','doctorUpdate')->name('doctorUpdate');
             Route::post('/delete-doctor','deleteDoctor')->name('deleteDoctor');
             Route::get('/edit-doctor-details','getEditForm')->name('editDoctor');
+            Route::post('/send-time-slot-mail/{doctor}','sendTimeSlotMail')->name('send-time-slot-mail');
         });
     });
 
