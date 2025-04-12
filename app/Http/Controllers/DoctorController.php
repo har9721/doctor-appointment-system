@@ -6,6 +6,7 @@ use App\Http\Requests\DoctorRegistration;
 use App\Http\Requests\SpecialtyRequest;
 use App\Http\Requests\SpeialtyRequest;
 use App\Http\Requests\ValidateTimeSlot;
+use App\Jobs\SendDoctorMail;
 use App\Models\city;
 use App\Models\Doctor;
 use App\Models\DoctorTimeSlots;
@@ -61,7 +62,20 @@ class DoctorController extends Controller
 
     public function fetchAllDoctorList(Request $request)
     {
-        $getDoctorList = Doctor::with(['user.city','user.gender','specialty'])->where('isActive',1)->latest()->get(['id','user_ID','specialty_ID','licenseNumber','experience','isActive'])->toArray();
+        $getDoctorList = Doctor::with([
+            'user.city',
+            'user.gender',
+            'specialty'
+        ])
+        ->withCount(['timeSlot' => function($query) {
+            $query->where('availableDate',date('Y-m-d'))
+            ->where('isBooked',0)
+            ->where('isDeleted',0);
+        }])
+        ->where('isActive',1)
+        ->latest()
+        ->get(['id','user_ID','specialty_ID','licenseNumber','experience','isActive'])
+        ->toArray();
 
         if($request->ajax())
         {
@@ -95,18 +109,34 @@ class DoctorController extends Controller
                 return (isset($row['specialty'])) ? $row['specialty']['specialtyName'] : null;
             })
 
-            ->editColumn('edit', function($row){
-                return '<a href="'.route('admin.editDoctorDetails',['doctor' => $row['id']]).'"><button name="edit" id="edit" class="editDoctorDetails mr-2" data-toggle="tooltip" data-id = "'.$row['id'].'" data-placement="bottom" title="Edit">
+            ->editColumn('action', function($row){
+                $edit = '<div class="d-flex justify-space-between"><a href="'.route('admin.editDoctorDetails',['doctor' => $row['id']]).'">
+                <button name="edit" id="edit" class="editDoctorDetails mr-2" data-toggle="tooltip" data-id = "'.$row['id'].'" data-placement="bottom" title="Edit">
                 <i class="fas fa-edit"  aria-hidden="true"></i>
-                </button></a>';
-            })
-            ->editColumn('delete', function($row){
-                return '<button name="delete" id="delete" class="mr-2 deleteDoctor" data-toggle="tooltip" data-id = "'.$row['id'].'" data-user_ID="'.$row['user_ID'].'" data-placement="bottom" title="Delete">
+                </button></a>
+                
+                <button name="delete" id="delete" class="mr-2 deleteDoctor" data-toggle="tooltip" data-id = "'.$row['id'].'" data-user_ID="'.$row['user_ID'].'" data-placement="bottom" title="Delete">
                 <i class="fas fa-trash"  aria-hidden="true"></i>
                 </button>';
-            })
 
-            ->rawColumns(['edit','delete'])
+                $action = (isset($row['time_slot_count']) && $row['time_slot_count'] == 0) ? '' : '</div>';
+
+                $sendMail = (isset($row['time_slot_count']) && $row['time_slot_count'] == 0) ? 
+                '<button name="send_mail" id="send_mail" class="mr-2 sendMail btn btn-sm border text-white bg-dark" data-toggle="tooltip" data-id = "'.$row['id'].'" data-placement="bottom" title="Send Time Slot Mail">
+                    <i class="fa fa-envelope" aria-hidden="true"></i>
+                </button></div>' : '';
+
+                return $edit.$action.$sendMail;
+            })
+            ->editColumn('timeSlot', function($row){
+                return (isset($row['time_slot_count'])) ? 
+                    ($row['time_slot_count'] != 0 ?
+                        '<label class="badge bg-warning text-white">'.ucfirst('Yes').'</label><br/>['. $row['time_slot_count'].']' : 
+                        '<label class="badge bg-danger text-white">'.ucfirst('No').'</label>'
+                    )
+                : 0;
+            })
+            ->rawColumns(['action','timeSlot'])
             ->make(true);
         }
     }   
@@ -402,5 +432,29 @@ class DoctorController extends Controller
             ->first(); 
 
         return response()->json($getDoctorDetails);
+    }
+
+    public function sendTimeSlotMail(Doctor $doctor)
+    {
+        try {
+            if(!empty($doctor->user_ID))
+            {
+                $getDoctorDetails = User::getUserInfo($doctor->user_ID);
+
+                dispatch(new SendDoctorMail($getDoctorDetails->toArray(),'controller'));
+
+                return response()
+                    ->json([
+                        'status' => 'success',
+                        'message' => 'Mail sent successfully.'
+                    ]);
+            }
+        } catch (\Throwable $th) {
+            return response()
+                ->json([
+                    'status' => 'error',
+                    'message' => $th->getMessage()
+                ]);
+        }
     }
 }
