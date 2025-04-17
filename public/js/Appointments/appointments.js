@@ -246,10 +246,15 @@ $(document).on('click','.rescheduleAppointment', function()
                         {
                             var slot = `<div class="time-slot mr-1" style="background-color:black;color:white" title="booked slot" onclick="clickOnTimeSlot(this)" data-time_slot_id ="${response.bookedSlot.doctor_time_slot.id}">${response.bookedSlot.doctor_time_slot.time}</div>`;
                         }else{
-                            var slot = `<div class="time-slot mr-1" title="available time slot" onclick="clickOnTimeSlot(this)" data-time_slot_id ="${element.id}">${element.time}</div>`;
+                            var slot = `<div class="time-slot mr-1" title="available time slot" onclick="clickOnTimeSlot(this)" data-time_slot_id ="${element.id}" id="time-slot_reschedule-${element.id}">${element.time}</div>`;
                         }
 
                         $(`#timeSlotDiv`).append(slot);
+
+                        if(element.isBooked == 1)
+                        {
+                            $(`#time-slot_reschedule-${element.id}`).css('backgroundColor','yellow').css('color','black').css('cursor','not-allowed').attr('disabled',true).removeAttr('onclick').attr('title','This time slot is already booked.');
+                        }
                     }
                 });
 
@@ -303,11 +308,24 @@ $(document).off('change', '#appointment_date').on('change','#appointment_date', 
 
             if(response != null)
             {
-                response.time_slot.forEach(element => {
-                    const slot = `<div class="time-slot mr-1" onclick="clickOnTimeSlot(this)" data-time_slot_id ="${element.id}">${element.time}</div>`;
+                if(response.time_slot.length == 0)
+                {
+                    const text = `<div class="mr-1" style="text-align:center"><h4>No slot available....</h4></div>`;
     
-                    $(`#timeSlotDiv`).append(slot);
-                });
+                    $(`#timeSlotDiv`).append(text);
+                }else
+                {
+                    response.time_slot.forEach(element => {
+                        const slot = `<div class="time-slot mr-1" onclick="clickOnTimeSlot(this)" data-time_slot_id ="${element.id}" id="time-slot-reshedule-search-${element.id}">${element.time}</div>`;
+        
+                        $(`#timeSlotDiv`).append(slot);
+    
+                        if(element.isBooked == 1)
+                        {
+                            $(`#time-slot-reshedule-search-${element.id}`).css('backgroundColor','yellow').css('color','black').css('cursor','not-allowed').attr('disabled',true).removeAttr('onclick').attr('title','This time slot is already booked.');
+                        }
+                    });
+                }
             }else{
                 Swal.fire({
                     title: "Error",
@@ -542,15 +560,21 @@ $(document).on('click','.appointmentEditButton', function(){
                         response.availableTimeSlot.forEach(element => {
                             
                             if(element)
-                            {
-                                // if(element.id == response.bookedSlot.doctorTimeSlot_ID)
-                                // {
-                                //     element.classList.add('selected');
-                                // }
-
-                                const available_time_slot = `<div class="time-slot mr-1" style="background-color=black" onclick="clickOnTimeSlot(this)" data-time_slot_id ="${element.id}">${element.time}</div>`;
+                            {   
+                                const available_time_slot = `<div class="time-slot mr-1" onclick="clickOnTimeSlot(this)" data-time_slot_id ="${element.id}" id="time-slot_edit-${element.id}" >${element.time}</div>`;
 
                                 $(`#timeSlotDivForEdit`).append(available_time_slot);
+
+                                if(element.isBooked == 1)
+                                {
+                                    $(`#time-slot_edit-${element.id}`).css('backgroundColor','yellow').css('color','black').css('cursor','not-allowed').attr('disabled',true).removeAttr('onclick').attr('title','This time slot is already booked.');
+                                }
+
+                                if(element.id == response.bookedSlot.doctorTimeSlot_ID)
+                                {
+                                    $(`#time-slot_edit-${element.id}`).removeAttr('style');
+                                    $(`#time-slot_edit-${element.id}`).css('background-color','black').css('color','white').attr('title','Booked slot');
+                                }
                             }
                         });
                     }
@@ -774,9 +798,14 @@ $(document).off('click', '#searchForTimeslot').on('click','#searchForTimeslot',f
                     response.time_slot.forEach(element => {
                         if(element)
                         {
-                            const available_time_slot = `<div class="time-slot mr-1" onclick="clickOnTimeSlot(this)" data-time_slot_id ="${element.id}">${element.time}</div>`;
+                            const available_time_slot = `<div class="time-slot mr-1" onclick="clickOnTimeSlot(this)" data-time_slot_id ="${element.id}" id="time_slot_search-${element.id}" title="">${element.time}</div>`;
     
                             $(`#timeSlotDivForEdit`).append(available_time_slot);
+
+                            if(element.isBooked == 1)
+                            {
+                                $(`#time_slot_search-${element.id}`).css('backgroundColor','yellow').css('color','black').css('cursor','not-allowed').attr('disabled',true).removeAttr('onclick').attr('title','This time slot is already booked.');
+                            }
                         }
                     });
                 }else{

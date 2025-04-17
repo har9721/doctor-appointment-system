@@ -128,9 +128,14 @@ function getTimeSlot(doctorID,timeSlot)
     selectedTimeSlot = null;
 
     timeSlot.forEach(element => {
-        const slot = `<div class="time-slot mr-1" onclick="clickOnTimeSlot(this)" data-time_slot_id ="${element.id}">${element.time}</div>`;
+        const slot = `<div class="time-slot mr-1" onclick="clickOnTimeSlot(this)" data-time_slot_id ="${element.id}" id="time-slot-${element.id}">${element.time}</div>`;
 
         $(`#timeSlotsContainer${doctorID}`).append(slot);
+
+        if(element.isBooked == 1)
+        {
+            $(`#time-slot-${element.id}`).css('backgroundColor','yellow').css('color','black').css('cursor','not-allowed').attr('disabled',true).removeAttr('onclick');
+        }
     });
 }
 

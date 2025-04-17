@@ -21,10 +21,15 @@ class AppointmentRequest extends FormRequest
                 function($attributes,$value,$fail)
                 {
                     $currentDate = Carbon::now()->format('d-m-Y');
+                    $appointmentDate = Carbon::parse($value);
 
-                    if($value >= $currentDate && $this->status === 'completed')
+                    if($appointmentDate->gte($currentDate) && in_array($this->status, ['completed','confirmed']))
                     {
                         $fail("The appointment cannot be marked as complete before the scheduled appointment date.");
+                    }
+                    else if($appointmentDate->lte($currentDate) && in_array($this->status, ['completed','confirmed']))
+                    {
+                        $fail("You cannot confirm an appointment scheduled in the past.");
                     }
                 }
             ],
