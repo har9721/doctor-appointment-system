@@ -153,6 +153,8 @@ $(document).on('click','.prescription_summary', function(){
                 $('#prescriptions_details tbody.details').append(details);
             });
 
+            $('#additional_instructions').text(response.instructions  ? response.instructions : 'No additional instructions provided.');
+
             $('#prescriptionSummaryModal').modal('show');
         },
         error: function () {

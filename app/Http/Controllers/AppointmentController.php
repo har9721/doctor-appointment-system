@@ -46,7 +46,10 @@ class AppointmentController extends Controller
             $updteStatus = $this->appoinments->markAppointment($request->all());
             
             // update isbooked time slot
-            DoctorTimeSlots::updateIsBookTimeSlot($request->all(),1);
+            if($request['status'] != 'archived')
+            {
+                DoctorTimeSlots::updateIsBookTimeSlot($request->all(),1);
+            }
 
             // update has_payment_pending flag
             Patients::updatePaymentStatus($request['patient_ID'],0);
@@ -85,8 +88,9 @@ class AppointmentController extends Controller
             $availableTimeSlots = DoctorTimeSlots::where('doctor_ID',$doctor_id)
                                 // ->where('id','!=',$getAppointmentData->doctorTimeSlot_ID)
                                 ->where('availableDate',$appointment_date)
-                                ->where('isBooked',0)
-                                ->get(['id','doctor_ID','start_time','end_time']);
+                                // ->where('isBooked',0)
+                                ->orderBy('start_time','asc')
+                                ->get(['id','doctor_ID','start_time','end_time','isBooked']);
             $data = [
                 'availableTimeSlot' => $availableTimeSlots,
                 'bookedSlot' => $getAppointmentData
@@ -127,7 +131,15 @@ class AppointmentController extends Controller
                 'timeSlot' => $request->doctorTimeSlot_ID,
             ]);
 
-            DoctorTimeSlots::updateIsBookTimeSlot($request->all(),0);
+            $getPreviousTimeSlotID = Appointments::getPreviousTimeSlotID($request['appointment_id']);
+
+            // update previous time slot isBooked = 0
+            if(!empty($getPreviousTimeSlotID))
+            {
+                DoctorTimeSlots::updateIsBookTimeSlot($getPreviousTimeSlotID,0);
+            }
+
+            DoctorTimeSlots::updateIsBookTimeSlot($request->all(),1);
 
             if($markIsReschedule != null)
             {
@@ -297,8 +309,18 @@ class AppointmentController extends Controller
     {
         try {
             $data = $request->validated();
+
+            $getPreviousTimeSlotID = Appointments::getPreviousTimeSlotID($data['appointment_id']);
+
+            // update previous time slot isBooked = 0
+            if(!empty($getPreviousTimeSlotID))
+            {
+                DoctorTimeSlots::updateIsBookTimeSlot($getPreviousTimeSlotID,0);
+            }
     
             $updateAppointmentsDetails = Appointments::updateAppointmentsDetails($data);
+
+            DoctorTimeSlots::updateIsBookTimeSlot($request->all(),1);
 
             if($updateAppointmentsDetails != null)
             {

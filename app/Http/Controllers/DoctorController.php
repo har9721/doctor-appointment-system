@@ -427,7 +427,9 @@ class DoctorController extends Controller
                 });
             })
             ->with(['user.city','timeSlot' => function($query) use($date) {
-                $query->where('availableDate', $date);
+                $query->where('availableDate', $date)
+                // ->where('isBooked',0)
+                ->orderBy('start_time','asc');
             }])
             ->first(); 
 

@@ -97,7 +97,7 @@
         </table>
 
         <div class="information">
-            <strong>Additional Instructions:</strong> ₹ {{ $data['instructions'] }}
+            <strong>Additional Instructions:</strong> ₹ {{ $instructions }}
         </div>
 
         <div class="footer">
