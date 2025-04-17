@@ -54,7 +54,11 @@ class SendPrescriptionEmail extends Mailable
     public function attachments()
     {
         $prescription_data = $this->data['medicines'];
-        $pdf = PDF::loadView('prescriptions.prescription', ['data' => $prescription_data]);
+        $instructions = $this->data['instructions'];
+        $pdf = PDF::loadView('prescriptions.prescription', [
+            'data' => $prescription_data,
+            'instructions' => $instructions
+        ]);
 
         $filePath = 'public/Prescriptions/prescrip_' . $this->data['id'] . '.pdf';
     

@@ -96,7 +96,8 @@ class Appointments extends Model
     public function markAppointment($data)
     {
         $appointments = Appointments::find($data['appointment_id']);
-        $appointments->status = ($data['status'] == 'archived') ? 'pending' : $data['status'];
+        $appointments->status = $data['status'];
+        // $appointments->status = ($data['status'] == 'archived') ? 'pending' : $data['status'];
         $appointments->archived_reason = (!empty($data['reason'])) ? $data['reason'] : null;
         $appointments->isCancel = ($data['status'] == 'cancelled') ? 1 : 0;
         $appointments->updated_at = now();
@@ -238,5 +239,10 @@ class Appointments extends Model
     public function prescriptions()
     {
         return $this->hasOne(Prescriptions::class,'appointment_ID');    
+    }
+
+    public static function getPreviousTimeSlotID($id)
+    {
+        return Appointments::where('id',$id)->first(['doctorTimeSlot_ID as timeSlot']);
     }
 }

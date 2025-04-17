@@ -84,13 +84,18 @@ Route::middleware('auth')->group(function(){
             Route::post('delete-time-slot','deleteTimeSlot')->name('deleteTimeSlot');
             Route::post('update-time-slot','updateTimeSlot')->name('updateTimeSlot');
             Route::get('/fetch-time-slot','fetchTimeSlotForDate')->name('fetch-time-slot');
-            Route::get('/get-doctor-details','getDoctorListForEdit')->name('get-octor-details');
         });
     });
 
     Route::prefix('/doctor')
     ->as('doctor.')
-    ->get('/get-doctor-list',[DoctorController::class,'getAllDoctorList'])->name('get-all-doctor');
+    ->group(function(){
+        Route::controller(DoctorController::class)
+        ->group(function(){
+            Route::get('/get-doctor-list','getAllDoctorList')->name('get-all-doctor');
+            Route::get('/get-doctor-details','getDoctorListForEdit')->name('get-octor-details');
+        });
+    });
 
     Route::group(['prefix' => '/patients', 'as' => 'patients.'], function(){
         Route::controller(PatientsController::class)->group(function(){

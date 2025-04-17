@@ -20,7 +20,7 @@ return new class extends Migration
             $table->unsignedBigInteger('patient_ID')->nullable();
             $table->foreign('patient_ID')->references('id')->on('patients')->onDelete('cascade');
             $table->date('appointmentDate')->nullable();
-            $table->enum('status',['pending','confirmed','cancelled','completed'])->default('pending');
+            $table->enum('status',['pending','confirmed','cancelled','completed','archived'])->default('pending');
             $table->boolean('isBooked')->default('1');
             $table->boolean('isCancel')->default('0');
             $table->boolean('isActive')->default('1');

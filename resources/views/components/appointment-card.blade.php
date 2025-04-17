@@ -114,10 +114,12 @@
                 </button>
             @endif
 
-            <button class="btn btn-danger appointmentButoon" id="cancel_button" data-id="{{ $appointment->id }}" data-status="cancelled" data-date="{{ $appointment->appointmentDate }}" data-patient_ID = "{{ $appointment->patient_ID }}" data-timeslot_id = "{{ $appointment->doctorTimeSlot_ID }}"  data-timeslot_id = "{{ $appointment->doctorTimeSlot_ID }}">
-                <i class="fa-sharp fa-solid fa-rectangle-xmark"></i>
-                Cancel Appointment
-            </button>
+            @if($status !== 'canceled' && $status !== 'completed')
+                <button class="btn btn-danger appointmentButoon" id="cancel_button" data-id="{{ $appointment->id }}" data-status="cancelled" data-date="{{ $appointment->appointmentDate }}" data-patient_ID = "{{ $appointment->patient_ID }}" data-timeslot_id = "{{ $appointment->doctorTimeSlot_ID }}"  data-timeslot_id = "{{ $appointment->doctorTimeSlot_ID }}">
+                    <i class="fa-sharp fa-solid fa-rectangle-xmark"></i>
+                    Cancel Appointment
+                </button>
+            @endif
 
             @if(in_array(Auth::user()->role_ID,config('constant.admin_and_doctor_role_ids')))
                 <a href = "{{ route('admin.view-patient-history',['patients' => $appointment->patient_ID]) }}">

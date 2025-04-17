@@ -21,6 +21,12 @@
                         <tbody class="details"> 
                         </tbody>
                     </table>
+                    <div class="row mt-3">
+                        <div class="col-md-12">
+                            <b>Additional Instructions : </b>
+                            <span id="additional_instructions"></span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

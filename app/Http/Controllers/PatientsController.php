@@ -95,7 +95,9 @@ class PatientsController extends Controller
         })
         ->with(['timeSlot' => function($q) use($date){
             $q->when(!empty($date), function($query) use($date){
-                $query->where('availableDate',$date)->where('isBooked',0);
+                $query->where('availableDate',$date)
+                ->where('isBooked',0)
+                ->orderBy('start_time','asc');
             });
         }])
         ->join('mst_specialties','mst_specialties.id','doctors.specialty_ID')
