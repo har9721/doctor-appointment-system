@@ -13,8 +13,17 @@
 
 ---
 
-## 🏠 Dashboard
-<img src="Screenshots/welcomeMail.png" alt="Dashboard" width="600">
+## 🏠 Admin Dashboard
+<img src="Screenshots/Admin/adminDashboard-01.png" alt="Admin Dashboard" width="600">
+<img src="Screenshots/Admin/adminDashboard-02.png" atl="Admin Dashboard" width="600">
+
+## 🏠 Doctor Dashboard
+<img src="Screenshots/Doctor/doctorDashboard-01.png" alt="Doctor Dashboard" width="600">
+<img src="Screenshots/Doctor/doctorDashboard-02.png" alt="Doctor Dashboard" widht="600">
+
+## 🏠 Patient Dashboard
+<img src="Screenshots/Patients/patientDashboard-01.png" alt="Patient Dashboard" width="600">
+<img src="Screenshots/Patients/patientDashboard-02.png" alt="Patient Dashboard" widht="600">
 
 ---
 
