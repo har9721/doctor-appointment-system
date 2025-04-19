@@ -9,11 +9,14 @@ use App\Models\MstGender;
 use App\Models\SmokingStatus;
 use App\Models\state;
 use App\Models\User;
+use App\Traits\Home;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class HomeController extends Controller
 {
+    use Home;
+
     public function __construct()
     {
         $this->middleware('auth',['except' => ['getCity','getState','getGender','getSmokingStatus','getAlcoholStatus']]);
@@ -83,5 +86,15 @@ class HomeController extends Controller
         } catch (\Exception $e) {
             echo json_encode($e->getMessage());
         }
+    }
+
+    public function getAreaChartData()
+    {
+        return $this->getChartData();
+    }
+
+    public function getPieChartData()
+    {
+        return $this->fetchPieChartData();    
     }
 }
