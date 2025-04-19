@@ -13,7 +13,9 @@
                                 @if(Auth::user()->isDoctor() != 'Doctor')
                                     <th scope="col">Doctor</th>
                                 @endif
-                                <th scope="col">Patient</th>
+                                @if(Auth::user()->isPatients() != 'Patients')
+                                    <th scope="col">Patient</th>
+                                @endif
                                 <th scope="col">Date</th>
                                 <th scope="col">Time</th>
                                 <th scope="col">Status</th>
@@ -30,7 +32,9 @@
                                         @if(Auth::user()->isDoctor() != 'Doctor')
                                             <td>{{ $appointment->doctor_full_name }}</td>
                                         @endif
-                                        <td>{{ $appointment->patient_full_name }}</td>
+                                        @if(Auth::user()->isPatients() != 'Patients')
+                                            <td>{{ $appointment->patient_full_name }}</td>
+                                        @endif
                                         <td>{{ $appointment->appointmentDate }}</td>
                                         <td>{{ $appointment->time }}</td>
                                         <td>{{ $appointment->status }}</td>
@@ -59,7 +63,9 @@
                                 @if(Auth::user()->isDoctor() != 'Doctor')
                                     <th scope="col">Doctor</th>
                                 @endif
-                                <th scope="col">Patient</th>
+                                @if(Auth::user()->isPatients() != 'Patients')
+                                    <th scope="col">Patient</th>
+                                @endif
                                 <th scope="col">Date</th>
                                 <th scope="col">Time</th>
                                 <th scope="col">Payment</th>
@@ -76,7 +82,9 @@
                                         @if(Auth::user()->isDoctor() != 'Doctor')
                                             <td>{{ $appointment->doctor_full_name }}</td>
                                         @endif
-                                        <td>{{ $appointment->patient_full_name }}</td>
+                                        @if(Auth::user()->isPatients() != 'Patients')
+                                            <td>{{ $appointment->patient_full_name }}</td>
+                                        @endif
                                         <td>{{ $appointment->appointmentDate }}</td>
                                         <td>{{ $appointment->time }}</td>
                                         <td>{{ $appointment->payment_status }}</td>
