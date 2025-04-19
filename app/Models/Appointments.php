@@ -245,4 +245,148 @@ class Appointments extends Model
     {
         return Appointments::where('id',$id)->first(['doctorTimeSlot_ID as timeSlot']);
     }
+
+    public function getAppointmentCount($status = null, $month = null, $payment_status = null,$roleName = null)
+    {
+        return Appointments::where('isActive',1)  
+            ->when($roleName == 'Patients', function($query){
+                $getPatientID = Patients::getLoginPatientsId();
+                $query->where('patient_ID',$getPatientID->id);
+            })
+            ->when($status, function($query) use($status){
+                $query->where('status', $status);
+            })
+            ->when($month, function($query) use($month){
+                $query->whereMonth('appointmentDate', $month);
+            })
+            ->when($payment_status, function($query) use($payment_status){
+                $query->where('payment_status', $payment_status);
+            })
+            ->count(); 
+    }
+
+    public function getDoctorDashboardData($status = null, $month = null, $payment_status = null)
+    {
+        $getDoctorID = Doctor::getLoginDoctorID();
+
+        return Appointments::join(
+            'doctor_time_slots', 'doctor_time_slots.id', '=', 'appointments.doctorTimeSlot_ID'
+        )
+        ->where('doctor_time_slots.doctor_ID', $getDoctorID->id)
+        ->where('appointments.isActive', 1)
+        ->when($status, function($query) use($status){
+            $query->where('appointments.status', $status);
+        })
+        ->when($month, function($query) use($month){
+            $query->whereMonth('appointments.appointmentDate', $month);
+        })
+        ->when($payment_status, function($query) use($payment_status){
+            $query->where('appointments.payment_status', $payment_status);
+        })
+        ->count();
+    }
+
+    public static function getAppointmentsSum()
+    {
+        return Appointments::where('isActive',1)
+            ->when(Auth::user()->isDoctor(), function($query){
+                $getDoctorID = Doctor::getLoginDoctorID();
+
+                $query->join(
+                    'doctor_time_slots', 'doctor_time_slots.id', '=', 'appointments.doctorTimeSlot_ID'
+                )
+                ->where('doctor_time_slots.doctor_ID', $getDoctorID->id);
+            })
+            ->whereYear('appointmentDate', date('Y'))
+            ->groupBy(DB::raw('MONTH(appointmentDate)'))
+            ->select(DB::raw('SUM(amount) as total_amount, MONTHNAME(appointmentDate) as month'))
+            ->get();
+    }
+
+    public static function getPieChartData()
+    {
+        return Appointments::join('doctor_time_slots', 'doctor_time_slots.id', '=', 'appointments.doctorTimeSlot_ID')
+            ->join('doctors', 'doctors.id', '=', 'doctor_time_slots.doctor_ID')
+            ->join('users as d', 'd.id', '=', 'doctors.user_ID')
+            ->when(Auth::user()->isDoctor(), function($query){
+                $getDoctorID = Doctor::getLoginDoctorID();
+
+                $query->where('doctor_time_slots.doctor_ID', $getDoctorID->id);
+            })
+            ->where([
+                'appointments.isActive' => 1,
+                'doctors.isActive' => 1,
+                'doctor_time_slots.isDeleted' => 0,
+                'appointments.status' => 'completed',
+            ])
+            ->groupBy('doctor_time_slots.doctor_ID')
+            ->select(
+                DB::raw('COUNT(appointments.id) as total_appointments'),  
+                DB::raw('CONCAT_WS(" ", d.first_name, d.last_name) as name'),
+            )
+            ->get();
+    }
+
+    public static function getUpcomingAppointments($status)
+    {
+        return Appointments::join(
+            'doctor_time_slots', 'doctor_time_slots.id', '=', 'appointments.doctorTimeSlot_ID'
+        )
+        ->join('doctors', 'doctors.id', '=', 'doctor_time_slots.doctor_ID')
+        ->join('users as d', 'd.id', '=', 'doctors.user_ID')
+        ->join('patients', 'patients.id', '=', 'appointments.patient_ID')
+        ->join('users as p', 'p.id', '=', 'patients.user_ID')
+        ->when(Auth::user()->isDoctor(), function ($query){
+            $doctor_ID = Doctor::getLoginDoctorID();
+
+            $query->where('doctor_time_slots.doctor_ID', $doctor_ID->id);
+        })
+        ->when(Auth::user()->isPatients(), function($query)
+        {
+            $patients_Id = Patients::getLoginPatientsId();
+
+            $query->where('appointments.patient_ID', $patients_Id->id);
+        })
+        ->where('appointments.isActive', 1)
+        ->where('appointments.status', $status)
+        ->when($status == 'completed', function($query){
+            $query->where('appointments.appointmentDate', '<=', date('Y-m-d'));
+        }, function($query){
+            $query->where('appointments.appointmentDate', '>=', date('Y-m-d'));
+        })
+        ->where('appointments.payment_status', $status)
+        ->limit(5)
+        ->orderBy('appointments.appointmentDate','asc')
+        ->select(
+            DB::raw('CONCAT_WS(" ", p.first_name, p.last_name) as patient_full_name'),  
+            DB::raw('CONCAT_WS(" ", d.first_name, d.last_name) as doctor_full_name'),
+            DB::raw('CONCAT_WS("-", DATE_FORMAT(doctor_time_slots.start_time, "%h:%i %p"), DATE_FORMAT(doctor_time_slots.end_time, "%h:%i %p")) as time'), 
+            DB::raw('DATE_FORMAT(appointments.appointmentDate,"%d-%m-%Y") as appointmentDate'),  
+            'appointments.status','appointments.payment_status'    
+        )
+        ->get();
+    }
+
+    public static function getPatientOverview($status)
+    {
+        $getDoctorID = Doctor::getLoginDoctorID();
+
+        return  Appointments::join(
+            'doctor_time_slots', 'doctor_time_slots.id', '=', 'appointments.doctorTimeSlot_ID'
+        )
+        ->join('doctors', 'doctors.id', '=', 'doctor_time_slots.doctor_ID')
+        ->join('patients', 'patients.id', '=', 'appointments.patient_ID')
+        ->join('users as p', 'p.id', '=', 'patients.user_ID')
+        ->where('appointments.isActive', 1)
+        ->where('appointments.status', $status)
+        ->where('doctor_time_slots.doctor_ID', $getDoctorID->id)
+        ->where('patients.isActive', 1)
+        ->where('patients.isDeleted', 0)
+        ->groupBy('appointments.patient_ID')
+        ->select(
+            DB::raw('COUNT(appointments.id) as total_appointments'),
+            DB::raw('CONCAT_WS(" ", p.first_name, p.last_name) as name'),
+        )
+        ->get();
+    }
 }

@@ -173,4 +173,19 @@ class User extends Authenticatable
     {
         return User::where('id',$id)->first(['id','first_name','last_name','email','mobile']);
     }
+
+    public function isAdmin()
+    {
+        return $this->role->roleName === 'Admin';    
+    }
+
+    public function isDoctor()
+    {
+        return $this->role->roleName === 'Doctor';    
+    }
+
+    public function isPatients()
+    {
+        return $this->role->roleName === 'Patients';    
+    }
 }

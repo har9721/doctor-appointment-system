@@ -141,6 +141,10 @@ Route::middleware('auth')->group(function(){
             Route::get('download-invoice/{link?}','downloadInvoice')->name('download-invoice');
         });
     });
+
+    Route::get('/get-area-chart-data',[HomeController::class,'getAreaChartData'])->name('get-area-chart-data');
+    Route::get('/get-pie-chart-data',[HomeController::class,'getPieChartData'])->name('get-pie-chart-data');
+    Route::get('/get-bar-chart-data',[HomeController::class,'getBarChartData'])->name('get-bar-chart-data');
 });
 
 Route::post('/payment/success', [PaymentController::class, 'handlePayment'])->name('payment.success');

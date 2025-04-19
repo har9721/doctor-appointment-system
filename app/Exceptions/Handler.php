@@ -55,7 +55,7 @@ class Handler extends ExceptionHandler
         
             // Database Query Errors
             if ($exception instanceof QueryException) {
-                return response()->json(['error' => 'A database error occurred. Please try again later.'], 500);
+                return response()->json(['error' => $exception->getMessage()], 500);
             }
         });
     }
