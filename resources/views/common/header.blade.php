@@ -26,7 +26,7 @@
         <li class="nav-item dropdown no-arrow">
             <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                <span class="mr-2 d-none d-lg-inline small" style="color: black;">@if (Auth::user() != '') {{ Auth::user()->first_name. ' '. Auth::user()->last_name  }} @endif</span>
+                <span class="mr-2 d-none d-lg-inline small" style="color: black;"><b>@if (Auth::user() != '') {{ ucfirst(Auth::user()->first_name). ' '. ucfirst(Auth::user()->last_name)  }} <p>({{ Auth::user()->role->roleName }})</p> @endif</b></span>
                 <img class="img-profile rounded-circle" src="{{ asset('Images/avatar.png') }}">
             </a>
             <!-- Dropdown - User Information -->
