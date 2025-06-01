@@ -6,6 +6,7 @@ use App\Mail\AppointmentConfirmationPatient;
 use App\Mail\NewAppointmentForDoctor;
 use App\Mail\SendAppointmentUpdateMail;
 use App\Mail\SendAppointmentUpdateMailToDoctor;
+use App\Services\GoogleCalendarService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;

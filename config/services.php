@@ -32,8 +32,13 @@ return [
     ],
 
     'razorpay' => [
-        "RAZORPAY_KEY_ID" => "rzp_test_Npew1mjEBTru2j",
-        "RAZORPAY_SECRET_KEY" => "oQ4D02tms1Pcjfy6eQ1EjOs0"
+        "RAZORPAY_KEY_ID" => env('RAZORPAY_KEY_ID'),
+        "RAZORPAY_SECRET_KEY" => env('RAZORPAY_SECRET_KEY')
+    ],
+
+    'google_calendar' => [
+        'email' => 'laravel.doctor21@gmail.com',
+        'calendar_ID' => env('GOOGLE_CALENDAR_ID', 'primary'),
     ]
 
 ];

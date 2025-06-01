@@ -255,7 +255,7 @@ class AppointmentController extends Controller
                 if($row['status'] === 'pending')
                 {
                     $color = '<label class="badge bg-warning text-white">'.ucfirst($row['status']).'</label>';
-                }else if($row['status'] === 'completed')
+                }else if($row['status'] === 'completed' || $row['status'] === 'confirmed')
                 {
                     $color = '<label class="badge bg-success text-white">'.ucfirst($row['status']).'</label>';
                 }else if($row['status'] === 'cancelled')
