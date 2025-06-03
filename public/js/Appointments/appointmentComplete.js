@@ -38,6 +38,7 @@ var table = $('#completeAppointmentList').DataTable({
         {
             d.from_date = $('#from_date').val()
             d.to_date = $('#to_date').val()
+            d.status = ""
         },
         complete: function()
         {
@@ -59,6 +60,7 @@ var table = $('#completeAppointmentList').DataTable({
 function reload_table() {
     var startDate = $('#from_date').val();
     var toDate = $('#to_date').val();
+    var status = "";
     
     if (startDate != '' && toDate != '')
     {

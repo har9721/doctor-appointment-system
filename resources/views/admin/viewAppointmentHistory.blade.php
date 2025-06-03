@@ -45,6 +45,7 @@
                             <option value="completed">Completed</option>
                             <option value="cancelled">Cancelled</option>
                             <option value="payment_pending">Payment Pending</option>
+                            <option value="all">All</option>
                         </select>
                     </div>
                     <div class="col-md-3 mt-4">
