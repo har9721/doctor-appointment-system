@@ -198,7 +198,7 @@ class AppointmentController extends Controller
     {
         $from_date = (!empty($request->from_date)) ? $request->from_date : date('01-m-Y');
         $to_date = (!empty($request->to_date)) ? $request->to_date : date('d-m-Y',strtotime(date('t-m-Y')));
-        $status = (empty($request->status)) ? 'completed' : $request->status;
+        $status = (!empty($request->status)) ? $request->status : "";
 
         $completedAppointments = Appointments::getAppointmentList($from_date,$to_date,$status);
         
@@ -213,9 +213,13 @@ class AppointmentController extends Controller
                     <i class="fas fa-receipt"></i> 
                 </button>' : '' ;
 
-                $pay = ($row['payment_status'] == 'pending' && (!in_array(Auth::user()->role_ID, config('constant.admin_and_doctor_role_ids')))) ? '<button name="Pay" id="payment" class="mr-2 payment btn btn-sm success border text-white bg-dark" data-toggle="tooltip" data-id = "'.$row['id'].'" data-placement="bottom" title="Pay">
+                $pay = ($row['payment_status'] == 'pending' && ($row['status'] == 'completed' || $row['status'] == 'confirmed') && (!in_array(Auth::user()->role_ID, config('constant.admin_and_doctor_role_ids')))
+                && $row['amount'] != null
+                ) 
+                ? '<button name="Pay" id="payment" class="mr-2 payment btn btn-sm success border text-white bg-dark" data-toggle="tooltip" data-id = "'.$row['id'].'" data-placement="bottom" title="Pay">
                     <i class="fas fa-credit-card"></i> Pay Now
-                </button>' : '';
+                </button>' 
+                : '';
 
                 // $filePath = 'public/invoices/invoice_' . $row['transaction_id'] . '.pdf';
 
@@ -255,12 +259,15 @@ class AppointmentController extends Controller
                 if($row['status'] === 'pending')
                 {
                     $color = '<label class="badge bg-warning text-white">'.ucfirst($row['status']).'</label>';
-                }else if($row['status'] === 'completed')
+                }else if($row['status'] === 'completed' || $row['status'] === 'confirmed')
                 {
                     $color = '<label class="badge bg-success text-white">'.ucfirst($row['status']).'</label>';
                 }else if($row['status'] === 'cancelled')
                 {
                     $color = '<label class="badge bg-danger text-white">'.ucfirst($row['status']).'</label>';
+                }else
+                {
+                    $color = '<label class="badge .bg-secondary text-white">'.ucfirst($row['status']).'</label>';
                 }
 
                 return $color;
