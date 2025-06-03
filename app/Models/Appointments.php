@@ -62,8 +62,11 @@ class Appointments extends Model
                 date('Y-m-d', strtotime($to_date))
             ]);
         })
-        ->when($status, function($query) use($status){
-            $query->where('appointments.status',$status);
+        ->when($status === 'payment_pending', function($query) use($status){
+            $query->where('appointments.payment_status','pending');
+        }, function($query) use($status){
+            info($status);
+            ($status != 'all' && !empty($status)) ? $query->where('appointments.status',$status) : '';
         })
         ->where('appointments.isActive', 1)
         ->when(Auth::user()->role_ID == config('constant.doctor_role_ID'),function($query){
