@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
@@ -15,18 +16,21 @@ class Appointments extends Model
 
     public $timestamps = false;
 
-    protected $fillable = ['doctorTimeSlot_ID','status','patient_ID','appointmentDate','created_at','originalAppointmentDate','isRescheduled','archived_reason','createdBy'];
+    protected $fillable = ['doctorTimeSlot_ID','status','patient_ID','appointmentDate','created_at','originalAppointmentDate','appointment_reminder_time','isRescheduled','archived_reason','createdBy'];
 
-    public static function bookPatientAppointment($data)
+    public function bookPatientAppointment($data)
     {
-        Appointments::create([
-            'doctorTimeSlot_ID' => $data['timeSlot'],
-            'patient_ID' => $data['patient_ID'],
-            'appointmentDate' => date('Y-m-d',strtotime($data['date'])),
-            'originalAppointmentDate' => date('Y-m-d',strtotime($data['date'])),
-            'created_at' => now(),
-            'createdBy' => Auth::user()->id
-        ]);
+        $appointment = new Appointments();
+
+        $appointment->doctorTimeSlot_ID = $data['timeSlot'];
+        $appointment->patient_ID = $data['patient_ID'];
+        $appointment->appointmentDate = date('Y-m-d',strtotime($data['date']));
+        $appointment->originalAppointmentDate = date('Y-m-d',strtotime($data['date']));
+        $appointment->appointment_reminder_time = true;
+        $appointment->created_at = now();
+        $appointment->createdBy = Auth::user()->id;
+
+        $appointment->save();
 
         return DoctorTimeSlots::updateIsBookTimeSlot($data,1);
     }
@@ -391,5 +395,28 @@ class Appointments extends Model
             DB::raw('CONCAT_WS(" ", p.first_name, p.last_name) as name'),
         )
         ->get();
+    }
+
+    // set appointment reminder time
+    protected function appointmentReminderTime() : Attribute
+    {
+        return Attribute::make(
+            get : fn($value) => $value ? date('d-m-Y H:i:s', strtotime($value)) : null,
+            set : function($value, $attributes){
+                $time_slot = DoctorTimeSlots::find($attributes['doctorTimeSlot_ID']);
+
+                $appointmentTime = date(
+                    'Y-m-d H:i:s', 
+                    strtotime($attributes['appointmentDate'] . ' ' . $time_slot->start_time)
+                );
+
+                $reminderTime = date(
+                    'Y-m-d H:i:s',
+                    strtotime($appointmentTime . ' -1 hour')
+                );
+
+                return $reminderTime;
+            } 
+        );
     }
 }
