@@ -148,7 +148,7 @@ class DoctorTimeSlots extends Model
 
     public function appointments()
     {
-        return $this->hasOne(Appointments::class,'doctorTimeSlot_ID')->select('id','doctorTimeSlot_ID','patient_ID','appointmentDate','isBooked','created_at');
+        return $this->hasOne(Appointments::class,'doctorTimeSlot_ID')->select('id','doctorTimeSlot_ID','patient_ID','appointmentDate','isBooked','created_at','appointment_reminder_time','isReminderSent');
     }
 
     public function getStatusAttribute($value)
