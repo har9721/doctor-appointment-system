@@ -116,9 +116,6 @@ php artisan serve
 🚀 **Maintain Patient Medical History –**  
 Store and track past diagnoses, treatments, and reports.  
 
-🚀 **Automated Appointment Reminders –**  
-Patients will receive email reminders before their appointments.  
-
 🚀 **Doctor Availability Calendar –**  
 Patients can view real-time doctor availability before booking an appointment.  
 
