@@ -3,22 +3,23 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\AppointmentBooking;
-use App\Http\Requests\AppointmentRequest;
 use App\Http\Requests\RegisterUserRequest;
 use App\Models\Appointments;
 use App\Models\Doctor;
 use App\Models\Patients;
-use App\Models\Person;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Validation\Rule;
 use Yajra\DataTables\Facades\DataTables;
 
 class PatientsController extends Controller
 {
+    public $appointment_model;
+
+    public function __construct()
+    {
+        $this->appointment_model = new Appointments();
+    }
 
     public function patientView()
     {
@@ -123,7 +124,7 @@ class PatientsController extends Controller
 
         if(empty($checkForOutstandingPayments))
         {
-            $bookAppointment = Appointments::bookPatientAppointment($data);
+            $bookAppointment = $this->appointment_model->bookPatientAppointment($data);
     
             if($bookAppointment != null)
             {
