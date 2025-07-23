@@ -7,6 +7,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PatientsController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\PrescriptionsController;
+use App\Http\Controllers\ReportsController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -145,6 +146,17 @@ Route::middleware('auth')->group(function(){
     Route::get('/get-area-chart-data',[HomeController::class,'getAreaChartData'])->name('get-area-chart-data');
     Route::get('/get-pie-chart-data',[HomeController::class,'getPieChartData'])->name('get-pie-chart-data');
     Route::get('/get-bar-chart-data',[HomeController::class,'getBarChartData'])->name('get-bar-chart-data');
+
+    // reports route
+    Route::middleware(['can:isAuthorized'])->prefix('/appointments.reports')->as('appointments.reports.')
+    ->group(function(){
+        Route::controller(ReportsController::class)->group(function(){
+            Route::get('appointments-trend','viewAppointmentsTrends')->name('trends');
+            Route::get('fetch-trends-data','fetchTrendsData')->name('fetchTrendsReport');
+            Route::get('time-preference','showTimePreference')->name('time-preference');
+            Route::get('fetch-time-preference','fetchTimePreference')->name('fetchTimePreferenceReport');
+        });
+    });
 });
 
 Route::post('/payment/success', [PaymentController::class, 'handlePayment'])->name('payment.success');

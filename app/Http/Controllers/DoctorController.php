@@ -4,14 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\DoctorRegistration;
 use App\Http\Requests\SpecialtyRequest;
-use App\Http\Requests\SpeialtyRequest;
 use App\Http\Requests\ValidateTimeSlot;
 use App\Jobs\SendDoctorMail;
 use App\Models\city;
 use App\Models\Doctor;
 use App\Models\DoctorTimeSlots;
 use App\Models\Mst_specialty;
-use App\Models\Person;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
