@@ -419,4 +419,44 @@ class Appointments extends Model
             } 
         );
     }
+
+    public function tredsReportData($dates)
+    {
+        $appointmentData = Appointments::where([
+            'isActive' => 1,
+        ])
+        ->whereBetween('appointmentDate',$dates)
+        ->select(
+            DB::raw('DATE_FORMAT(appointmentDate, "%M-%Y") as showLabel'),
+            DB::raw('YEAR(appointmentDate) as year'),
+            DB::raw('MONTH(appointmentDate) as months'),
+            DB::raw('COUNT(id) as total_appointment'),
+            DB::raw('COUNT(CASE WHEN status = "Completed" THEN 1 END) As completed'),
+            DB::raw('COUNT(CASE WHEN status = "Confirmed" THEN 1 END) As confirmed'),
+            DB::raw('COUNT(CASE WHEN status = "Pending" THEN 1 END) As pending'),
+            DB::raw('COUNT(CASE WHEN status = "cancelled" THEN 1 END) As cancelled')
+        )
+        ->groupBy('months')
+        ->orderBy('year','asc')
+        ->orderBy('months','asc')
+        ->get();
+
+        return $appointmentData;
+    }
+
+    public function timePreferenceData()
+    {
+        return Appointments::join('doctor_time_slots','doctor_time_slots.id','appointments.doctorTimeSlot_ID')
+            ->where('appointments.isActive',1)
+            ->where('doctor_time_slots.isDeleted',0)    
+            ->where('doctor_time_slots.status','available')    
+            ->where('doctor_time_slots.isBooked',1)
+            ->select(
+                DB::raw('CONCAT_WS("-", DATE_FORMAT(doctor_time_slots.start_time, "%h:%i %p"), DATE_FORMAT(doctor_time_slots.end_time, "%h:%i %p")) as time'),
+                DB::raw('COUNT(doctor_time_slots.id) as timeCount')
+            )
+            ->groupBy('time')  
+            ->orderBy('timeCount','desc')
+            ->get();  
+    }
 }
