@@ -104,12 +104,12 @@
 
     @endif
 
-    <li class="nav-item">
+    <!-- <li class="nav-item">
         <a class="nav-link collapsed" href="{{ route('appointments-history',['role' => strtolower(Auth::user()->role->roleName)]) }}" active>
             <i class="fas fa-calendar"></i>
             <span>Appointments History</span>
         </a>
-    </li>
+    </li> -->
 
     <li class="nav-item">
         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo"
@@ -119,9 +119,28 @@
         </a>
         <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
             <div class="bg-white py-2 collapse-inner rounded">
-                <a class="collapse-item" href="{{ route('appointments.reports.trends') }}">Appointment Trend Report</a>
-                <a class="collapse-item" href="{{ route('appointments.reports.time-preference') }}">Booking Time Preferences</a>
-                <a class="collapse-item" href="#">Doctor Performance Report</a>
+                <!-- common reports -->
+                <a class="collapse-item" href="{{ route('appointments-history',['role' => strtolower(Auth::user()->role->roleName)]) }}">
+                    Appointments History
+                </a>
+
+                <a class="collapse-item" href="{{ route('patients.reports.view-history') }}">
+                    Patient Visit History
+                </a> 
+
+                @if(auth()->user()->role->roleName == 'Admin' || auth()->user()->role->roleName == 'Doctor')
+                    <a class="collapse-item" href="{{ route('appointments.reports.trends') }}">
+                        Appointment Trend
+                    </a>
+
+                    <a class="collapse-item" href="{{ route('appointments.reports.time-preference') }}">
+                        Booking Time Preferences
+                    </a>
+
+                    <a class="collapse-item" href="{{ route('appointments.reports.doctorPerformanceReport') }}">
+                        Doctor Performance
+                    </a>
+                @endif
             </div>
         </div>
     </li>

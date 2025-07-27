@@ -37,11 +37,7 @@ function loadData(quater)
 
 function showChart(response)
 {  
-    console.log(response);
-    
     const isEmpty = response.length
-    console.log(isEmpty);
-    
    
     let labels = (isEmpty) ? response.map(item => item.showLabel) : null;
 
