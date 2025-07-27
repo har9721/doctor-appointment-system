@@ -457,4 +457,9 @@ class DoctorController extends Controller
                 ]);
         }
     }
+
+    public function fetchDoctorList()
+    {
+        return Doctor::getDoctorList();    
+    }
 }

@@ -228,4 +228,9 @@ class PatientsController extends Controller
 
         echo json_encode($response);
     }
+
+    public function fetchPatientList(Request $request)
+    {
+        return Patients::getPatientNames();
+    }
 }

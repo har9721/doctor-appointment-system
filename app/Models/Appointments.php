@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -245,7 +246,7 @@ class Appointments extends Model
 
     public function prescriptions()
     {
-        return $this->hasOne(Prescriptions::class,'appointment_ID');    
+        return $this->hasOne(Prescriptions::class,'appointment_ID')->select('id','appointment_ID','doctor_ID','patient_ID','medicines','instructions');    
     }
 
     public static function getPreviousTimeSlotID($id)
@@ -425,6 +426,14 @@ class Appointments extends Model
         $appointmentData = Appointments::where([
             'isActive' => 1,
         ])
+        ->when(Auth::user()->isDoctor(), function($query) {
+            $doctor_ID = Doctor::getLoginDoctorID();
+
+            $query->whereHas('doctorTimeSlot', function($query) use($doctor_ID){
+                return $query->where('doctor_ID' ,$doctor_ID->id)
+                        ->where('isDeleted',0);
+            });
+        })
         ->whereBetween('appointmentDate',$dates)
         ->select(
             DB::raw('DATE_FORMAT(appointmentDate, "%M-%Y") as showLabel'),
@@ -451,6 +460,11 @@ class Appointments extends Model
             ->where('doctor_time_slots.isDeleted',0)    
             ->where('doctor_time_slots.status','available')    
             ->where('doctor_time_slots.isBooked',1)
+            ->when(auth()->user()->role->roleName === 'Doctor', function($query){
+                $doctor_ID = Doctor::getLoginDoctorID();
+
+                return $query->where('doctor_time_slots.doctor_ID',$doctor_ID->id);
+            })
             ->select(
                 DB::raw('CONCAT_WS("-", DATE_FORMAT(doctor_time_slots.start_time, "%h:%i %p"), DATE_FORMAT(doctor_time_slots.end_time, "%h:%i %p")) as time'),
                 DB::raw('COUNT(doctor_time_slots.id) as timeCount')
@@ -458,5 +472,83 @@ class Appointments extends Model
             ->groupBy('time')  
             ->orderBy('timeCount','desc')
             ->get();  
+    }
+
+    public function getAppointmentDetails($doctor_ID, $status)
+    {
+        return Appointments::with([
+                'patients.user',
+                'doctorTimeSlot'
+            ])
+            ->whereHas('doctorTimeSlot', function($query) use($doctor_ID){
+                return $query->where('doctor_ID' ,$doctor_ID)
+                        ->where('isDeleted',0);
+            })
+            ->where([
+                'isActive' => 1,
+                'status' => ucfirst($status)
+            ])
+            ->orderBy('id', 'desc')
+            ->get(['id','doctorTimeSlot_ID','patient_ID','appointmentDate']);
+    }
+
+    // protected function appointmentDate() : Attribute 
+    // {
+    //     return  Attribute::make(
+    //         get: fn($value) => Carbon::parse($value)->format('d-m-Y'),
+    //     );
+    // }
+
+    public function fetchPatientsHistory($data)
+    {
+        $doctor_ID = Doctor::getLoginDoctorID();
+
+        return Appointments::with([
+            'patients.user',
+            'prescriptions.doctor.user',
+            'doctorTimeSlot' =>  function($query)
+            {
+                return $query->where('isDeleted', 0);
+            }
+        ])
+        ->when(auth()->user()->role->roleName == 'Patients', function($query){
+            $patients_Id = Patients::getLoginPatientsId();
+
+            $query->whereHas(
+                'prescriptions', function($query) use($patients_Id){
+                    return $query->where([
+                        'patient_ID' => $patients_Id->id,
+                        'isActive' => 1
+                    ]);
+                }
+            );
+        })
+        ->when(auth()->user()->role->roleName == 'Doctor', function($query) use($doctor_ID){
+            $query->whereHas(
+                'prescriptions', function($query) use($doctor_ID){
+                    return $query->where([
+                        'doctor_ID' => $doctor_ID->id,
+                        'isActive' => 1
+                    ]);
+                }
+            );
+        })
+        ->where('isActive', 1)
+        ->when(!empty($data['from_date'] && !empty($data['to_date'])), function($query) use($data){
+            $startDate = date('Y-m-d', strtotime($data['from_date']));
+            $toDate = date('Y-m-d', strtotime($data['to_date']));
+
+            return $query->whereBetween('appointmentDate',[$startDate, $toDate]);
+        })
+        ->when(!empty($data['id']), function($query) use($data) {
+            return $query->where('patient_ID', $data['id']);
+        })
+        ->get([
+            'id',
+            'patient_ID',
+            'status',
+            'appointmentDate', 
+            'doctorTimeSlot_ID'
+        ]);
     }
 }

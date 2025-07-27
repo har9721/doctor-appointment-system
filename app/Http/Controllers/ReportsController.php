@@ -42,4 +42,38 @@ class ReportsController extends Controller
     {
         return $this->reportService->getTimeSlotPreference();
     }
+
+    public function viewDoctorPerformanceReport()
+    {
+        return view('reports.appointments.doctorPerformance');    
+    }
+
+    public function fetchDoctorPerformance(Request $request)
+    {
+        return $this->reportService->getDoctorPerformanceReport($request);
+    }
+
+    public function viewReportInDetails($id, $status, $reportKey)
+    {
+        return view('reports.appointments.appointmentDetails', compact(['id','status', 'reportKey']));
+    }
+
+    public function fetchAppointmentDetails(Request $request)
+    {
+        $id = $request->id;
+        $status = $request->status;
+        $reportKey = $request->reportKey;
+
+        return $this->reportService->getReportDetails($id,  $status,  $reportKey);
+    }
+
+    public function viewPatientsHistory()
+    {
+        return view('reports.patientHistory');
+    }
+
+    public function fetchPatientHistory(Request $request)
+    {
+        return $this->reportService->getPatientstHistory($request->only(['id','from_date','to_date']));
+    }
 }
