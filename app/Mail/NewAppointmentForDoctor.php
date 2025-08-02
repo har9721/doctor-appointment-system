@@ -47,6 +47,7 @@ class NewAppointmentForDoctor extends Mailable
                 'patientName' => $this->doctorData['patientsName'],
                 'date' => date('d-m-Y',strtotime($this->doctorData['date'])),
                 'time' => Carbon::parse($this->doctorData['time'])->format('h:i A'),
+                'appointmentNo' => $this->doctorData['appointment_no'] ?? null,
             ],
         );
     }

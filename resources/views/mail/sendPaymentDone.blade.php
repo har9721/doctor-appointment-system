@@ -5,6 +5,7 @@
     
     <h5>Appointment Details:</h5>
     <ul>
+        <li>Appointment Number : {{ $appointmentNo }} </li>
         <li>Doctor Name: Dr. {{ $doctorName }}</li>
         <li>Appointment Date: {{ $date }}</li>
         <li>Appointment Time: {{ $time }}</li>

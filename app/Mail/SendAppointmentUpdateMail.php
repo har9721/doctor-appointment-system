@@ -36,6 +36,7 @@ class SendAppointmentUpdateMail extends Mailable
                 'patientName' => $this->mailData['patientsName'],
                 'date' => date('d-m-Y',strtotime($this->mailData['date'])),
                 'time' => Carbon::parse($this->mailData['time'])->format('h:i A'),
+                'appointmentNo' => $this->mailData['appointment_no'] ?? null,
             ],
         );
     }

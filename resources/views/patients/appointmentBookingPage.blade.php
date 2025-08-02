@@ -125,6 +125,8 @@
         </div>
     </div>
 </div>
+
+<x-appointment-reason />
 @endsection
 @push('scripts')
 <script>

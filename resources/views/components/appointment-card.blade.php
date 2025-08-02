@@ -1,49 +1,43 @@
 <div class="card appointment-card mb-5">
     <div class="card-header">
-        @if(in_array(Auth::user()->role_ID,config('constant.admin_and_doctor_role_ids')))
-            <div class="text-white d-flex justify-content-between align-items-center rounded">
-                @if(Auth::user()->role_ID == config('constant.admin_role_ID'))
-                    <span style="color: white;"><b>Dr. {{ $appointment->doctor_full_name }}</b></span>
-                @else 
-                    <span class="fw-bold fs-4">Patient : {{ $appointment->patient_full_name }}</span>
-                @endif
-                <input type="hidden" id="hidden_amount-{{ $appointment->id }}" value="{{ $appointment->amount ?? 0 }}">
+        <div class="text-white d-flex justify-content-between align-items-center rounded">
+            <span style="color: white;"><b>{{ $appointment->appointment_no ?? "" }}</b></span>
+            <input type="hidden" id="hidden_amount-{{ $appointment->id }}" value="{{ $appointment->amount ?? 0 }}">
                 <span>
                     <span class="fw-bold fs-5 text-white" role="button" data-bs-toggle="modal" data-bs-target="#editAmountModal">
                         ₹  {{ $appointment->amount ?? 0 }}
                     </span>&nbsp;
 
-                    @if($status == 'confirmed')
-                        <button class="btn btn-sm btn-light ms-2 amount" data-id="{{ $appointment->id }}" title="edit amount">
-                            <i class="fas fa-edit"  aria-hidden="true"></i>
-                        </button>
+                    @if(in_array(Auth::user()->role_ID,config('constant.admin_and_doctor_role_ids')))
+                        @if($status == 'confirmed')
+                            <button class="btn btn-sm btn-light ms-2 amount" data-id="{{ $appointment->id }}" title="edit amount">
+                                <i class="fas fa-edit"  aria-hidden="true"></i>
+                            </button>
+                        @endif
                     @endif
                 </span>
-            </div>
-        @else
-            <div class="text-white d-flex justify-content-between align-items-center rounded">
-                <span style="color: white;"><b>Dr. {{ $appointment->doctor_full_name }}</b></span>
-                <input type="hidden" id="hidden_amount-{{ $appointment->id }}" value="{{ $appointment->amount ?? 0 }}">
-                <span>
-                    <span class="fw-bold fs-5 text-white" role="button">
-                        ₹  {{ $appointment->amount ?? 0 }}
-                    </span>&nbsp;
-                </span>
-            </div>
-        @endif
+        </div>
+        
     </div>
     <div class="appointment-details">
+        @if(Auth::user()->role_ID == config('constant.patients_role_ID'))
+            <p style="color: black;"><b>Doctor Name :</b> {{ $appointment->doctor_full_name }}</b></p>
+        @elseif(Auth::user()->role_ID == config('constant.doctor_role_ID'))
+            <p style="color: black;" class="fw-bold fs-4"><b>Patient Name :</b> {{ $appointment->patient_full_name }}</p>
+        @endif
+
         @if(Auth::user()->role_ID == config('constant.admin_role_ID'))
+            <p style="color: black;"><b>Doctor Name:</b> Dr. {{ $appointment->doctor_full_name }}</p>
             <p style="color: black;"><b>Patient Name:</b> {{ $appointment->patient_full_name }}</p>
         @endif
         @if(
             Auth::user()->role_ID == config('constant.admin_role_ID') || Auth::user()->role_ID == config('constant.patients_role_ID')
         )
-        <p><strong>Specialty:</strong> {{ $appointment->specialtyName }}</p>
+        <p style="color: black;"><strong>Specialty:</strong> {{ $appointment->specialtyName }}</p>
         @endif
-        <p><strong>Date:</strong> {{ $appointment->appointmentDate }}</p>
-        <p><strong>Time:</strong> {{ $appointment->time }}</p>
-        <p><strong>Status:</strong> 
+        <p style="color: black;"><strong>Date:</strong> {{ $appointment->appointmentDate }}</p>
+        <p style="color: black;"><strong>Time:</strong> {{ $appointment->time }}</p>
+        <p style="color: black;"><strong>Status:</strong> 
             @if($status == 'confirmed')
                 <span class="appointment-status status-confirmed">Confirmed</span>
             @elseif($status == 'pending')

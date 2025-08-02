@@ -17,6 +17,10 @@
             <td>{{ $partner_name }}</td>
         </tr>
         <tr>
+            <td><strong>Appointment Number:</strong></td>
+            <td>{{ $appointmentNo }}</td>
+        </tr>
+        <tr>
             <td><strong>Date:</strong></td>
             <td>{{ $appointmentDate }}</td>
         </tr>

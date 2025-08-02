@@ -11,6 +11,7 @@
     <p>You can now proceed with adding the prescription for this appointment.</p>
 
     <ul>
+        <li><strong>Appointment Number :</strong> {{ $appointmentNo }} </li>
         <li><strong>Patient Name:</strong> {{ $patientName }}</li>
         <li><strong>Appointment Date:</strong> {{ $date }}</li>
         <li><strong>Payment Status:</strong> <span style="color: green;">Paid ✅</span></li>

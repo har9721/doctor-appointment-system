@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -17,7 +16,7 @@ class Appointments extends Model
 
     public $timestamps = false;
 
-    protected $fillable = ['doctorTimeSlot_ID','status','patient_ID','appointmentDate','created_at','originalAppointmentDate','appointment_reminder_time','isRescheduled','archived_reason','createdBy'];
+    protected $fillable = ['doctorTimeSlot_ID','status','patient_ID','appointmentDate','created_at','originalAppointmentDate','appointment_reminder_time','isRescheduled','archived_reason','createdBy', 'reason', 'appointment_no'];
 
     public function bookPatientAppointment($data)
     {
@@ -30,6 +29,7 @@ class Appointments extends Model
         $appointment->appointment_reminder_time = true;
         $appointment->created_at = now();
         $appointment->createdBy = Auth::user()->id;
+        $appointment->reason = $data['reason'] ?? null;
 
         $appointment->save();
 
@@ -90,6 +90,7 @@ class Appointments extends Model
             'appointments.status',
             'appointments.created_at',
             'appointments.amount',
+            'appointments.appointment_no',
             'appointments.payment_status',
             'mst_specialties.specialtyName',
             DB::raw('CONCAT_WS(" ", p.first_name, p.last_name) as patient_full_name'),                
@@ -131,6 +132,7 @@ class Appointments extends Model
         $emailData['amount'] = $appointments->amount;
         $emailData['specialty'] = $doctorDetails ? $doctorDetails->specialtyName : null;
         $emailData['payment_status'] = $appointments->payment_status;
+        $emailData['appointment_no'] = $appointments->appointment_no;
 
         if (Auth::user()->role_ID == config('constant.doctor_role_ID') || Auth::user()->role_ID == config('constant.admin_role_ID')) {
             $appointments->load(['patients.user']);
@@ -207,7 +209,8 @@ class Appointments extends Model
                 'transaction_id' => $details->res_payment_id,
                 'paymentDate' => date('d-m-Y',strtotime($details->created_at)),
                 'amount' => $details->appointments->amount,
-                'method' =>  $details->method
+                'method' =>  $details->method,
+                'appointment_no' => $details->appointments->appointment_no
             ];
         });
 

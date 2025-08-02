@@ -15,6 +15,7 @@ document.addEventListener('DOMContentLoaded', function() {
     getPatientsList();
 
     let selectedTimeSlot = null;
+    let selectedTimeSlotText = null;
 
     $('#search').on('click', function(){
         let speciality = $('#speciality').val();
@@ -126,9 +127,10 @@ document.addEventListener('DOMContentLoaded', function() {
 function getTimeSlot(doctorID,timeSlot)
 {
     selectedTimeSlot = null;
+    selectedTimeSlotText = null;
 
     timeSlot.forEach(element => {
-        const slot = `<div class="time-slot mr-1" onclick="clickOnTimeSlot(this)" data-time_slot_id ="${element.id}" id="time-slot-${element.id}">${element.time}</div>`;
+        const slot = `<div class="time-slot mr-1" onclick="clickOnTimeSlot(this)" data-time_slot_id ="${element.id}" id="time-slot-${element.id}" data-time_slot_text ="${element.time}" >${element.time}</div>`;
 
         $(`#timeSlotsContainer${doctorID}`).append(slot);
 
@@ -142,6 +144,7 @@ function getTimeSlot(doctorID,timeSlot)
 function clickOnTimeSlot(timeSlot)
 {
     selectedTimeSlot = $(timeSlot).data('time_slot_id');
+    selectedTimeSlotText = $(timeSlot).data('time_slot_text');
 
     $('.time-slot').removeClass('selected');
 
@@ -153,55 +156,61 @@ $(document).on('click', '.book-btn',function(){
 
     if(selectedTimeSlot)
     {
-        let time_slot = selectedTimeSlot;
-        let date = $('#date').val();
-        let patient_ID = $('#patients_ID').val();
-        
-        $.ajaxSetup({
-            headers:{
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            }
-        })
-        $.ajax({
-            type : 'post',
-            url : bookingUrl,
-            data : {'timeSlot' : time_slot,'date' : date,'patient_ID' : patient_ID},
-            success : function(response)
-            {
-                if(response['status'] == 'success'){
-                    Swal.fire({
-                        title: "Success",
-                        text: response['message'],
-                        icon: "success",
-                        timer: 3000
-                    });
+        console.log('slot text', selectedTimeSlotText);
 
-                    setTimeout(function(){
-                        window.location.reload();
-                    },2000);
-                }else{    
-                    Swal.fire({
-                        title: "Error",
-                        text: response['message'],
-                        icon: "error",
-                        timer: 3000
-                    });
-                }
-            },
-            error: function(response)
-            {
-                if(response.status === 422)
-                {
-                    var errors = response.responseJSON;
-                    Swal.fire({
-                        title: "Error",
-                        text: errors.message,
-                        icon: "error",
-                        timer: 5000
-                    });
-                }
-            },
-        })
+        $('#selectedTimeSlot').html(`<strong>Time:</strong> ${selectedTimeSlotText}`);
+    
+        $('#bookModal').modal('show');
+
+        // let time_slot = selectedTimeSlot;
+        // let date = $('#date').val();
+        // let patient_ID = $('#patients_ID').val();
+        
+        // $.ajaxSetup({
+        //     headers:{
+        //         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        //     }
+        // })
+        // $.ajax({
+        //     type : 'post',
+        //     url : bookingUrl,
+        //     data : {'timeSlot' : time_slot,'date' : date,'patient_ID' : patient_ID},
+        //     success : function(response)
+        //     {
+        //         if(response['status'] == 'success'){
+        //             Swal.fire({
+        //                 title: "Success",
+        //                 text: response['message'],
+        //                 icon: "success",
+        //                 timer: 3000
+        //             });
+
+        //             setTimeout(function(){
+        //                 window.location.reload();
+        //             },2000);
+        //         }else{    
+        //             Swal.fire({
+        //                 title: "Error",
+        //                 text: response['message'],
+        //                 icon: "error",
+        //                 timer: 3000
+        //             });
+        //         }
+        //     },
+        //     error: function(response)
+        //     {
+        //         if(response.status === 422)
+        //         {
+        //             var errors = response.responseJSON;
+        //             Swal.fire({
+        //                 title: "Error",
+        //                 text: errors.message,
+        //                 icon: "error",
+        //                 timer: 5000
+        //             });
+        //         }
+        //     },
+        // })
         
     }else{
         return Swal.fire({
@@ -510,4 +519,80 @@ function getDoctorList(speciality_id){
     $("#doctor").select2({
         placeholder: "Select doctor name",
     });
+}
+
+$(document).on('click','#reasonModal', function(){
+    
+    const reason = $('#reason').val();
+    bookAppointment(selectedTimeSlot, reason);
+});
+
+function bookAppointment(selectedTimeSlot, reason)
+{
+    if(selectedTimeSlot)
+    {
+        let date = $('#date').val();
+        let patient_ID = $('#patients_ID').val();
+        
+        $.ajaxSetup({
+            headers:{
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            }
+        })
+        $.ajax({
+            type : 'post',
+            url : bookingUrl,
+            data : {'timeSlot' : selectedTimeSlot,'date' : date,'patient_ID' : patient_ID, 'reason' : reason},
+            beforeSend : function(){ 
+                $('#reasonModal').attr('disabled',true);
+            },
+            success : function(response)
+            {
+                if(response['status'] == 'success'){
+                    Swal.fire({
+                        title: "Success",
+                        text: response['message'],
+                        icon: "success",
+                        timer: 3000
+                    });
+
+                    setTimeout(function(){
+                        window.location.reload();
+                    },2000);
+                }else{    
+                    Swal.fire({
+                        title: "Error",
+                        text: response['message'],
+                        icon: "error",
+                        timer: 3000
+                    });
+                }
+            },
+            complete :function ()
+            {
+                $('#reasonModal').attr('disabled',false);
+            },
+            error: function(response)
+            {
+                if(response.status === 422)
+                {
+                    var errors = response.responseJSON;
+                    Swal.fire({
+                        title: "Error",
+                        text: errors.message,
+                        icon: "error",
+                        timer: 5000
+                    });
+                }
+            },
+        })
+        
+    }else{
+        return Swal.fire({
+            title: "Error",
+            text: "Please select a time slot.",
+            icon: "error",
+            timer: 5000
+        });
+    }
 }

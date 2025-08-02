@@ -36,7 +36,8 @@ class sendAddPrescriptionMail extends Mailable
                 'patientName' => $this->mailData['patientName'] ?? '',
                 'date' => $this->mailData['appointmentDate'] ?? '',
                 'paymentDate' => $this->mailData['paymentDate'] ?? '',
-                'prescriptionLink' => route('appointments.my-appointments')
+                'prescriptionLink' => route('appointments.my-appointments'),
+                'appointmentNo' => $this->mailData['appointment_no'] ?? null,
             ],
         );
     }
