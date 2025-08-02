@@ -199,8 +199,9 @@ class AppointmentController extends Controller
         $from_date = (!empty($request->from_date)) ? $request->from_date : date('01-m-Y');
         $to_date = (!empty($request->to_date)) ? $request->to_date : date('d-m-Y',strtotime(date('t-m-Y')));
         $status = (!empty($request->status)) ? $request->status : "";
+        $appoinmentno = $request->appointment_no ?? '';
 
-        $completedAppointments = Appointments::getAppointmentList($from_date,$to_date,$status);
+        $completedAppointments = Appointments::getAppointmentList($from_date,$to_date,$status, $appoinmentno);
         
         return DataTables::of($completedAppointments)
             ->addIndexColumn()
@@ -237,7 +238,9 @@ class AppointmentController extends Controller
 
                 if(
                     in_array(Auth::user()->role_ID, config('constant.admin_and_doctor_role_ids')) 
-                    && 
+                    &&
+                    $row['status'] == 'completed' 
+                    &&
                     $row['payment_status'] == 'pending'
                 )
                 {

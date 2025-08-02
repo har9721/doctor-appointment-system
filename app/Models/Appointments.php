@@ -51,7 +51,7 @@ class Appointments extends Model
         return date('d-m-Y',strtotime($value));
     }
 
-    public static function getAppointmentList($from_date = null,$to_date  = null,$status = null)
+    public static function getAppointmentList($from_date = null,$to_date  = null,$status = null, $appointment_no = null)
     {
         $getMyAppointments = Appointments::join('doctor_time_slots', 'doctor_time_slots.id', '=', 'appointments.doctorTimeSlot_ID')
         ->join('doctors', 'doctors.id', '=', 'doctor_time_slots.doctor_ID')
@@ -79,6 +79,9 @@ class Appointments extends Model
         })
         ->when(Auth::user()->role_ID == config('constant.patients_role_ID'),function($query){
             $query->where('patients.user_ID',Auth::user()->id);
+        })
+        ->when(!empty($appointment_no), function($query) use($appointment_no){
+            $query->where('appointments.appointment_no', 'like', '%' . $appointment_no . '%');
         })
         ->latest('appointments.created_at')
         ->get([
@@ -470,7 +473,8 @@ class Appointments extends Model
             })
             ->select(
                 DB::raw('CONCAT_WS("-", DATE_FORMAT(doctor_time_slots.start_time, "%h:%i %p"), DATE_FORMAT(doctor_time_slots.end_time, "%h:%i %p")) as time'),
-                DB::raw('COUNT(doctor_time_slots.id) as timeCount')
+                DB::raw('COUNT(doctor_time_slots.id) as timeCount'),
+                'doctor_time_slots.doctor_ID'
             )
             ->groupBy('time')  
             ->orderBy('timeCount','desc')
@@ -508,6 +512,7 @@ class Appointments extends Model
 
         return Appointments::with([
             'patients.user',
+            'paymentDetails:id,appointment_ID,res_payment_id,method,created_at',
             'prescriptions.doctor.user',
             'doctorTimeSlot' =>  function($query)
             {
@@ -551,7 +556,11 @@ class Appointments extends Model
             'patient_ID',
             'status',
             'appointmentDate', 
-            'doctorTimeSlot_ID'
+            'doctorTimeSlot_ID',
+            'reason',
+            'appointment_no',
+            'payment_status',
+            'amount'
         ]);
     }
 }

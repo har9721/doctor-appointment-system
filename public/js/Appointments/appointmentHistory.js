@@ -43,6 +43,7 @@ var table = $('#appointmentHistory').DataTable({
             d.from_date = $('#from_date').val()
             d.to_date = $('#to_date').val()
             d.status = $('#status').val()
+            d.appointment_no = $('#appointment_no').val()
         },
         complete: function()
         {
@@ -51,6 +52,7 @@ var table = $('#appointmentHistory').DataTable({
     },
     columns: [
         {data: 'DT_RowIndex', name: 'DT_RowIndex',"sortable": true, "searchable": false},
+        {data: 'appointment_no', name: 'appointment_no',"sortable": true, "searchable": false},
         {data: 'doctor_full_name', name:'doctor_full_name',"sortable": true, "searchable": true, "visible" : isHideDoctor},
         {data: 'patient_full_name', name:'patient_full_name',"sortable": true, "searchable": true, "visible" : isHidePatien},
         {data: 'appointmentDate', name:'appointmentDate',"sortable": true, "searchable": true},
@@ -126,6 +128,7 @@ $(document).on('click','.sendMail', function(){
 function reload_table() {
     var startDate = $('#from_date').val();
     var toDate = $('#to_date').val();
+    var appointment_no = $('#appointment_no').val();
     
     if (startDate != '' && toDate != '')
     {
