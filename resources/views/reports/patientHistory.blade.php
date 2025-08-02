@@ -35,8 +35,15 @@
                         </div>
                     @endif
 
-                    <div class="col-md-3 mt-4">
-                        <button type="button" onclick="reload_table()" class="btn btn-success form-group mt-2" id="search">Search</button>
+                    <div class="col-md-3">
+                        <label for="date">Appointment No : </label>
+                        <input type="text" id="appointment_no" name="appointment_no" class="form-control" placeholder="Appointment No">
+                    </div>
+
+                    <div class="col-md-12 mt-4 text-center">
+                        <button type="button" onclick="reload_table()" class="btn btn-success form-group mt-2" id="search">
+                            <i class="fas fa-search"></i> &nbsp; Search
+                        </button>
                     </div>
                 </div>
             </form>
@@ -58,11 +65,11 @@
                             @else
                                 <th>Patient Name</th>
                             @endif
-                            <th>Appointment Date</th>
-                            <th>Appointment Time</th>
+                            <th>Appointment Date & Time</th>
                             <th>Reason</th>
-                            <th>Diagnosis</th>
+                            <!-- <th>Diagnosis</th> -->
                             <th>Status</th>
+                            <th>Payment</th>
                             <th>Prescriptions</th>
                         </tr>
                     </thead>
@@ -78,6 +85,8 @@
 
 <x-view-prescription-summary />
 
+<x-view-payment-summary />
+
 @endsection
 @push('scripts')
 
@@ -85,6 +94,7 @@
     let getPatientsHistory = "{{ route('patients.reports.fetchHistory') }}";
     let fetchPrescriptionsDetails = "{{ route('appointments.prescription.get') }}";
     let getPatientList = "{{ route('get-patient-list') }}";
+    let fetchPaymentSummary = "{{ route('payments.fetch-payment-summary') }}";
 </script>
 
 <script src="{{ asset('js/Reports/patientsHistory.js') }}"></script>

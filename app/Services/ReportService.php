@@ -90,7 +90,14 @@ class ReportService
 
         return DataTables::of($data)
             ->addIndexColumn()
-            ->rawColumns([])
+            // ->editColumn('timeCount', function($row){
+            //     return '<a href="'.route('appointments.reports.viewReportInDetails', [
+            //         'id' => $row['doctor_ID'],
+            //         'status' => 'completed',
+            //         'reportKey' => 'doctor'
+            //     ]).'" title="View In Details" >'.$row['timeCount'].'</a>';
+            // })
+            ->rawColumns(['timeCount'])
             ->make(true);
     }
 
@@ -104,14 +111,14 @@ class ReportService
                 return "Dr." . $row->user->full_name ?? "N/A";
             })
             ->editColumn('completed_count', function($row){
-                return '<a href="'.route('appointments.reports.viewReportInDetails', [
+                return ($row['completed_count'] == 0) ? 0 : '<a href="'.route('appointments.reports.viewReportInDetails', [
                     'id' => $row['id'],
                     'status' => 'completed',
                     'reportKey' => 'doctor'
                 ]).'" title="View In Details" >'.$row['completed_count'].'</a>';
             })
             ->editColumn('cancelled_count', function($row){
-                return '<a href="'.route('appointments.reports.viewReportInDetails', [
+                return ($row['cancelled_count'] == 0) ? 0 : '<a href="'.route('appointments.reports.viewReportInDetails', [
                     'id' => $row['id'],
                     'status' => 'cancelled',
                     'reportKey' => 'doctor'
@@ -143,16 +150,15 @@ class ReportService
     public function getPatientstHistory($data)
     {
         $patientsHistory = $this->appointment->fetchPatientsHistory($data);
-        // dd($patientsHistory);
 
         return DataTables::of($patientsHistory)
             ->addIndexColumn()
             ->editColumn('appointmentDate', function($row){
-                return date('d-m-Y', strtotime($row['appointmentDate']));
+                return date('d-m-Y', strtotime($row['appointmentDate'])). ' ' . $row->doctorTimeSlot->time ?? 'N/A';
             })
-            ->editColumn('appointmentTime', function($row){
-                return $row->doctorTimeSlot->time ?? 'N/A';
-            })
+            // ->editColumn('appointmentTime', function($row){
+            //     return $row->doctorTimeSlot->time ?? 'N/A';
+            // })
             ->editColumn('patients_full_name', function($row){
                 return (auth()->user()->role->roleName == 'Patients') ? $row->prescriptions->doctor->user->doctor_name : $row->patients->user->patients_name;
             })
@@ -186,15 +192,29 @@ class ReportService
                 return $viewPrescription.$downloadPrescription;
             })
             ->editColumn('appointmentNo', function($row){
-                return '';
+                return $row['appointment_no'] ?? '';
             })
-            ->editColumn('diagnosis', function($row){
-                return '';
-            })
+            // ->editColumn('diagnosis', function($row){
+            //     return '';
+            // })
             ->editColumn('reason', function($row){
-                return '';
+                return $row['reason'] ?? '' ;
             })
-            ->rawColumns(['appointmentDate','appointmentTime', 'patients_full_name','prescriptions', 'status'])
+            ->editColumn('payment', function($row){
+                $viewPaymentSummay = ($row['payment_status'] == 'completed') ? '<button name="Pay" class="mr-2 btn btn-sm btn-info border text-white payment_summary"  data-toggle="tooltip" data-id = "'.$row['id'].'" data-amount = "'. $row['amount'] .'" data-placement="bottom" title="View Payment Summary"  data-bs-toggle="modal" data-bs-target="#paymentSummaryModal">
+                    <i class="fas fa-file-invoice-dollar"></i> 
+                </button>' : '' ;
+
+                $downloadInvoice = (
+                    ($row['payment_status'] == 'completed') && (!empty($row->paymentDetails->res_payment_id))) ? 
+                '<a href="'. route("payments.download-invoice",['link' => $row->paymentDetails->res_payment_id]) .'">
+                <button name="invoice" class="mr-2 btn btn-sm btn-dark border text-white download_invoice"  data-toggle="tooltip" data-placement="bottom" title="Download Payment Summary"  data-bs-toggle="modal">
+                    <i class="fas fa-download"></i> 
+                </button></a>' : '' ;
+
+                return $viewPaymentSummay.$downloadInvoice;
+            })
+            ->rawColumns(['appointmentDate', 'patients_full_name','prescriptions', 'status', 'payment'])
             ->make(true);
     }
 }

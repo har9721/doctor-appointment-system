@@ -32,9 +32,6 @@ $('#patientHistoryTable').DataTable({
     processing:true,
     serverside:true,
     Bsort: true,
-    // columnDefs: [
-    //     { orderable: true, className: 'reorder', targets: [5] },
-    // ],
     dom: 'lBfrtip',
     ajax : {
         url : getPatientsHistory,
@@ -60,10 +57,10 @@ $('#patientHistoryTable').DataTable({
         {data: 'appointmentNo', name:'appointmentNo',"sortable": true, "searchable": true},
         {data: 'patients_full_name', name:'patients_full_name',"sortable": true, "searchable": true},
         {data: 'appointmentDate', name:'appointmentDate',"sortable": true, "searchable": true},
-        {data: 'appointmentTime', name:'appointmentTime',"sortable": true, "searchable": true},
         {data: 'reason', name:'reason',"sortable": true, "searchable": true},
-        {data: 'diagnosis', name:'diagnosis',"sortable": true, "searchable": true},
+        // {data: 'diagnosis', name:'diagnosis',"sortable": true, "searchable": true},
         {data: 'status', name:'status',"sortable": true, "searchable": true},
+        {data: 'payment', name:'payment',"sortable": true, "searchable": true},
         {data: 'prescriptions', name:'prescriptions',"sortable": true, "searchable": true}
     ],
 });
@@ -144,3 +141,36 @@ function getPatientsList()
 
     $('#patient_name_list').select2();
 }
+
+$(document).on('click','.payment_summary', function(){
+    const appointment_id = $(this).data('id');
+    $('#loader').css('display','block');
+
+    $.ajax({
+        type : 'get',
+        url : fetchPaymentSummary,
+        data : {appointment_id:appointment_id},
+        success: function(response)
+        {
+            const details = `
+                <ul>
+                    <li><strong>Payment ID:</strong> ${response.res_payment_id}</li>
+                    <li><strong>Order ID:</strong> ${response.order_id}</li>
+                    <li><strong>Amount:</strong> ₹ ${response.amount}.00</li>
+                    <li><strong>Status:</strong> ${response.status}</li>
+                    <li><strong>Transaction Date:</strong> ${response.formatted_date}</li>
+                </ul>`;
+
+            $('#paymentSummaryModal .modal-body').html(details);
+            $('#paymentSummaryModal').modal('show');
+        },
+        error: function () {
+            $('#paymentSummaryModal .modal-body').html('<p>Unable to fetch details. Please try again later.</p>');
+            $('#paymentSummaryModal').modal('show');
+        },
+        complete: function(){
+            $('.payment_summary').attr('disabled',false);
+            $('#loader').css('display','none');
+        }
+    });
+});
