@@ -20,6 +20,7 @@
         <h2>Prescription Details</h2>
         
         <div class="details">
+            <p><strong>Appointment Number :</strong> {{ $appointmentNo }} </p>
             <p><strong>Patient Name:</strong> {{ $patient_name }}</p>
             <p><strong>Doctor:</strong> {{ $doctor_name }}</p>
             <p><strong>Appointment Date:</strong> {{ $appointment_date }}</p>

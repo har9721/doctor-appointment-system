@@ -47,6 +47,7 @@ class SendPrescriptionEmail extends Mailable
                 'appointment_date' => date("d-m-Y",strtotime($this->data['appointmentDate'])),
                 'medicines' => $this->data['medicines'],
                 'instructions' => $this->data['instructions'],
+                'appointmentNo' => $this->data['appointment_no'] ?? null,
             ],
         );
     }

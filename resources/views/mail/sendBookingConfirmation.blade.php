@@ -7,10 +7,23 @@
 </head>
 <body>
     <h5>Dear {{ $patientName }},</h5>
-    <p>Your appointment with Dr. {{ $name }} has been scheduled for {{ $date }} at {{ $time }}.</p>
-    <p>Please make sure to attend the appointment on time.</p>
-    <p>Thank you for using our service!</p>
-    <p>Regards,</p>
-    <p>Doctor Management System</p>
+
+    <p>Your appointment has been successfully booked.</p>
+    <ul>
+        <li><strong>Appointment Number:</strong> {{ $appointmentNumber }}</li>
+        <li><strong>Doctor:</strong> Dr. {{ $name }}</li>
+        <li><strong>Date & Time:</strong> {{ $date }} at {{ $time }}</li>
+        <li><strong>Location:</strong>Main Clinic, Health Avenue</li>
+    </ul>
+
+    <p>Please make sure to arrive 10–15 minutes early. If you have any questions or need to reschedule, feel free to contact us.</p>
+
+    <p>Thank you for choosing our services.</p>
+
+    <p>Warm regards,</p>
+
+    <p><strong>Doctor Appointment Management Team</strong></p>
+
+    <p><small>This is an automated email. Please do not reply directly.</small></p>
 </body>
 </html>

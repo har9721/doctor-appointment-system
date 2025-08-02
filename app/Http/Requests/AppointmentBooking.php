@@ -70,7 +70,8 @@ class AppointmentBooking extends FormRequest
                         }
                     }
                 ],
-                'patient_ID' => 'required'
+                'patient_ID' => 'required',
+                'reason' => 'nullable|string|max:500',
             ];
         }
     }

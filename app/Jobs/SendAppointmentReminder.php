@@ -47,7 +47,8 @@ class SendAppointmentReminder implements ShouldQueue
                     'patient_email' => $appointments->patients->user->email ?? 'N/A',
                     'doctor_email' => $appointments->doctorTimeSlot->doctor->user->email ?? 'N/A',
                     'appointment_reminder_time' => $appointments->appointment_reminder_time ?? null,
-                    'isReminderSent' => $appointments->isReminderSent ?? 0
+                    'isReminderSent' => $appointments->isReminderSent ?? 0,
+                    'appointment_no' => $appointments->appointment_no ?? null,
                 ];
             })->toArray();
 

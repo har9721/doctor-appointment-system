@@ -41,7 +41,8 @@ class sendPaymentDone extends Mailable
                 'time' => $this->mailData['time'] ?? '',
                 'transaction_id' => $this->mailData['transaction_id'] ?? '',
                 'paymentDate' => $this->mailData['paymentDate'] ?? '',
-                'amount' => $this->mailData['amount'] ?? ''
+                'amount' => $this->mailData['amount'] ?? '',
+                'appointmentNo' => $this->mailData['appointment_no'] ?? null,
             ],
         );
     }

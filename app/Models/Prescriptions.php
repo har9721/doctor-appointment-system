@@ -75,6 +75,7 @@ class Prescriptions extends Model
                     'time' => $details->appointment->doctorTimeSlot->time,
                     'medicines' => $details->medicines ?? json_decode($details->medicines,true),
                     'instructions' => $details->instructions,
+                    'appointment_no' => $details->appointment->appointment_no ?? null
                 ];
             });
 

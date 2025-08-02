@@ -139,7 +139,8 @@ class PaymentController extends Controller
             $getAppointmenDetails = Appointments::with(['patients.user','doctorTimeSlot.doctor.user'])
             ->where('id',$request->id)
             ->first(['id','patient_ID',
-                DB::raw('DATE_FORMAT(appointmentDate,"%M %d, %Y") as appointmentDate'),'amount','doctorTimeSlot_ID'
+                DB::raw('DATE_FORMAT(appointmentDate,"%M %d, %Y") as appointmentDate'),'amount','doctorTimeSlot_ID',
+                'appointment_no'
             ]);
 
             if(!empty($getAppointmenDetails))
