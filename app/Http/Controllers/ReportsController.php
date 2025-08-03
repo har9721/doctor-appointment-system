@@ -53,9 +53,9 @@ class ReportsController extends Controller
         return $this->reportService->getDoctorPerformanceReport($request);
     }
 
-    public function viewReportInDetails($id, $status, $reportKey)
+    public function viewReportInDetails($id, $status, $reportKey, $start = null, $end = null)
     {
-        return view('reports.appointments.appointmentDetails', compact(['id','status', 'reportKey']));
+        return view('reports.appointments.appointmentDetails', compact(['id','status', 'reportKey', 'start', 'end']));
     }
 
     public function fetchAppointmentDetails(Request $request)
@@ -63,8 +63,10 @@ class ReportsController extends Controller
         $id = $request->id;
         $status = $request->status;
         $reportKey = $request->reportKey;
+        $start = $request->start;
+        $end = $request->end;
 
-        return $this->reportService->getReportDetails($id,  $status,  $reportKey);
+        return $this->reportService->getReportDetails($id,  $status,  $reportKey, $start, $end);
     }
 
     public function viewPatientsHistory()

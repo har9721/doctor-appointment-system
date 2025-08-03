@@ -30,6 +30,7 @@ class Appointments extends Model
         $appointment->created_at = now();
         $appointment->createdBy = Auth::user()->id;
         $appointment->reason = $data['reason'] ?? null;
+        $appointment->isBooked = 1;
 
         $appointment->save();
 
@@ -481,7 +482,7 @@ class Appointments extends Model
             ->get();  
     }
 
-    public function getAppointmentDetails($doctor_ID, $status)
+    public function getAppointmentDetails($doctor_ID, $status, $start, $end)
     {
         return Appointments::with([
                 'patients.user',
@@ -490,6 +491,12 @@ class Appointments extends Model
             ->whereHas('doctorTimeSlot', function($query) use($doctor_ID){
                 return $query->where('doctor_ID' ,$doctor_ID)
                         ->where('isDeleted',0);
+            })
+            ->when(!empty($start) && !empty($end), function($query) use($start, $end){
+                $query->whereBetween('appointmentDate', [
+                    $start,
+                    $end
+                ]);
             })
             ->where([
                 'isActive' => 1,

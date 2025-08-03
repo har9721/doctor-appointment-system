@@ -162,7 +162,7 @@ Route::middleware('auth')->group(function(){
                     Route::get('fetch-time-preference','fetchTimePreference')->name('fetchTimePreferenceReport');
                     Route::get('doctor-performace-report','viewDoctorPerformanceReport')->name('doctorPerformanceReport');
                     Route::get('fetch-doctor-performace-report','fetchDoctorPerformance')->name('fetch-doctor-performance');
-                    Route::get('view-report-details/{id?}/{status?}/{reportKey?}','viewReportInDetails')->name('viewReportInDetails');
+                    Route::get('view-report-details/{id?}/{status?}/{reportKey?}/{start?}/{end?}','viewReportInDetails')->name('viewReportInDetails');
                     Route::get('fetch-report-details','fetchAppointmentDetails')->name('fetchAppointmentDetails');
                 });
             });

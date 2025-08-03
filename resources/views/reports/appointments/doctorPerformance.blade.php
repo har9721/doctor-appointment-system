@@ -40,8 +40,10 @@
                         <tr class="text-center">
                             <th>Sr.No</th>
                             <th>Doctor Name</th>
-                            <th>No of Appointment</th>
-                            <th>No of Cancellations</th>
+                            <th>Pending Appointment</th>
+                            <th>Completed Appointment</th>
+                            <th>Cancelled Appointment</th>
+                            <th>Revenu Generated</th>
                         </tr>
                     </thead>
                     <tbody class="text-center">

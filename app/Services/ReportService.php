@@ -103,6 +103,9 @@ class ReportService
 
     public function getDoctorPerformanceReport($request)
     {
+        $startDate = date('Y-m-d', strtotime($request->from_date));
+        $toDate = date('Y-m-d', strtotime($request->to_date));
+
         $doctorPerformanceReport = $this->doctor->getDoctorPerformance($request);
 
         return DataTables::of($doctorPerformanceReport)
@@ -110,27 +113,43 @@ class ReportService
             ->editColumn('doctor_full_name', function($row){
                 return "Dr." . $row->user->full_name ?? "N/A";
             })
-            ->editColumn('completed_count', function($row){
+            ->editColumn('sum_amount', function($row){
+                return ($row->sum_amount == 0) ? 0.00 : '₹ '. number_format($row->sum_amount, 2);
+            })
+            ->editColumn('pending_count', function($row) use($startDate, $toDate){
+                return ($row['pending_count'] == 0) ? 0 : '<a href="'.route('appointments.reports.viewReportInDetails', [
+                    'id' => $row['id'],
+                    'status' => 'pending',
+                    'reportKey' => 'doctor',
+                    'start' => $startDate,
+                    'end' => $toDate
+                ]).'" title="View In Details" >'.$row['pending_count'].'</a>';
+            })
+            ->editColumn('completed_count', function($row) use($startDate, $toDate){
                 return ($row['completed_count'] == 0) ? 0 : '<a href="'.route('appointments.reports.viewReportInDetails', [
                     'id' => $row['id'],
                     'status' => 'completed',
-                    'reportKey' => 'doctor'
+                    'reportKey' => 'doctor',
+                    'start' => $startDate,
+                    'end' => $toDate
                 ]).'" title="View In Details" >'.$row['completed_count'].'</a>';
             })
-            ->editColumn('cancelled_count', function($row){
+            ->editColumn('cancelled_count', function($row) use($startDate, $toDate){
                 return ($row['cancelled_count'] == 0) ? 0 : '<a href="'.route('appointments.reports.viewReportInDetails', [
                     'id' => $row['id'],
                     'status' => 'cancelled',
-                    'reportKey' => 'doctor'
+                    'reportKey' => 'doctor',
+                    'start' => $startDate,
+                    'end' => $toDate
                 ]).'" title="View In Details" >'.$row['cancelled_count'].'</a>';
             })
-            ->rawColumns(['completed_count','cancelled_count'])
+            ->rawColumns(['completed_count','cancelled_count', 'pending_count', 'sum_amount'])
             ->make(true);
     }
 
-    public function getReportDetails($id, $status, $reportKey)
+    public function getReportDetails($id, $status, $reportKey, $start = null, $end = null)
     {
-        $data   =   $this->appointment->getAppointmentDetails($id, $status);
+        $data   =   $this->appointment->getAppointmentDetails($id, $status, $start, $end);
 
         return DataTables::of($data)
             ->addIndexColumn()

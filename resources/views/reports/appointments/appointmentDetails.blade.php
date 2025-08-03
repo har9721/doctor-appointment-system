@@ -46,6 +46,8 @@
     let reportKey = @json($reportKey);
     let doctorPerformance = null;
     let getDoctorList = "{{ route('get-doctor-list') }}";
+    let startDate = @json($start);
+    let toDate = @json($end);
 </script>
 
 <script src="{{ asset('js/Reports/doctorPerformance.js') }}"></script>

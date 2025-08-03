@@ -75,11 +75,16 @@ class DoctorTimeSlots extends Model
         return $addOrEditTimeSlot;
     }
 
-    public static function fetchDoctorTimeSlots()
+    public static function fetchDoctorTimeSlots($start = null, $end = null)
     {
         $loginUserId = Doctor::getLoginDoctorID();
 
-        return DoctorTimeSlots::where(['doctor_ID' => $loginUserId->id, 'isDeleted' => 0])->get(['id','start_time','end_time','availableDate','status'])
+        return DoctorTimeSlots::where([
+            'doctor_ID' => $loginUserId->id, 
+            'isDeleted' => 0,
+        ])
+        ->whereBetween('availableDate', [$start, $end])
+        ->get(['id','start_time','end_time','availableDate','status', 'isBooked'])
         ->toArray();
     }
 
