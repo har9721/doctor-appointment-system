@@ -37,6 +37,7 @@ class SendPaymentPendingMail extends Mailable
                 'date' => $this->data->appointmentDate,
                 'time' => $this->data->doctorTimeSlot->time,
                 'amount' => $this->data->amount,
+                'appointmentNo' => $this->data->appointment_no ?? null,
             ]
         );
     }

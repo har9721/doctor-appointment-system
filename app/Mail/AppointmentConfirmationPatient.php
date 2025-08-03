@@ -46,6 +46,7 @@ class AppointmentConfirmationPatient extends Mailable
                 'patientName' => $this->patientsData['patientsName'],
                 'date' => date('d-m-Y',strtotime($this->patientsData['date'])),
                 'time' => Carbon::parse($this->patientsData['time'])->format('h:i A'),
+                'appointmentNumber' => $this->patientsData['appointment_no']
             ],
         );
     }

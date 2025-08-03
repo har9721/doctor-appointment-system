@@ -8,7 +8,15 @@ class IsAdminOrDoctor
 {
     public function checkIsAdminOrDoctor($user)
     {
-        if(Route::currentRouteName() == 'admin.patientsUpdate' || in_array($user->role_ID, config('constant.admin_and_doctor_role_ids')))
+        if(
+            Route::currentRouteName() == 'admin.patientsUpdate' || 
+            in_array(Route::currentRouteName(), [ 
+                'patients.reports.view-history',
+                'patients.reports.fetchHistory'
+            ]) 
+            ||
+            in_array($user->role_ID, config('constant.admin_and_doctor_role_ids'))
+        )
         {
             return true;
         }else{

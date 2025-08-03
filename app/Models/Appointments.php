@@ -16,7 +16,7 @@ class Appointments extends Model
 
     public $timestamps = false;
 
-    protected $fillable = ['doctorTimeSlot_ID','status','patient_ID','appointmentDate','created_at','originalAppointmentDate','appointment_reminder_time','isRescheduled','archived_reason','createdBy'];
+    protected $fillable = ['doctorTimeSlot_ID','status','patient_ID','appointmentDate','created_at','originalAppointmentDate','appointment_reminder_time','isRescheduled','archived_reason','createdBy', 'reason', 'appointment_no'];
 
     public function bookPatientAppointment($data)
     {
@@ -29,6 +29,8 @@ class Appointments extends Model
         $appointment->appointment_reminder_time = true;
         $appointment->created_at = now();
         $appointment->createdBy = Auth::user()->id;
+        $appointment->reason = $data['reason'] ?? null;
+        $appointment->isBooked = 1;
 
         $appointment->save();
 
@@ -50,7 +52,7 @@ class Appointments extends Model
         return date('d-m-Y',strtotime($value));
     }
 
-    public static function getAppointmentList($from_date = null,$to_date  = null,$status = null)
+    public static function getAppointmentList($from_date = null,$to_date  = null,$status = null, $appointment_no = null)
     {
         $getMyAppointments = Appointments::join('doctor_time_slots', 'doctor_time_slots.id', '=', 'appointments.doctorTimeSlot_ID')
         ->join('doctors', 'doctors.id', '=', 'doctor_time_slots.doctor_ID')
@@ -79,6 +81,9 @@ class Appointments extends Model
         ->when(Auth::user()->role_ID == config('constant.patients_role_ID'),function($query){
             $query->where('patients.user_ID',Auth::user()->id);
         })
+        ->when(!empty($appointment_no), function($query) use($appointment_no){
+            $query->where('appointments.appointment_no', 'like', '%' . $appointment_no . '%');
+        })
         ->latest('appointments.created_at')
         ->get([
             'appointments.id',
@@ -89,6 +94,7 @@ class Appointments extends Model
             'appointments.status',
             'appointments.created_at',
             'appointments.amount',
+            'appointments.appointment_no',
             'appointments.payment_status',
             'mst_specialties.specialtyName',
             DB::raw('CONCAT_WS(" ", p.first_name, p.last_name) as patient_full_name'),                
@@ -130,6 +136,7 @@ class Appointments extends Model
         $emailData['amount'] = $appointments->amount;
         $emailData['specialty'] = $doctorDetails ? $doctorDetails->specialtyName : null;
         $emailData['payment_status'] = $appointments->payment_status;
+        $emailData['appointment_no'] = $appointments->appointment_no;
 
         if (Auth::user()->role_ID == config('constant.doctor_role_ID') || Auth::user()->role_ID == config('constant.admin_role_ID')) {
             $appointments->load(['patients.user']);
@@ -206,7 +213,8 @@ class Appointments extends Model
                 'transaction_id' => $details->res_payment_id,
                 'paymentDate' => date('d-m-Y',strtotime($details->created_at)),
                 'amount' => $details->appointments->amount,
-                'method' =>  $details->method
+                'method' =>  $details->method,
+                'appointment_no' => $details->appointments->appointment_no
             ];
         });
 
@@ -245,7 +253,7 @@ class Appointments extends Model
 
     public function prescriptions()
     {
-        return $this->hasOne(Prescriptions::class,'appointment_ID');    
+        return $this->hasOne(Prescriptions::class,'appointment_ID')->select('id','appointment_ID','doctor_ID','patient_ID','medicines','instructions');    
     }
 
     public static function getPreviousTimeSlotID($id)
@@ -418,5 +426,148 @@ class Appointments extends Model
                 return $reminderTime;
             } 
         );
+    }
+
+    public function tredsReportData($dates)
+    {
+        $appointmentData = Appointments::where([
+            'isActive' => 1,
+        ])
+        ->when(Auth::user()->isDoctor(), function($query) {
+            $doctor_ID = Doctor::getLoginDoctorID();
+
+            $query->whereHas('doctorTimeSlot', function($query) use($doctor_ID){
+                return $query->where('doctor_ID' ,$doctor_ID->id)
+                        ->where('isDeleted',0);
+            });
+        })
+        ->whereBetween('appointmentDate',$dates)
+        ->select(
+            DB::raw('DATE_FORMAT(appointmentDate, "%M-%Y") as showLabel'),
+            DB::raw('YEAR(appointmentDate) as year'),
+            DB::raw('MONTH(appointmentDate) as months'),
+            DB::raw('COUNT(id) as total_appointment'),
+            DB::raw('COUNT(CASE WHEN status = "Completed" THEN 1 END) As completed'),
+            DB::raw('COUNT(CASE WHEN status = "Confirmed" THEN 1 END) As confirmed'),
+            DB::raw('COUNT(CASE WHEN status = "Pending" THEN 1 END) As pending'),
+            DB::raw('COUNT(CASE WHEN status = "cancelled" THEN 1 END) As cancelled')
+        )
+        ->groupBy('months')
+        ->orderBy('year','asc')
+        ->orderBy('months','asc')
+        ->get();
+
+        return $appointmentData;
+    }
+
+    public function timePreferenceData()
+    {
+        return Appointments::join('doctor_time_slots','doctor_time_slots.id','appointments.doctorTimeSlot_ID')
+            ->where('appointments.isActive',1)
+            ->where('doctor_time_slots.isDeleted',0)    
+            ->where('doctor_time_slots.status','available')    
+            ->where('doctor_time_slots.isBooked',1)
+            ->when(auth()->user()->role->roleName === 'Doctor', function($query){
+                $doctor_ID = Doctor::getLoginDoctorID();
+
+                return $query->where('doctor_time_slots.doctor_ID',$doctor_ID->id);
+            })
+            ->select(
+                DB::raw('CONCAT_WS("-", DATE_FORMAT(doctor_time_slots.start_time, "%h:%i %p"), DATE_FORMAT(doctor_time_slots.end_time, "%h:%i %p")) as time'),
+                DB::raw('COUNT(doctor_time_slots.id) as timeCount'),
+                'doctor_time_slots.doctor_ID'
+            )
+            ->groupBy('time')  
+            ->orderBy('timeCount','desc')
+            ->get();  
+    }
+
+    public function getAppointmentDetails($doctor_ID, $status, $start, $end)
+    {
+        return Appointments::with([
+                'patients.user',
+                'doctorTimeSlot'
+            ])
+            ->whereHas('doctorTimeSlot', function($query) use($doctor_ID){
+                return $query->where('doctor_ID' ,$doctor_ID)
+                        ->where('isDeleted',0);
+            })
+            ->when(!empty($start) && !empty($end), function($query) use($start, $end){
+                $query->whereBetween('appointmentDate', [
+                    $start,
+                    $end
+                ]);
+            })
+            ->where([
+                'isActive' => 1,
+                'status' => ucfirst($status)
+            ])
+            ->orderBy('id', 'desc')
+            ->get(['id','doctorTimeSlot_ID','patient_ID','appointmentDate']);
+    }
+
+    // protected function appointmentDate() : Attribute 
+    // {
+    //     return  Attribute::make(
+    //         get: fn($value) => Carbon::parse($value)->format('d-m-Y'),
+    //     );
+    // }
+
+    public function fetchPatientsHistory($data)
+    {
+        $doctor_ID = Doctor::getLoginDoctorID();
+
+        return Appointments::with([
+            'patients.user',
+            'paymentDetails:id,appointment_ID,res_payment_id,method,created_at',
+            'prescriptions.doctor.user',
+            'doctorTimeSlot' =>  function($query)
+            {
+                return $query->where('isDeleted', 0);
+            }
+        ])
+        ->when(auth()->user()->role->roleName == 'Patients', function($query){
+            $patients_Id = Patients::getLoginPatientsId();
+
+            $query->whereHas(
+                'prescriptions', function($query) use($patients_Id){
+                    return $query->where([
+                        'patient_ID' => $patients_Id->id,
+                        'isActive' => 1
+                    ]);
+                }
+            );
+        })
+        ->when(auth()->user()->role->roleName == 'Doctor', function($query) use($doctor_ID){
+            $query->whereHas(
+                'prescriptions', function($query) use($doctor_ID){
+                    return $query->where([
+                        'doctor_ID' => $doctor_ID->id,
+                        'isActive' => 1
+                    ]);
+                }
+            );
+        })
+        ->where('isActive', 1)
+        ->when(!empty($data['from_date'] && !empty($data['to_date'])), function($query) use($data){
+            $startDate = date('Y-m-d', strtotime($data['from_date']));
+            $toDate = date('Y-m-d', strtotime($data['to_date']));
+
+            return $query->whereBetween('appointmentDate',[$startDate, $toDate]);
+        })
+        ->when(!empty($data['id']), function($query) use($data) {
+            return $query->where('patient_ID', $data['id']);
+        })
+        ->get([
+            'id',
+            'patient_ID',
+            'status',
+            'appointmentDate', 
+            'doctorTimeSlot_ID',
+            'reason',
+            'appointment_no',
+            'payment_status',
+            'amount'
+        ]);
     }
 }

@@ -42,13 +42,18 @@
                         <select name="status" id="status" class="form-control">
                             <option value="">Select Status</option>
                             <option value="pending">Pending</option>
+                            <option value="confirmed">Confirmed</option>
                             <option value="completed">Completed</option>
                             <option value="cancelled">Cancelled</option>
                             <option value="payment_pending">Payment Pending</option>
                             <option value="all">All</option>
-                        </select>
+                        </select>   
                     </div>
-                    <div class="col-md-3 mt-4">
+                    <div class="col-md-3">
+                        <label for="date">Appointment No. </label>
+                        <input type="text" id="appointment_no" name="appointment_no" class="form-control" placeholder="Appointment No">
+                    </div>
+                    <div class="col-md-12 mt-3 text-center">
                         <button type="button" onclick="reload_table()" class="btn btn-success form-group mt-2" id="search">Search</button>
                     </div>
                 </div>
@@ -65,6 +70,7 @@
                     <thead>
                         <tr class="text-center">
                             <th>Sr.No</th>
+                            <th>Appointment No</th>
                             <th>Doctor Name</th>
                             <th>Patient Name</th>
                             <th>Date</th>

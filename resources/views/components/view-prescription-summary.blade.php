@@ -2,7 +2,9 @@
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="prescriptionSummaryModalLabel">Prescriptions Summary</h5>
+                <h5 class="modal-title font-weight-bold text-primary" id="prescriptionSummaryModalLabel">
+                    Prescriptions Summary
+                </h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
                 </button>
@@ -23,7 +25,7 @@
                     </table>
                     <div class="row mt-3">
                         <div class="col-md-12">
-                            <b>Additional Instructions : </b>
+                            <b class="font-weight-bold">Additional Instructions : </b>
                             <span id="additional_instructions"></span>
                         </div>
                     </div>

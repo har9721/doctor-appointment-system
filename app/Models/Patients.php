@@ -121,4 +121,21 @@ class Patients extends Model
     {
         return $this->hasOne(Patients::class,'patient_ID');    
     }
+
+    public static function getPatientNames()
+    {
+        return Patients::leftJoin('appointments','appointments.patient_ID','patients.id')
+            ->leftJoin('doctor_time_slots','doctor_time_slots.id','appointments.doctorTimeSlot_ID')
+            ->leftJoin('doctors','doctors.id','doctor_time_slots.doctor_ID')
+            ->leftJoin('users','users.id','patients.user_ID')
+            ->where('doctors.user_ID',Auth::user()->id)
+            ->where('patients.isActive',1)
+            ->where('users.isActive',1)
+            ->groupBy('appointments.patient_ID')
+             ->get([ 
+                'patients.id',
+                'patients.user_ID',
+                DB::raw('CONCAT_WS(" ", users.first_name, users.last_name) as patient_full_name')
+            ]);
+    }
 }

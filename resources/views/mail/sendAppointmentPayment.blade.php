@@ -6,6 +6,7 @@
     
     <h3>Appointment Details:</h3>
     <ul>
+        <li>Appointment Number: <strong>{{ $appointmentNo }}</strong></li>
         <li>Doctor's Name: Dr. {{ $doctorName }}</li>
         <li>Specialty: {{ $specialty }}</li>
         <li>Appointment Date: {{ $date }}</li>

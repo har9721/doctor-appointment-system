@@ -44,6 +44,7 @@ class SendAppointmentReminderMail extends Mailable
                 'partner_name' => ($this->role == 'doctor') ? $this->data['patient_name'] : $this->data['doctor_name'],
                 'supportEmail' => config('app.support_email'),
                 'label' => ($this->role == 'patient') ? 'Doctor' : 'Patient',
+                'appointmentNo' => $this->data['appointment_no'] ?? null,
             ]
         );
     }

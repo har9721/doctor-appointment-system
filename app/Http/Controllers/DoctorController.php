@@ -4,15 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\DoctorRegistration;
 use App\Http\Requests\SpecialtyRequest;
-use App\Http\Requests\SpeialtyRequest;
 use App\Http\Requests\ValidateTimeSlot;
 use App\Jobs\SendDoctorMail;
 use App\Models\city;
 use App\Models\Doctor;
 use App\Models\DoctorTimeSlots;
 use App\Models\Mst_specialty;
-use App\Models\Person;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -201,9 +200,12 @@ class DoctorController extends Controller
         return view('doctor.viewTimeSlot',compact('loginUserId'));    
     }
 
-    public function getTimeSlot()
+    public function getTimeSlot(Request $request)
     {
-        $fetchAllTimeSlots = DoctorTimeSlots::fetchDoctorTimeSlots();
+        $start = Carbon::parse($request->start);
+        $end = Carbon::parse($request->end);
+
+        $fetchAllTimeSlots = DoctorTimeSlots::fetchDoctorTimeSlots($start, $end);
 
         return response()->json($fetchAllTimeSlots);
     }
@@ -458,5 +460,10 @@ class DoctorController extends Controller
                     'message' => $th->getMessage()
                 ]);
         }
+    }
+
+    public function fetchDoctorList()
+    {
+        return Doctor::getDoctorList();    
     }
 }

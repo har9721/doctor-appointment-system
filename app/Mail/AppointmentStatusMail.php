@@ -42,29 +42,31 @@ class AppointmentStatusMail extends Mailable
         info($this->mailData);
         info('------------------end here-----------------------------');
 
-        if($this->status == 'confirmed')
-        {
-            info('-------------------------------inside if-----------------------------------');
-            $msg1 = "Your appointment with Dr. ".$this->mailData['doctor_name']." has been ".$this->status." for ".date('d-m-Y',strtotime($this->mailData['date']))." at ".Carbon::parse($this->mailData['time'])->format('h:i A').".";
+        $doctorName = $this->mailData['doctor_name'];
+        $patientName = $this->mailData['patientsName'];
+        $date = date('d-m-Y', strtotime($this->mailData['date']));
+        $time = Carbon::parse($this->mailData['time'])->format('h:i A');
+        $appointmentNo = $this->mailData['appointment_no'] ?? null;
+        $msg1 = '';
+        $msg2 = '';
 
+        if ($this->status === 'confirmed') {
+            info('---------------- inside confirmed ----------------');
+            $msg1 = "Your appointment with Dr. {$doctorName} has been confirmed for {$date} at {$time}.";
             $msg2 = "Kindly ensure you are available on time for your appointment.";
-        }elseif($this->status == 'cancelled')
-        {
-            info('-------------------------------inside else if-----------------------------------');
 
-            $msg1 = "Your appointment with Dr. ".$this->mailData['doctor_name']." has been ".$this->status." for ".date('d-m-Y',strtotime($this->mailData['date']))." at ".Carbon::parse($this->mailData['time'])->format('h:i A').".";
+        } elseif ($this->status === 'cancelled') {
+            info('---------------- inside cancelled ----------------');
+            $msg1 = "Your appointment with Dr. {$doctorName} has been cancelled for {$date} at {$time}.";
+            // No msg2
 
-            $msg2 = "";
-        }elseif($this->mailData['isRescheduled'] == 1)
-        {
-            info('-------------------------------inside is reschedule-----------------------------------');
-
-            $msg1 = "Your appointment with Dr. ".$this->mailData['doctor_name']." has been rescheduled for ".date('d-m-Y',strtotime($this->mailData['date']))." at ".Carbon::parse($this->mailData['time'])->format('h:i A').".";
-
+        } elseif (!empty($this->mailData['isRescheduled'])) {
+            info('---------------- inside rescheduled ----------------');
+            $msg1 = "Your appointment with Dr. {$doctorName} has been rescheduled for {$date} at {$time}.";
             $msg2 = "Kindly ensure you are available on time for your appointment.";
-        }else{
-            info('-------------------------------inside else-----------------------------------');
 
+        } else {
+            info('---------------- inside default ----------------');
             $msg1 = '';
             $msg2 = '';
         }
@@ -72,12 +74,13 @@ class AppointmentStatusMail extends Mailable
         return new Content(
             view: 'mail.sendApointmentStatus',
             with: [
-                'name' => $this->mailData['doctor_name'],
-                'patientName' => $this->mailData['patientsName'],
-                'date' => date('d-m-Y',strtotime($this->mailData['date'])),
-                'time' => Carbon::parse($this->mailData['time'])->format('h:i A'),
+                'name' => $doctorName,
+                'patientName' => $patientName,
+                'date' => $date,
+                'time' => $time,
                 'msg1' => $msg1,
-                'msg2' => $msg2
+                'msg2' => $msg2,
+                'appointmentNo' => $appointmentNo,
             ],
         );
     }
