@@ -56,8 +56,10 @@ if(loadDoctorPerformanceTable)
         columns: [
             {data: 'DT_RowIndex', name: 'DT_RowIndex',"sortable": true, "searchable": false},
             {data: 'doctor_full_name', name:'doctor_full_name',"sortable": true, "searchable": true},
+            {data: 'pending_count', name:'completed_count',"sortable": true, "searchable": true},
             {data: 'completed_count', name:'completed_count',"sortable": true, "searchable": true},
-            {data: 'cancelled_count', name:'cancelled_count',"sortable": true, "searchable": true}
+            {data: 'cancelled_count', name:'cancelled_count',"sortable": true, "searchable": true},
+            {data: 'sum_amount', name:'cancelled_count',"sortable": true, "searchable": true}
         ],
     });
 }
@@ -85,6 +87,8 @@ if(loadAppointmentDetailsTable)
                 d.id = doctor_id,
                 d.status = statusofAppointment,
                 d.reportKey = reportKey
+                d.start = startDate,
+                d.end = toDate
             },
             complete: function()
             {

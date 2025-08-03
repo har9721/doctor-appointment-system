@@ -115,9 +115,9 @@ class Doctor extends Model
 
                                 return $query->whereBetween('appointmentDate',[$startDate, $toDate]);
                             }
-                        );
+                        )
 
-                    $query1->where('appointments.status', 'completed')->where('isActive',1);
+                        ->where('appointments.status', 'completed')->where('isActive',1);
                 },
                 'appointments as cancelled_count' => function ($query1) use($inputs){
                     $query1
@@ -130,11 +130,41 @@ class Doctor extends Model
 
                                 return $query->whereBetween('appointmentDate',[$startDate, $toDate]);
                             }
-                        );
+                        )
 
-                    $query1->where('appointments.status', 'cancelled')->where('isActive',1);
+                        ->where('appointments.status', 'cancelled')->where('isActive',1);
                 },
+                'appointments as pending_count' => function ($query1) use($inputs){
+                    $query1
+                        ->when(
+                            !empty($inputs['from_date']) && !empty($inputs['to_date']),
+                            function($query) use($inputs)
+                            {
+                                $startDate = date('Y-m-d', strtotime($inputs['from_date']));
+                                $toDate = date('Y-m-d', strtotime($inputs['to_date']));
+                            
+                                return $query->whereBetween('appointmentDate',[$startDate, $toDate]);
+                            }
+                        )
+
+                    ->where('appointments.status', 'pending')->where('isActive',1);
+                }
             ])
+            ->withSum(['appointments as sum_amount' => function($query1) use($inputs){
+                $query1
+                    ->when(
+                        !empty($inputs['from_date']) && !empty($inputs['to_date']),
+                        function($query) use($inputs)
+                        {
+                            $startDate = date('Y-m-d', strtotime($inputs['from_date']));
+                            $toDate = date('Y-m-d', strtotime($inputs['to_date']));
+                        
+                            return $query->whereBetween('appointmentDate',[$startDate, $toDate]);
+                        }
+                    )
+
+                    ->where('appointments.status', 'completed')->where('appointments.isActive',1);
+            }], 'amount')
             ->with(['user'])
             ->where('isActive',1)
             // ->groupBy('doctors.id') // comment this because withCount() function internally apply grouping

@@ -96,10 +96,15 @@ document.addEventListener('DOMContentLoaded', function() {
                 { value : 'delete' , text : 'Delete'}
             ];
 
-            // append values to dropdown
-            appendValuesToDropdown(dropdown);
+            let isBooked = event.event.extendedProps.isBooked;        
 
-            showEditAndDeleteActionModal(event,0);
+            if(isBooked == 0)
+            {
+                // append values to dropdown
+                appendValuesToDropdown(dropdown);
+    
+                showEditAndDeleteActionModal(event,0);
+            }
         },
 
         eventDrop : function(info)
@@ -151,14 +156,17 @@ document.addEventListener('DOMContentLoaded', function() {
         eventContent: function (event) {
             let status = event.event.extendedProps.status;
             let time = event.event.extendedProps.time;
+            let isBooked = event.event.extendedProps.isBooked;
+            let isBookedText = (isBooked) ? ' Booked' : '';
 
             let customTitle = document.createElement("div");
-            customTitle.innerHTML = `<b>${time}</b> <br> ${status}`;
+            customTitle.innerHTML = `<b>${time}</b> <br> ${status} &nbsp;  ${isBookedText}`;
 
             return { domNodes: [customTitle] };
         },
         eventDidMount: function (info) {
             let status = info.event.extendedProps.status;
+            let isBooked = info.event.extendedProps.isBooked;
 
             if (status === 'Available') {
                 info.el.style.backgroundColor = '#4e73df'; 
@@ -166,6 +174,11 @@ document.addEventListener('DOMContentLoaded', function() {
             } else {
                 info.el.style.backgroundColor = '#e11509';
                 info.el.style.color = 'white';
+            }
+
+            if (isBooked) {
+                info.el.style.backgroundColor = '#0be53eff'; 
+                info.el.style.color = 'black'; 
             }
         }
     });
