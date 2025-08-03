@@ -69,3 +69,29 @@
 <img src="Screenshots/Doctor/prescription-03.png" alt="Prescriptions Button" width="600">
 <img src="Screenshots/Doctor/prescription-04.png" alt="Prescriptions Edit" width="600">
 <img src="Screenshots/Doctor/prescription-05.png" alt="Prescriptions Summary" width="600">
+
+## 📝 **Admin Reports**
+
+## 📝 Appointment Monthly Report
+<img src="Screenshots/Admin/appointmentReport.png" alt="Appointment Monthly Report" width="600">
+
+## 📝 Patients History Report
+<img src="Screenshots/Admin/patient-history.png" alt="Patient History Report" width="600">
+
+## 📝 Appointment Trends Report
+<img src="Screenshots/Admin/appointmentsTrends.png" alt="Appointments Trends" width="600">
+
+## 📝 Patients Time Preference Report
+<img src="Screenshots/Admin/patientPreference.png" alt="Patients Preference" width="600">
+
+## 📝 Doctor Performance Report
+<img src="Screenshots/Admin/doctorPerformance.png" alt="Doctor Performance" width="600">
+
+
+## 📝 **Patients Reports**
+
+## 📝 Appointment Monthly Report
+<img src="Screenshots/Patients/appointmentHistoryReport.png" alt="Appointment History" width="600">
+
+## 📝 Patients History Report
+<img src="Screenshots/Patients/patientHistory.png" alt="Patients History" width="600">

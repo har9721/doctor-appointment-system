@@ -43,7 +43,7 @@
                             <th>Pending Appointment</th>
                             <th>Completed Appointment</th>
                             <th>Cancelled Appointment</th>
-                            <th>Revenu Generated</th>
+                            <th>Revenue Generated</th>
                         </tr>
                     </thead>
                     <tbody class="text-center">

@@ -119,9 +119,6 @@ Store and track past diagnoses, treatments, and reports.
 🚀 **Doctor Availability Calendar –**  
 Patients can view real-time doctor availability before booking an appointment.  
 
-🚀 **Admin Dashboard Enhancements –**  
-Graphs and reports for better system insights.  
-
 ---
 
 ## 📸 Screenshots
