@@ -141,6 +141,12 @@
                         Doctor Performance
                     </a>
                 @endif
+
+                @if(auth()->user()->role->roleName == 'Admin')
+                    <a class="collapse-item" href="{{ route('admin.get-revenue-report') }}">
+                        Monthly Revenue Reports
+                    </a>
+                @endif
             </div>
         </div>
     </li>
