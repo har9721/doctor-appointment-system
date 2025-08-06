@@ -72,6 +72,11 @@ Route::middleware('auth')->group(function(){
             Route::get('/edit-doctor-details','getEditForm')->name('editDoctor');
             Route::post('/send-time-slot-mail/{doctor}','sendTimeSlotMail')->name('send-time-slot-mail');
         });
+
+        Route::controller(ReportsController::class)->group(function(){
+            Route::get('/get-revenue-report', 'getRevenueReport')->name('get-revenue-report');
+            Route::get('/fetch-revenue-details', 'fetchRevenueDetails')->name('fetch-revenue-details');
+        });
     });
 
     Route::controller(AppointmentController::class)->group(function(){

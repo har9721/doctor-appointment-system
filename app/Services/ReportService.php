@@ -5,6 +5,8 @@ namespace App\Services;
 use App\Models\Appointments;
 use App\Models\Doctor;
 use App\Models\Patients;
+use App\Models\PaymentDetails;
+use Faker\Provider\ar_EG\Payment;
 use Yajra\DataTables\Facades\DataTables;
 
 class ReportService
@@ -235,6 +237,16 @@ class ReportService
             })
             ->rawColumns(['appointmentDate', 'patients_full_name','prescriptions', 'status', 'payment'])
             ->make(true);
+    }
+
+    public function getRevenueDetails($request)
+    {
+        $startDate = date('Y-m-d', strtotime($request['from_date']));
+        $endDate = date('Y-m-d', strtotime($request['to_date']));
+
+        $revenueDetails = PaymentDetails::getRevenueDetails($startDate, $endDate);
+
+        return $revenueDetails;
     }
 }
 ?>
