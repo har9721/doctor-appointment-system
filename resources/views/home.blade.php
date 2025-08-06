@@ -66,6 +66,8 @@
     <script type="text/javascript">
         let myAreaChart = "{{ route('get-area-chart-data') }}";
         let myPieChart = "{{ route('get-pie-chart-data') }}";
+        let loadMyChart = true;
+        let loadRevenueChart = false;
     </script>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>

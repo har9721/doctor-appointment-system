@@ -78,4 +78,17 @@ class ReportsController extends Controller
     {
         return $this->reportService->getPatientstHistory($request->only(['id','from_date','to_date']));
     }
+
+    public function getRevenueReport()
+    {
+        return view('reports.revenueReport');
+    }
+
+    public function fetchRevenueDetails(Request $request)
+    {
+        if($request->ajax())
+        {
+            return $this->reportService->getRevenueDetails($request->only(['from_date', 'to_date']));
+        }
+    }
 }
