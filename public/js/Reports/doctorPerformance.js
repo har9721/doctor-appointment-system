@@ -109,7 +109,7 @@ function reload_table() {
     var toDate = $('#to_date').val();
     var doctor = $('#doctor_name_list').val();
     
-    if (startDate != '' && toDate != '')
+    if (startDate != '' && toDate != '' && doctor != '')
     {
         $('#doctorPerformanceReport').DataTable().ajax.reload();
     }
@@ -125,8 +125,7 @@ function fetchDoctorList()
         type : 'GET',
         url : getDoctorList,
         success : function(response) {
-            console.log(response);
-            
+
             $.each(response, function (indexInArray, valueOfElement) 
             {                
                 $('#doctor_name_list').append($("<option></option>")

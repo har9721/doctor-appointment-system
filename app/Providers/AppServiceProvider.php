@@ -8,23 +8,16 @@ use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
 {
-    /**
-     * Register any application services.
-     *
-     * @return void
-     */
     public function register()
     {
         //
     }
 
-    /**
-     * Bootstrap any application services.
-     *
-     * @return void
-     */
     public function boot()
     {
         Gate::define('isAuthorized',[IsAdminOrDoctor::class,'checkIsAdminOrDoctor']);
+        Gate::define('isPatients', [\App\Gate\isPatients::class, 'checkIsPatients']);
+        Gate::define('isDoctor', [\App\Gate\isDoctor::class, 'checkIsDoctor']);
+        Gate::define('isAdmin', [\App\Gate\IsAdmin::class, 'checkIsAdmin']);
     }
 }
