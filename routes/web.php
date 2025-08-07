@@ -73,9 +73,11 @@ Route::middleware('auth')->group(function(){
             Route::post('/send-time-slot-mail/{doctor}','sendTimeSlotMail')->name('send-time-slot-mail');
         });
 
-        Route::controller(ReportsController::class)->group(function(){
-            Route::get('/get-revenue-report', 'getRevenueReport')->name('get-revenue-report');
-            Route::get('/fetch-revenue-details', 'fetchRevenueDetails')->name('fetch-revenue-details');
+        Route::middleware(['can:isAdmin'])->group(function(){   
+            Route::controller(ReportsController::class)->group(function(){
+                Route::get('/get-revenue-report', 'getRevenueReport')->name('get-revenue-report');
+                Route::get('/fetch-revenue-details', 'fetchRevenueDetails')->name('fetch-revenue-details');
+            });
         });
     });
 
@@ -85,7 +87,7 @@ Route::middleware('auth')->group(function(){
         ->name('appointments-history');
     });
 
-    Route::middleware(['can:isAuthorized'])->prefix('/doctor')->as('doctor.')->group(function(){
+    Route::middleware(['can:isDoctor'])->prefix('/doctor')->as('doctor.')->group(function(){
         Route::controller(DoctorController::class)->group(function(){
             Route::get('time-slot','viewTimeSlot')->name('time-slot');
             Route::get('fetch-time-slot-list','getTimeSlot')->name('getTimeSlot');

@@ -95,12 +95,12 @@
             </a>
         </li>
 
-        <li class="nav-item">
+        <!-- <li class="nav-item">
             <a class="nav-link collapsed" href="{{ route('appointments.completed-list') }}" active>
                 <i class="fas fa-check-circle"></i>
                 <span>Completed Appointments</span>
             </a>
-        </li>
+        </li> -->
 
     @endif
 

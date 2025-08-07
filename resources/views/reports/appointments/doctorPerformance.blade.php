@@ -21,7 +21,7 @@
 
                     @if(auth()->user()->role->roleName != 'Doctor')
                         <div class="col-md-3">
-                            <label for="date" class="font-weight-bold">Doctor Name : </label>
+                            <label for="date" class="font-weight-bold">Doctor Name : <span style="color: red;">*</span></label>
                             <select class="form-control js-example-basic-multiple" id="doctor_name_list" multiple="multiple" name="doctor_name[]" aria-placeholder="select doctor">
                                 <option value="" selected>Select Doctor</option>
                             </select>
