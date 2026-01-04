@@ -556,7 +556,7 @@ class Appointments extends Model
             return $query->whereBetween('appointmentDate',[$startDate, $toDate]);
         })
         ->when(!empty($data['id']), function($query) use($data) {
-            return $query->where('patient_ID', $data['id']);
+            return $query->whereIn('patient_ID', $data['id']);
         })
         ->get([
             'id',
