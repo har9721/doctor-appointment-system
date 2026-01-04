@@ -7,15 +7,26 @@
             <h4 class="mt-2 font-weight-bold text-primary">Appointments Trends Report</h4>
         </div>
         <div class="card-body">
-            <div class="col-md-3">
-                <label for="monthRangeInput" class="form-label"><b>Select Month Range :</b></label>
-                <select id="periodFilter" class="form-control">
-                    <option value="q1">Q1 (Jan-Mar)</option>
-                    <option value="q2">Q2 (Apr-Jun)</option>
-                    <option value="h1">First Half (Jan–Jun)</option>
-                    <option value="h2">Second Half (Jul–Dec)</option>
-                    <option value="all">Full Year</option>
-                </select>
+            <div class="row mb-4">
+                <div class="col-md-2">
+                    <label for="yearSelect" class="form-label"><b>Select Year :</b></label>
+                    <select id="yearSelect" class="form-control" >
+                        @for ($i = date('Y'); $i >= date('Y') - 5; $i--)
+                            <option value="{{ $i }}" {{ $i == date('Y') ? 'selected' : '' }}>{{ $i }}</option>
+                        @endfor
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label for="monthRangeInput" class="form-label"><b>Select Month Range :</b></label>
+                    <select id="periodFilter" class="form-control">
+                        <option value="" selected>Select Period</option>
+                        <option value="q1">Q1 (Jan-Mar)</option>
+                        <option value="q2">Q2 (Apr-Jun)</option>
+                        <option value="h1">First Half (Jan–Jun)</option>
+                        <option value="h2">Second Half (Jul–Dec)</option>
+                        <option value="all">Full Year</option>
+                    </select>
+                </div>
             </div>
 
             <div class="chart-area" id="charts" style="overflow-x: auto;">

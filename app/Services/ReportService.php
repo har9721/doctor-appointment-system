@@ -38,7 +38,7 @@ class ReportService
     public function getDates($request)
     {
         $quater = $request->quater;
-        $year = date('Y');
+        $year = $request->year;
 
         switch ($quater) {
             case 'q1':

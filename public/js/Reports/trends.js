@@ -1,22 +1,24 @@
 // set dynamic value according to current date
 let quaterValue = $('#periodFilter').val(quater);
+let yearValue = $('#yearSelect').val();
 
 var myChart;
 
 // initial call
-loadData(quater);
+loadData(quater, yearValue);
 
 // on change event on select tag
 $('#periodFilter').on('change', function (){  
     const quater = $(this).val();
+    const year = $('#yearSelect').val();
 
     if(quater == 'all')
-        loadTableData(quater);
+        loadTableData(quater, year);
     else
-        loadData(quater);
+        loadData(quater, year);
 });
 
-function loadData(quater)
+function loadData(quater, year)
 {
     $('#charts').css('display','block');
     $('#yearlyDataDiv').css('display','none');
@@ -27,7 +29,7 @@ function loadData(quater)
     $.ajax({
         type: "GET",
         url: trendsUrl,
-        data : {'quater' : quater},
+        data : {'quater' : quater, 'year' : year},
         success: function (response) {
      
            showChart(response); 
@@ -110,7 +112,7 @@ function showChart(response)
     myChart = new Chart(ctx, config);
 }
 
-function loadTableData(quater)
+function loadTableData(quater, year)
 {
     $('#charts').css('display','none');
     $('#yearlyDataDiv').css('display','block');
@@ -132,6 +134,7 @@ function loadTableData(quater)
             data: function(d)
             {
                 d.quater = quater
+                d.year = year
             },
             complete: function()
             {
@@ -149,3 +152,9 @@ function loadTableData(quater)
         ],
     });
 }
+
+// on change event on select tag
+$('#yearSelect').on('change', function (){  
+    $('#allYearData').DataTable().destroy();
+    $('#periodFilter').val('');
+});
