@@ -137,9 +137,11 @@
                         Booking Time Preferences
                     </a>
 
-                    <a class="collapse-item" href="{{ route('appointments.reports.doctorPerformanceReport') }}">
-                        Doctor Performance
-                    </a>
+                    @if(auth()->user()->role->roleName == 'Admin')
+                        <a class="collapse-item" href="{{ route('appointments.reports.doctorPerformanceReport') }}">
+                            Doctor Performance
+                        </a>
+                    @endif
                 @endif
 
                 @if(auth()->user()->role->roleName == 'Admin')

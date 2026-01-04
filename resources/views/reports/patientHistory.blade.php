@@ -29,7 +29,7 @@
                     @if(auth()->user()->role->roleName != 'Patients')
                         <div class="col-md-3">
                             <label for="date" class="font-weight-bold">Patients Name : </label>
-                            <select class="form-control" id="patient_name_list" name="patient_name">
+                            <select class="form-control" id="patient_name_list" name="patient_name" multiple>
                                 <option value="">Select Patient</option>
                             </select>
                         </div>
