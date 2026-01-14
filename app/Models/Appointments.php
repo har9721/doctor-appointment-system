@@ -16,7 +16,7 @@ class Appointments extends Model
 
     public $timestamps = false;
 
-    protected $fillable = ['doctorTimeSlot_ID','status','patient_ID','appointmentDate','created_at','originalAppointmentDate','appointment_reminder_time','isRescheduled','archived_reason','createdBy', 'reason', 'appointment_no'];
+    protected $fillable = ['doctorTimeSlot_ID','status','patient_ID','appointmentDate','created_at','originalAppointmentDate','appointment_reminder_time','isRescheduled','archived_reason','createdBy', 'reason', 'appointment_no','amount','payment_status','isBooked','isCancel', 'advance_amount'];
 
     public function bookPatientAppointment($data)
     {
@@ -84,7 +84,7 @@ class Appointments extends Model
         ->when(!empty($appointment_no), function($query) use($appointment_no){
             $query->where('appointments.appointment_no', 'like', '%' . $appointment_no . '%');
         })
-        ->latest('appointments.created_at')
+        ->latest('appointment_type')
         ->get([
             'appointments.id',
             'appointments.doctorTimeSlot_ID',
@@ -100,7 +100,15 @@ class Appointments extends Model
             DB::raw('CONCAT_WS(" ", p.first_name, p.last_name) as patient_full_name'),                
             DB::raw('CONCAT_WS(" ", d.first_name, d.last_name) as doctor_full_name'),
             DB::raw('CONCAT_WS("-", DATE_FORMAT(doctor_time_slots.start_time, "%h:%i %p"), DATE_FORMAT(doctor_time_slots.end_time, "%h:%i %p")) as time'),
-            'payment_details.res_payment_id','doctor_time_slots.doctor_ID','prescriptions.id as prescriptions_ID'
+            'payment_details.res_payment_id','doctor_time_slots.doctor_ID','prescriptions.id as prescriptions_ID',
+            'p.email as patient_email', 'p.mobile as patient_contact',
+            DB::raw('
+                CASE
+                    WHEN appointments.appointmentDate < CURDATE() THEN "past"
+                    WHEN appointments.appointmentDate = CURDATE() THEN "today"
+                    ELSE "upcoming"
+                    END as appointment_type
+            ')
         ]);
 
         return $getMyAppointments;

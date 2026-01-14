@@ -111,7 +111,7 @@ class PatientsController extends Controller
         ->when(!empty($specialty), function($query) use($specialty){
             $query->where('mst_specialties.id',$specialty);
         })
-        ->get(['doctors.id','doctors.specialty_ID','doctors.fileName','doctors.licenseNumber','users.id as personId','users.first_name','users.last_name','users.email','users.age','users.mobile','users.address','users.gender_ID','mst_genders.gender','mst_specialties.specialtyName','mst_specialties.id as specialtyId']);
+        ->get(['doctors.id','doctors.specialty_ID','doctors.fileName','doctors.licenseNumber','users.id as personId','users.first_name','users.last_name','users.email','users.age','users.mobile','users.address','users.gender_ID','mst_genders.gender','mst_specialties.specialtyName','mst_specialties.id as specialtyId','doctors.consultationFees','doctors.followUpFees','doctors.payment_mode','doctors.advanceFees']);
 
         return $getDoctorDetails;
     }

@@ -33,7 +33,11 @@ class DoctorRegistration extends FormRequest
                 'licenseNumber' => 'required',
                 'isPatients' => 'sometimes',
                 'experience' => 'required|numeric',
-                'profile_image' => 'required|mimes:jpg,jpeg,png'
+                'profile_image' => 'required|mimes:jpg,jpeg,png',
+                'consultationFees' => 'required|numeric|gt:0',
+                'followUpFees' => 'required|numeric|gt:0',
+                'paymentMode' => 'required|in:none,advance,full',
+                'advanceFees' => 'required_if:paymentMode,advance|numeric|gte:0',
             ];
         }else if(isset($this->user_ID))
         {
@@ -53,7 +57,11 @@ class DoctorRegistration extends FormRequest
                 'profile_image' => 'required_if:imageUpdateOption,Yes|mimes:jpg,jpeg,png',
                 'user_ID' => 'sometimes',
                 'isPatients' => 'sometimes',
-                'imageUpdateOption' => 'required'
+                'imageUpdateOption' => 'required',
+                'consultationFees' => 'required|numeric|gt:0',
+                'followUpFees' => 'required|numeric|gt:0',
+                'paymentMode' => 'required|in:none,advance,full',
+                'advanceFees' => 'required_if:paymentMode,advance|numeric|gte:0',
             ];
         }
     }

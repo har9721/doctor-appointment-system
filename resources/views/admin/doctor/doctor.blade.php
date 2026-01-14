@@ -29,6 +29,10 @@
                             <th>License Number</th>
                             <th>Experience</th>
                             <th>TimeSlot</th>
+                            <th>Consultation Fees</th>
+                            <th>FollowUp Fees</th>
+                            <th>Payment Mode</th>
+                            <th>Advance Fees</th>
                             <th>Action</th>
                         </tr>
                     </thead>

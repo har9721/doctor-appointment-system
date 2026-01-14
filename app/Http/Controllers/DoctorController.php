@@ -73,7 +73,7 @@ class DoctorController extends Controller
         }])
         ->where('isActive',1)
         ->latest()
-        ->get(['id','user_ID','specialty_ID','licenseNumber','experience','isActive'])
+        ->get(['id','user_ID','specialty_ID','licenseNumber','experience','isActive', 'consultationFees','followUpFees','payment_mode', 'advanceFees'])
         ->toArray();
 
         if($request->ajax())
@@ -298,7 +298,7 @@ class DoctorController extends Controller
     public function editDoctorForm(Doctor $doctor)
     {
         $getDoctorDetails = Doctor::with(['user'])->where('id',$doctor->id)
-        ->get(['id','fileName','experience','user_ID','specialty_ID','licenseNumber'])
+        ->get(['id','fileName','experience','user_ID','specialty_ID','licenseNumber', 'consultationFees','followUpFees','payment_mode', 'advanceFees'])
         ->map(function($doctor){
             $doctor['first_name'] = $doctor->user->first_name;
             $doctor['last_name'] = $doctor->user->last_name;
@@ -308,6 +308,10 @@ class DoctorController extends Controller
             $doctor['city_ID'] = $doctor->user->city_ID;
             $doctor['gender_ID'] = $doctor->user->gender_ID;
             $doctor['state_ID'] = city::where('id',$doctor->user->city_ID)->pluck('state_id')->first();
+            $doctor['consultationFees'] = $doctor->consultationFees;
+            $doctor['followUpFees'] = $doctor->followUpFees;
+            $doctor['paymentMode'] = $doctor->payment_mode;
+            $doctor['advanceFees'] = $doctor->advanceFees;
 
             return $doctor;
         })->toArray();
