@@ -25,7 +25,11 @@ function razorPay(order)
                 razorpay_signature: response.razorpay_signature, // Payment signature
                 appointment_id: document.getElementById('appointment_id').value, // Retrieve appointment ID
                 currency: order.currency,
-                amount: order.amount
+                amount: order.amount,
+                payment_details_id: paymentDetails_id,
+                name : response.patientName,
+                email : response.patientEmail,
+                contact : response.patientContact
             };
 
             // Send payment details to the server for verification

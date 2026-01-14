@@ -217,7 +217,7 @@ class AppointmentController extends Controller
                 $pay = ($row['payment_status'] == 'pending' && ($row['status'] == 'completed' || $row['status'] == 'confirmed') && (!in_array(Auth::user()->role_ID, config('constant.admin_and_doctor_role_ids')))
                 && $row['amount'] != null
                 ) 
-                ? '<button name="Pay" id="payment" class="mr-2 payment btn btn-sm success border text-white bg-dark" data-toggle="tooltip" data-id = "'.$row['id'].'" data-placement="bottom" title="Pay">
+                ? '<button name="Pay" id="payment" class="mr-2 payment btn btn-sm success border text-white bg-dark" data-toggle="tooltip" data-id = "'.$row['id'].'" data-placement="bottom" title="Pay" data-email ="' . $row['patient_email'] . '" data-contact ="' . $row['patient_contact'] . '" data-name="'. $row['patient_full_name'] .'">
                     <i class="fas fa-credit-card"></i> Pay Now
                 </button>' 
                 : '';

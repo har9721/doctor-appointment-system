@@ -137,6 +137,12 @@
     let patientsList = "{{ route('patients.get-all-patients') }}";
     let doctorList = "{{ route('doctor.get-all-doctor') }}";
     let getAvailableTimeSlot = "{{ route('doctor.fetch-time-slot') }}";
+    let bookingWithPaymentGateway = "{{ route('payments.advance-payment') }}";
+    let razorpayKey = "{{ config('services.razorpay.RAZORPAY_KEY_ID') }}";
+    let successUrl = "{{ url('payment/success') }}";
+    let successRoute = "{{ route('payment.success') }}";
+    let successPage = "{{ route('payments.success-page') }}";
 </script>
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <script src="{{ asset('js/Appointments/appointmentBook.js') }}"></script>
 @endpush

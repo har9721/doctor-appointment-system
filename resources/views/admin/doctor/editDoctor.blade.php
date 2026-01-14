@@ -109,13 +109,56 @@
                         <input type="text" name="licenseNumber" class="form-control" id="licenseNumber" placeholder="enter medical license number..." value="{{ $doctorDetails['licenseNumber'] }}">
                     </div>
 
-                    <div class="col-md-2">
+                    <div class="col-md-3">
                         <label for="experience"><b>Experience<span style="color: red;">*</span> :</b></label>
                         <input type="number" class="form-control" name="experience" id="experience" placeholder="enter experience" value="{{ $doctorDetails['experience'] }}">
                     </div>
 
-                    <div class="col-md-4">
-                        <label for="profileImageRadioBtn"><b>Do you want to update profile Image<span style="color: red;">*</span> :</b></label><br/>
+                    <div class="col-md-3">
+                        <label for="consultationFees">
+                            <b>Consultation Fees<span style="color: red;">*</span> :</b>
+                        </label>
+                        <input type="number" class="form-control" name="consultationFees" id="consultationFees" value="{{ $doctorDetails['consultationFees'] }}">
+                    </div>
+                </div>
+
+                <div class="row mb-4">
+                    <div class="col-md-3">
+                        <label for="followUpFees">
+                            <b>Follow Up Fees<span style="color: red;">*</span> :</b>
+                        </label>
+                        <input type="number" class="form-control" name="followUpFees" id="followUpFees" value="{{ $doctorDetails['followUpFees'] }}">
+                    </div>
+
+                    <div class="col-md-3">
+                        <label for="paymentMode">
+                            <b>Payment Mode<span style="color: red;">*</span> :</b>
+                        </label>
+
+                        @php
+                            $paymentMode = $doctorDetails['paymentMode'];
+                            $noneSelected = $paymentMode == 'none' ? 'selected' : '';
+                            $advanceSelected = $paymentMode == 'advance' ? 'selected' : '';
+                            $fullSelected = $paymentMode == 'full' ? 'selected' : '';
+                        @endphp
+
+                        <select class="form-control" id="paymentMode" name="paymentMode" value="{{ $doctorDetails['paymentMode'] }}">
+                            <option value="" disabled>select payment mode</option>
+                            <option value="none" {{ $noneSelected }}>None</option>
+                            <option value="advance" {{ $advanceSelected }}>Advance</option>
+                            <option value="full" {{ $fullSelected }}>Full</option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-3" id="advance_fees_input_div">
+                        <label for="advanceFees">
+                            <b>Advance Fees :</b>
+                        </label>
+                        <input type="number" class="form-control" name="advanceFees" id="advanceFees" placeholder="enter advance fees" value="{{ $doctorDetails['advanceFees'] }}">
+                    </div>
+
+                    <div class="col-md-3">
+                        <label for="profileImageRadioBtn"><b>Do you want to update profile Image:</label><br/>
                         <label class="radio-inline">
                             <input type="radio" name="imageUpdateOption" value="Yes">Yes
                         </label>
@@ -125,7 +168,7 @@
                     </div>
                 </div>
 
-                <div class="row" id="fileUploadDiv" style="display: none;">
+                <div class="row mb-4" id="fileUploadDiv" style="display: none;">
                     <div class="col-md-3">
                         <label for="image"><b>Profile Image <span style="color: red;">*</span> :</b></label>
                         <input type="file" name="profile_image" class="form-control" id="image" value="{{ $doctorDetails['fileName'] }}" >

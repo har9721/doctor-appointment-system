@@ -20,34 +20,48 @@
         
     </div>
     <div class="appointment-details">
-        @if(Auth::user()->role_ID == config('constant.patients_role_ID'))
-            <p style="color: black;"><b>Doctor Name :</b> {{ $appointment->doctor_full_name }}</b></p>
-        @elseif(Auth::user()->role_ID == config('constant.doctor_role_ID'))
-            <p style="color: black;" class="fw-bold fs-4"><b>Patient Name :</b> {{ $appointment->patient_full_name }}</p>
-        @endif
+        <div class="d-flex justify-content-between">
+            <div class="appointment-left">
+                @if(Auth::user()->role_ID == config('constant.patients_role_ID'))
+                    <p style="color: black;"><b>Doctor Name :</b> {{ $appointment->doctor_full_name }}</b></p>
+                @elseif(Auth::user()->role_ID == config('constant.doctor_role_ID'))
+                    <p style="color: black;" class="fw-bold fs-4"><b>Patient Name :</b> {{ $appointment->patient_full_name }}</p>
+                @endif
 
-        @if(Auth::user()->role_ID == config('constant.admin_role_ID'))
-            <p style="color: black;"><b>Doctor Name:</b> Dr. {{ $appointment->doctor_full_name }}</p>
-            <p style="color: black;"><b>Patient Name:</b> {{ $appointment->patient_full_name }}</p>
-        @endif
-        @if(
-            Auth::user()->role_ID == config('constant.admin_role_ID') || Auth::user()->role_ID == config('constant.patients_role_ID')
-        )
-        <p style="color: black;"><strong>Specialty:</strong> {{ $appointment->specialtyName }}</p>
-        @endif
-        <p style="color: black;"><strong>Date:</strong> {{ $appointment->appointmentDate }}</p>
-        <p style="color: black;"><strong>Time:</strong> {{ $appointment->time }}</p>
-        <p style="color: black;"><strong>Status:</strong> 
-            @if($status == 'confirmed')
-                <span class="appointment-status status-confirmed">Confirmed</span>
-            @elseif($status == 'pending')
-                <span class="appointment-status status-pending">Pending</span>
-            @elseif($status == 'canceled')
-                <span class="appointment-status status-canceled">Canceled</span>
-            @else
-                <span class="appointment-status status-completed">Completed</span>
-            @endif
-        </p>
+                @if(Auth::user()->role_ID == config('constant.admin_role_ID'))
+                    <p style="color: black;"><b>Doctor Name:</b> Dr. {{ $appointment->doctor_full_name }}</p>
+                    <p style="color: black;"><b>Patient Name:</b> {{ $appointment->patient_full_name }}</p>
+                @endif
+                @if(
+                    Auth::user()->role_ID == config('constant.admin_role_ID') || Auth::user()->role_ID == config('constant.patients_role_ID')
+                )
+                <p style="color: black;"><strong>Specialty:</strong> {{ $appointment->specialtyName }}</p>
+                @endif
+                <p style="color: black;"><strong>Date:</strong> {{ $appointment->appointmentDate }}</p>
+                <p style="color: black;"><strong>Time:</strong> {{ $appointment->time }}</p>
+                <p style="color: black;"><strong>Status:</strong> 
+                    @if($status == 'confirmed')
+                        <span class="appointment-status status-confirmed">Confirmed</span>
+                    @elseif($status == 'pending')
+                        <span class="appointment-status status-pending">Pending</span>
+                    @elseif($status == 'canceled')
+                        <span class="appointment-status status-canceled">Canceled</span>
+                    @else
+                        <span class="appointment-status status-completed">Completed</span>
+                    @endif
+                </p>
+            </div>
+            <div class="appointment-right text-end">
+                <span class="badge 
+                    @if($appointment->appointment_type == 'today') bg-success text-white
+                    @elseif($appointment->appointment_type == 'past') bg-secondary text-white
+                    @else bg-warning text-dark
+                    @endif
+                ">
+                    {{ strtoupper($appointment->appointment_type) }}
+                </span>
+            </div>
+        </div>
         <div class="text-right">
             @if($status == 'pending' && (in_array(Auth::user()->role_ID,config('constant.admin_and_doctor_role_ids'))))
                 <button class="btn btn-success appointmentButoon" id="confirm_button" data-id="{{ $appointment->id }}" data-status="confirmed" data-date="{{ $appointment->appointmentDate }}" data-patient_ID = "{{ $appointment->patient_ID }}" data-timeslot_id = "{{ $appointment->doctorTimeSlot_ID }}"  data-timeslot_id = "{{ $appointment->doctorTimeSlot_ID }}">
@@ -116,7 +130,7 @@
             @endif
 
             @if(in_array(Auth::user()->role_ID,config('constant.admin_and_doctor_role_ids')))
-                <a href = "{{ route('admin.view-patient-history',['patients' => $appointment->patient_ID]) }}">
+                <a href = "{{ route('admin.view-patient-history',['patients' => $appointment->patient_ID]) }}" target="_blank">
                     <button class="btn btn-info view" id="view_details" data-date="{{ $appointment->appointmentDate }}" data-id="{{ $appointment->id }}" data-status="archived" data-patient_ID = "{{ $appointment->patient_ID }}"><i class="fas fa-eye"></i>
                     View Patient Details</button>
                 </a>
