@@ -79,6 +79,11 @@
         {
             height: 36px !important;
         }
+
+        .appointment-right {
+            min-width: 140px;
+            margin-top: 5px;
+        }
     </style>
 @section('content')
 <div class="container-fluid">

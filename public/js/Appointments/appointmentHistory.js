@@ -144,6 +144,9 @@ $(document).on('click','#offline-pay', function()
 {
     const appointment_id = $('#appointment_id').val();
     const amount = $('#amount_hidden').val();
+    const email = $(this).data('email');
+    const name = $(this).data('name');
+    const contact = $(this).data('contact');
 
     $.ajaxSetup({
         headers: {
@@ -153,7 +156,7 @@ $(document).on('click','#offline-pay', function()
     $.ajax({
         type : "post",
         url : markPaymentDone,
-        data : {'appointment_id' : appointment_id,'amount' : amount,'email': 'johndoe@yopmail.com', 'name' : 'John Doe', 'contact' : '9857551454'},
+        data : {'appointment_id' : appointment_id,'amount' : amount,'email': email, 'name' : name, 'contact' : contact},
         success : function (response){
             if(response['status'] == 'success'){
                 Swal.fire({

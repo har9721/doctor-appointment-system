@@ -12,7 +12,7 @@ class PaymentDetails extends Model
 
     protected $table = 'payment_details';
 
-    protected $fillable = ['appointment_ID','res_payment_id','order_id','transaction_id','method','currency','email','phone','amount','status','json_response','createdBy'];
+    protected $fillable = ['appointment_ID','res_payment_id','order_id','transaction_id','method','currency','email','phone','amount','status','json_response','createdBy', 'payment_type'];
 
     protected $appends = ['formatted_date'];
 

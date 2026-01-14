@@ -21,6 +21,10 @@ var table = $('#doctorList').DataTable({
         {data: 'licenseNumber', name:'licenseNumber',"sortable": true, "searchable": true},
         {data: 'experience', name:'experience',"sortable": true, "searchable": true},
         {data: 'timeSlot', name:'timeSlot',"sortable": true, "searchable": true},
+        {data: 'consultationFees', name:'consultationFees',"sortable": true, "searchable": true},
+        {data: 'followUpFees', name:'followUpFees',"sortable": true, "searchable": true},
+        {data: 'payment_mode', name:'payment_mode',"sortable": true, "searchable": true},
+        {data: 'advanceFees', name:'advanceFees',"sortable": true, "searchable": true},
         {data: 'action', name: 'action', orderable: false, searchable: false}
     ],
 });

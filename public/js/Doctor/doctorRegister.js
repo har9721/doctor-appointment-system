@@ -20,9 +20,12 @@ $(document).on('change', '#state',function(){
 $('#doctorForm').on('submit', function(e){
     e.preventDefault();
     const email = $('#email').val();
+    const advanceFees = $('#advanceFees').val();
+    const fees = advanceFees ? advanceFees : 0;
 
     var formData = new FormData(this);
     formData.append('email',email);
+    formData.append('advanceFees',fees);
 
     $.ajaxSetup({
         headers:{

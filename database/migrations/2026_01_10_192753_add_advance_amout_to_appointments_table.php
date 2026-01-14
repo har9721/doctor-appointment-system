@@ -9,14 +9,14 @@ return new class extends Migration
     public function up()
     {
         Schema::table('appointments', function (Blueprint $table) {
-            $table->enum('payment_status',['pending','paid','failed','completed'])->default('pending')->after('status');
+            $table->decimal('advance_amount', 10, 2)->default(0.00)->after('amount');
         });
     }
 
     public function down()
     {
         Schema::table('appointments', function (Blueprint $table) {
-            $table->dropColumn(['payment_status']);
+            $table->dropColumn('advance_amount');
         });
     }
 };

@@ -31,7 +31,7 @@ class AppointmentBooking extends FormRequest
                     function($atttributes,$value,$fail){
                         $timeSlot = DoctorTimeSlots::find($value);
     
-                        $currentTime = Carbon::now()->addHours(5)->addMinutes(30);
+                        $currentTime = Carbon::now()->addHours(5)->addMinutes(30)->format('H:i:s');
     
                         if(($timeSlot->start_time <= $currentTime) && ($timeSlot->availableDate <= date('Y-m-d')))
                         {
@@ -61,8 +61,8 @@ class AppointmentBooking extends FormRequest
                     Rule::unique('appointments','doctorTimeSlot_ID')->where('appointmentDate',$this->date)->where('patient_ID',$this->patient_ID)->where('doctorTimeSlot_ID',$this->timeSlot),
                     function($atttributes,$value,$fail){
                         $timeSlot = DoctorTimeSlots::find($value);
-    
-                        $currentTime = Carbon::now()->addHours(5)->addMinutes(30);
+
+                        $currentTime = Carbon::now()->addHours(5)->addMinutes(30)->format('H:i:s');
     
                         if(($timeSlot->start_time <= $currentTime) && ($timeSlot->availableDate <= date('Y-m-d')))
                         {
@@ -72,6 +72,8 @@ class AppointmentBooking extends FormRequest
                 ],
                 'patient_ID' => 'required',
                 'reason' => 'nullable|string|max:500',
+                'advanceFees' => 'nullable|numeric|min:0',
+                'consultationFees' => 'nullable|numeric|min:0',
             ];
         }
     }

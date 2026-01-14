@@ -19,7 +19,7 @@ class Doctor extends Model
 
     const DELETED_AT = 'deletedAt';
 
-    protected $fillable = ['fileName','experience','user_ID','specialty_ID','licenseNumber','created_at'];
+    protected $fillable = ['fileName','experience','user_ID','specialty_ID','licenseNumber','created_at', 'consultationFees' ,'followUpFees','payment_mode', 'advanceFees'];
 
     public static function addDoctors($data)
     {   
@@ -30,6 +30,10 @@ class Doctor extends Model
             'specialty_ID' => $data['speciality'],
             'licenseNumber' => trim($data['licenseNumber']),
             'created_at' => now(),
+            'consultationFees' => $data['consultationFees'],
+            'followUpFees' => $data['followUpFees'],
+            'payment_mode' => $data['paymentMode'],
+            'advanceFees' => $data['advanceFees'],
         ]);
     }
 
@@ -56,13 +60,17 @@ class Doctor extends Model
     public static function updateDoctorInfo($data)
     {
         $doctorData = array_filter([
-            'fileName' => isset($data['fileName']) ? $data['fileName'] : null,
+            'fileName' => $data['fileName'] ?? null,
             'experience' => $data['experience'],
             'specialty_ID' => $data['speciality'],
             'licenseNumber' => trim($data['licenseNumber']),
             'updated_at' => now(),
-            'updatedBy' => Auth::user()->id
-        ]);
+            'updatedBy' => Auth::user()->id,
+            'consultationFees' => $data['consultationFees'],
+            'followUpFees' => $data['followUpFees'],
+            'payment_mode' => $data['paymentMode'],
+            'advanceFees' => $data['advanceFees'] ?? null,
+        ], fn ($value) => $value !== null);
 
         return Doctor::where('user_ID',$data['user_ID'])->update($doctorData);
     }

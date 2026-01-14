@@ -16,11 +16,17 @@ document.addEventListener('DOMContentLoaded', function() {
 
     let selectedTimeSlot = null;
     let selectedTimeSlotText = null;
+    let advanceFees = 0.00;
+    let paymentMethod = null;
+    let consultationFees = 0.00;
+    let followUpFees = 0.00;
+    let selectedAppointmentDate = null;
 
     $('#search').on('click', function(){
         let speciality = $('#speciality').val();
         let city = $('#city').find(':selected').val();
         let date = $('#date').val();
+        selectedAppointmentDate = date;
 
         if(speciality != '' || city != '' || date != '')
         {
@@ -42,6 +48,10 @@ document.addEventListener('DOMContentLoaded', function() {
                     {
                         response.forEach(doctor => {
                             const timeSlot = doctor.time_slot;
+                            advanceFees = doctor.advanceFees;
+                            paymentMethod = doctor.payment_mode;
+                            consultationFees = doctor.consultationFees;
+                            followUpFees = doctor.followUpFees;
 
                             if(timeSlot.length != 0)
                             {
@@ -54,11 +64,19 @@ document.addEventListener('DOMContentLoaded', function() {
                                 let doctorCard = `
                                 <div class="col-md-6">
                                     <div class="doctor-card">
-                                        <img src="${imageUrl}" atr="${doctor.first_name}">
+                                        <img src="${imageUrl}" alt="${doctor.first_name}">
                                         <div class="doctor-info">
                                             <h4 style="color:black">Dr.${doctor.first_name}</h4>
-                                            <p>${doctor.specialtyName}</p>
-                                            <p>${doctor.gender}</p>
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <p><label><b>Speciality :</b></label> <span>${doctor.specialtyName}</span></p>
+                                                    <p><label><b>Consultation Fees :</b></label> <span>${consultationFees}</span></p>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <p><label><b>Gender :</b></label> <span>${doctor.gender}</span></p>
+                                                    <p><label><b>Advance Fees :</b></label> <span>${doctor.advanceFees}</span></p>
+                                                </div>
+                                            </div>
                                         </div>
                                         <div class="accordion" id="accordion${doctor.id}">
                                             <div class="card">
@@ -86,7 +104,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                 $('#searchResults').append(doctorCard);
     
                                 // append time slot
-                                getTimeSlot(doctor.id,timeSlot);
+                                getTimeSlot(doctor.id,timeSlot,advanceFees,paymentMethod,consultationFees, followUpFees, selectedAppointmentDate);
                             }
                         });
                         
@@ -124,13 +142,18 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
-function getTimeSlot(doctorID,timeSlot)
+function getTimeSlot(doctorID,timeSlot,fees,payment_method, consultationFees, followUpFees, appointmentDate)
 {
     selectedTimeSlot = null;
     selectedTimeSlotText = null;
+    advanceFees = fees;
+
+    paymentMethod = payment_method;
+    consultationFees = consultationFees;
+    followUpFees = followUpFees;
 
     timeSlot.forEach(element => {
-        const slot = `<div class="time-slot mr-1" onclick="clickOnTimeSlot(this)" data-time_slot_id ="${element.id}" id="time-slot-${element.id}" data-time_slot_text ="${element.time}" >${element.time}</div>`;
+        const slot = `<div class="time-slot mr-1" onclick="clickOnTimeSlot(this)" data-time_slot_id ="${element.id}" id="time-slot-${element.id}" data-time_slot_text ="${element.time}" data-payment-mode="${paymentMethod}" data-consultation-fees="${consultationFees}" data-follow-up-fees="${followUpFees}" data-advance-fees="${advanceFees}" data-appointment-date="${element.availableDate}" data-selected-date="${appointmentDate}">${element.time}</div>`;
 
         $(`#timeSlotsContainer${doctorID}`).append(slot);
 
@@ -145,6 +168,9 @@ function clickOnTimeSlot(timeSlot)
 {
     selectedTimeSlot = $(timeSlot).data('time_slot_id');
     selectedTimeSlotText = $(timeSlot).data('time_slot_text');
+    paymentMethod = $(timeSlot).data('payment-mode');
+    consultationFees = $(timeSlot).data('consultation-fees');
+    selectedAppointmentDate = $(timeSlot).data('selected-date');
 
     $('.time-slot').removeClass('selected');
 
@@ -156,9 +182,13 @@ $(document).on('click', '.book-btn',function(){
 
     if(selectedTimeSlot)
     {
-        console.log('slot text', selectedTimeSlotText);
-
         $('#selectedTimeSlot').html(`<strong>Time:</strong> ${selectedTimeSlotText}`);
+        $('#advanceFees').html(`<strong>Advance Fees:</strong> ${advanceFees}`);
+        $('#advanceFees').attr('data-payment-method', paymentMethod);
+        $('#consult_fees').val(consultationFees);
+
+        $('#available-date').html(`<strong>Date:</strong> ${selectedAppointmentDate}`);
+        $('#consultationFeesInfo').html(`<strong>Consultation Fees:</strong> ${consultationFees}`);
     
         $('#bookModal').modal('show');
 
@@ -529,6 +559,8 @@ $(document).on('click','#reasonModal', function(){
 
 function bookAppointment(selectedTimeSlot, reason)
 {
+    bookingUrl = (paymentMethod && paymentMethod.toLowerCase() === 'none') ? bookingUrl : bookingWithPaymentGateway;
+
     if(selectedTimeSlot)
     {
         let date = $('#date').val();
@@ -542,13 +574,21 @@ function bookAppointment(selectedTimeSlot, reason)
         $.ajax({
             type : 'post',
             url : bookingUrl,
-            data : {'timeSlot' : selectedTimeSlot,'date' : date,'patient_ID' : patient_ID, 'reason' : reason},
+            data : {
+                'timeSlot' : selectedTimeSlot,'date' : date,'patient_ID' : patient_ID, 'reason' : reason, 'advanceFees' : advanceFees, 'consultationFees' : consultationFees
+            },
             beforeSend : function(){ 
                 $('#reasonModal').attr('disabled',true);
             },
             success : function(response)
             {
                 if(response['status'] == 'success'){
+
+                    if(paymentMethod && paymentMethod.toLowerCase() !== 'none' && response.paymentsData)
+                    {
+                        return razorPay(response.paymentsData, response.appointment_id,response.paymentDetails_id);
+                    }
+
                     Swal.fire({
                         title: "Success",
                         text: response['message'],
@@ -595,4 +635,64 @@ function bookAppointment(selectedTimeSlot, reason)
             timer: 5000
         });
     }
+}
+
+function razorPay(order, appointment_id, paymentDetails_id)
+{
+    const options = {   
+        key: razorpayKey, // Razorpay API Key
+        amount: order.amount, // Amount in paise
+        currency: order.currency,
+        name: "Doctor Appointment Fees",
+        description:  `Payment for Order # ${order.id}`,
+        order_id: order.id,
+        callback_url: successRoute,
+        "handler": function (response) {
+        
+            // Handle the response after successful payment
+            var data = {
+                razorpay_payment_id: response.razorpay_payment_id, // Payment ID
+                razorpay_order_id: response.razorpay_order_id, // Order ID
+                razorpay_signature: response.razorpay_signature, // Payment signature
+                appointment_id: appointment_id, // Retrieve appointment ID
+                currency: order.currency,
+                amount: order.amount,
+                payment_details_id: paymentDetails_id,
+                name : order.patientName,
+                email : order.patientEmail,
+                contact : order.patientContact
+            };
+
+            // Send payment details to the server for verification
+            fetch(successUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                body: JSON.stringify(data) // Convert data to JSON
+            }).then(response => response.json()).then(data => {
+
+                if (data.success) {
+                    Swal.fire('Payment successful!');
+                    let successUrl = `${successPage}?appointment_id=${appointment_id}`;
+
+                    window.location.href = successUrl; // Redirect to success page
+                } else {
+                    Swal.fire('Payment verification failed.'); // Notify if verification fails
+                }
+            });
+        },
+        prefill: {
+            name: order.patientName,
+            email: order.patientEmail,
+            contact: order.patientContact,
+        },
+        theme: {
+            color: "#14eb2a"
+        }
+    };
+
+    const rzp = new Razorpay(options);
+    rzp.open();
 }

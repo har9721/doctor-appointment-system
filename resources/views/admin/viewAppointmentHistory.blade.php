@@ -104,7 +104,7 @@
     let roleName = "{{ Auth::user()->role->roleName }}";
     let savePayment = "{{ route('payments.save-payment') }}";
     let getAppointmentDetails = "{{ route('appointments.get-appointment-details') }}";
-    let razorpayKey = "{{ config('services.razorpay.key') }}";
+    let razorpayKey = "{{ config('services.razorpay.RAZORPAY_KEY_ID') }}";
     let successRoute = "{{ route('payment.success') }}";
     let successUrl = "{{ url('payment/success') }}";
     let fetchPaymentSummary = "{{ route('payments.fetch-payment-summary') }}";

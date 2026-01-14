@@ -150,6 +150,7 @@ Route::middleware('auth')->group(function(){
             Route::post('/send-payment-pending-mail','sendPaymentPedingMail')->name('send-payment-mail');
             Route::post('/mark-payment-done','markPaymentDone')->name('mark-payment');
             Route::get('download-invoice/{link?}','downloadInvoice')->name('download-invoice');
+            Route::post('/advance-payment', 'makeAdvancePayment')->name('advance-payment');
         });
     });
 

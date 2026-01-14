@@ -101,6 +101,41 @@
                     </div>
                 </div>
 
+                <div class="row mb-4">
+                    <div class="col-md-3">
+                        <label for="consultationFees">
+                            <b>Consultation Fees<span style="color: red;">*</span> :</b>
+                        </label>
+                        <input type="number" class="form-control" name="consultationFees" id="consultationFees" placeholder="enter consultation fees">
+                    </div>
+
+                    <div class="col-md-3">
+                        <label for="followUpFees">
+                            <b>Follow Up Fees<span style="color: red;">*</span> :</b>
+                        </label>
+                        <input type="number" class="form-control" name="followUpFees" id="followUpFees" placeholder="enter follow up fees">
+                    </div>
+
+                    <div class="col-md-3">
+                        <label for="paymentMode">
+                            <b>Payment Mode<span style="color: red;">*</span> :</b>
+                        </label>
+                        <select class="form-control" id="paymentMode" name="paymentMode">
+                            <option value="" disabled selected>select payment mode</option>
+                            <option value="none">None</option>
+                            <option value="advance">Advance</option>
+                            <option value="full">Full</option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-3" id="advance_fees_input_div">
+                        <label for="advanceFees">
+                            <b>Advance Fees :</b>
+                        </label>
+                        <input type="number" class="form-control" name="advanceFees" id="advanceFees" placeholder="enter advance fees">
+                    </div>
+                </div>
+
                 <div class="row">
                     <div class="col-md-12 d-flex justify-content-center">
                         <button type="submit" class="btn btn-success" id="submitForm"><i class="fas fa-save pr-1"></i>Save</button>
