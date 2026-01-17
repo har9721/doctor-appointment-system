@@ -6,8 +6,10 @@ use App\Http\Requests\AppointmentBooking;
 use App\Http\Requests\RegisterUserRequest;
 use App\Models\Appointments;
 use App\Models\Doctor;
+use App\Models\DoctorTimeSlots;
 use App\Models\Patients;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Yajra\DataTables\Facades\DataTables;
@@ -232,5 +234,29 @@ class PatientsController extends Controller
     public function fetchPatientList(Request $request)
     {
         return Patients::getPatientNames();
+    }
+
+    public function viewDoctorSlots()
+    {
+        $doctors = Doctor::with(['user', 'specialty'])->where('isActive', 1)->get(['id', 'user_ID', 'specialty_ID']);
+
+        $patient_id = Patients::where('user_ID', Auth::user()->id)->value('id');
+
+        return view('patients.viewDoctorSlots', compact('doctors', 'patient_id'));
+    }
+
+    public function getDoctorTimeSlot(Request $request)
+    {
+        $doctorId = $request->input('doctor_id');
+        $start = Carbon::parse($request->start);
+        $end = Carbon::parse($request->end);
+
+        $timeSlots = [];
+
+        if ($doctorId) {
+            $timeSlots = DoctorTimeSlots::fetchDoctorTimeSlots($start, $end, $doctorId);
+        }
+
+        return response()->json($timeSlots);
     }
 }

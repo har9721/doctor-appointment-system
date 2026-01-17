@@ -115,6 +115,8 @@ Route::middleware('auth')->group(function(){
             Route::post('book-appointment','bookAppointment')->name('book-appointment');
             Route::get('/get-patients-list','getAllPatientsList')->name('get-all-patients');
             Route::get('/edit-patients-details/{patients}','editPatient')->name('edit-patients');
+            Route::get('view-doctor-slots', 'viewDoctorSlots')->name('view-doctor-slots');
+            Route::get('get-doctor-time-slot','getDoctorTimeSlot')->name('doctor-time-slot');
         });
     });
 
@@ -187,6 +189,7 @@ Route::middleware('auth')->group(function(){
 });
 
 Route::post('/payment/success', [PaymentController::class, 'handlePayment'])->name('payment.success');
+Route::post('/payment/fail', [PaymentController::class, 'handleFailPayment'])->name('payment.fail');
 
 // forgot password
 Route::get('forgot-password',[ForgotPasswordController::class,'index'])->name('forgot-password');

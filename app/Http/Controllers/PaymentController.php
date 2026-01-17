@@ -32,8 +32,8 @@ class PaymentController extends Controller
     {
         try {
             $appointments = Appointments::find($id);
-            // $appointmentData = $appointments->load(['doctorTimeSlot','patients']);
-            $amountToPay = ($column == 'amount') ? $appointments->amount : $appointments->advanceFees;
+    
+            $amountToPay = ($column == 'amount') ? $appointments->amount : $appointments->advance_amount;
 
             $paymentData = [
                 'receipt'         => uniqid(),
@@ -228,24 +228,46 @@ class PaymentController extends Controller
     }
 
     public function makeAdvancePayment(AppointmentBooking $request)
-    {
-        $data = $request->validated();
-        
-        $checkForOutstandingPayments = Appointments::checkForOutstandingPayments($data['patient_ID']);
-
-        if(empty($checkForOutstandingPayments))
-        {
-            DB::beginTransaction();
-
-            $time_slot_id = $request->timeSlot;
+    {        
+        try {
             $patient_id = $request->patient_ID;
-            $appointment_date = date('Y-m-d', strtotime($request->date));
-            $reason = trim($request->reason);
-            $amount = $request->consultationFees;
-            $advanceFees = $request->advanceFees;
+                
+            DB::transaction(function ()  use($request, $patient_id, &$response){
+                $time_slot_id = $request->timeSlot;
+                    
+                $appointment_date = date('Y-m-d', strtotime($request->date));
+                $reason = trim($request->reason);
+                $amount = $request->consultationFees;
+                $advanceFees = $request->advanceFees;
 
-            try {
-                // book appointment
+                // Lock the timeslot
+                $timeSlot = DoctorTimeSlots::where('id', $time_slot_id)
+                    ->lockForUpdate()
+                    ->first();
+
+                if (!$timeSlot) {
+                    throw new \Exception('Time slot not found');
+                }
+
+                if ($timeSlot->isBooked) {
+                    throw new \Exception('This time slot is already booked');
+                }
+
+                $checkForOutstandingPayments = Appointments::checkForOutstandingPayments($patient_id);
+
+                if (!empty($checkForOutstandingPayments)) {
+                    throw new \Exception('Outstanding payment exists for this patient');
+                }
+
+                // update time slot as booked
+                DoctorTimeSlots::where('id', $time_slot_id)
+                ->update([
+                    'isBooked' => 1,
+                    'updatedBy' => auth()->user()->id,
+                    'updated_at' => now()
+                ]);
+
+                 // book appointment
                 $appointment = Appointments::create([
                     'patient_ID' => $patient_id,
                     'doctorTimeSlot_ID' => $time_slot_id,
@@ -259,16 +281,8 @@ class PaymentController extends Controller
                     'createdBy' => auth()->user()->id
                 ]);
 
-                // update time slot as booked
-                DoctorTimeSlots::where('id', $time_slot_id)
-                ->update([
-                    'isBooked' => 1,
-                    'updatedBy' => auth()->user()->id,
-                    'updated_at' => now()
-                ]);
-
                 $paymentData = $this->viewPaymentPage($appointment->id, 'advanceFees');
-
+    
                 $paymentDetails = PaymentDetails::create([
                     'appointment_ID' => $appointment->id,
                     'order_id' => $paymentData['id'],
@@ -279,31 +293,42 @@ class PaymentController extends Controller
                     'createdBy' => auth()->user()->id
                 ]);
 
-                DB::commit();
+                $response = [
+                    'appointment' => $appointment,
+                    'paymentDetails' => $paymentDetails,
+                    'paymentData' => $paymentData
+                ];
+            },3);
 
-                $getPatientDetails = Patients::with('user')->where('id',$patient_id)->first();
-    
-                return response()->json([
-                    'status' => 'success',
-                    'message' => 'Advance payment successful',
-                    'paymentsData' => $paymentData,
-                    'appointment_id' => $appointment->id,
-                    'paymentDetails_id' => $paymentDetails->id,
-                    'patientName' => (!empty($getPatientDetails->user)) ? $getPatientDetails->user->first_name . ' ' . $getPatientDetails->user->last_name : null,
-                    'patientEmail' => (!empty($getPatientDetails->user)) ? $getPatientDetails->user->email : null,
-                    'patientContact' => (!empty($getPatientDetails->user)) ? $getPatientDetails->user->mobile : null,
-                ]);
+            DB::commit();
 
-            } catch (\Exception $e) {
+            $getPatientDetails = Patients::with('user')->where('id',$patient_id)->first();
 
-                DB::rollBack();
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Advance payment successful',
+                'paymentsData' => $response['paymentData'],
+                'appointment_id' => $response['appointment']->id,
+                'paymentDetails_id' => $response['paymentDetails']->id,
+                'patientName' => (!empty($getPatientDetails->user)) ? $getPatientDetails->user->first_name . ' ' . $getPatientDetails->user->last_name : null,
+                'patientEmail' => (!empty($getPatientDetails->user)) ? $getPatientDetails->user->email : null,
+                'patientContact' => (!empty($getPatientDetails->user)) ? $getPatientDetails->user->mobile : null,
+            ]);
 
-                return response()->json([
-                    'status' => 'error', 
-                    'message' => $e->getMessage(),
-                    'line' => $e->getLine()
-                ]);
-            }
+        } catch (\Exception $e) {
+
+            DB::rollBack();
+
+            return response()->json([
+                'status' => 'error', 
+                'message' => $e->getMessage(),
+                'line' => $e->getLine()
+            ]);
         }
+    }
+
+    public function handleFailPayment(Request $request)
+    {
+
     }
 }
