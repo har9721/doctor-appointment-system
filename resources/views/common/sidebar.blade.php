@@ -95,12 +95,12 @@
             </a>
         </li>
 
-        <!-- <li class="nav-item">
-            <a class="nav-link collapsed" href="{{ route('appointments.completed-list') }}" active>
+        <li class="nav-item">
+            <a class="nav-link collapsed" href="{{ route('patients.view-doctor-slots') }}" active>
                 <i class="fas fa-check-circle"></i>
-                <span>Completed Appointments</span>
+                <span>View Doctors Availability</span>
             </a>
-        </li> -->
+        </li>
 
     @endif
 

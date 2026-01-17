@@ -204,8 +204,9 @@ class DoctorController extends Controller
     {
         $start = Carbon::parse($request->start);
         $end = Carbon::parse($request->end);
+        $loginUserId = Doctor::getLoginDoctorID();
 
-        $fetchAllTimeSlots = DoctorTimeSlots::fetchDoctorTimeSlots($start, $end);
+        $fetchAllTimeSlots = DoctorTimeSlots::fetchDoctorTimeSlots($start, $end, $loginUserId->id);
 
         return response()->json($fetchAllTimeSlots);
     }

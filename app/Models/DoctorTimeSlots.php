@@ -22,7 +22,7 @@ class DoctorTimeSlots extends Model
 
     protected $fillable = ['doctor_ID', 'availableDate' ,'start_time','end_time','created_at'];
 
-    protected $appends = ['start','end','title','time'];
+    protected $appends = ['start','end','title','time', 'appointmentdate'];
 
     public static function addDoctorTimeSlot($data)
     {
@@ -75,16 +75,17 @@ class DoctorTimeSlots extends Model
         return $addOrEditTimeSlot;
     }
 
-    public static function fetchDoctorTimeSlots($start = null, $end = null)
+    public static function fetchDoctorTimeSlots($start = null, $end = null, $doctorId = null)
     {
-        $loginUserId = Doctor::getLoginDoctorID();
-
-        return DoctorTimeSlots::where([
-            'doctor_ID' => $loginUserId->id, 
+        return DoctorTimeSlots::with('doctor')->where([
+            'doctor_ID' => $doctorId, 
             'isDeleted' => 0,
         ])
+        ->when(!empty($doctorId), function($query) use ($doctorId){
+            $query->where('doctor_ID', $doctorId);
+        })
         ->whereBetween('availableDate', [$start, $end])
-        ->get(['id','start_time','end_time','availableDate','status', 'isBooked'])
+        ->get(['id','start_time','end_time','availableDate','status', 'isBooked','doctor_ID'])
         ->toArray();
     }
 
@@ -131,7 +132,7 @@ class DoctorTimeSlots extends Model
 
     public function doctor()
     {
-        return $this->belongsTo(Doctor::class,'doctor_ID')->select('id','user_ID','specialty_ID','licenseNumber','isActive');    
+        return $this->belongsTo(Doctor::class,'doctor_ID')->select('id','user_ID','specialty_ID','licenseNumber','isActive','consultationFees' ,'followUpFees','payment_mode', 'advanceFees');    
     }
 
     public function time() : Attribute
@@ -159,5 +160,12 @@ class DoctorTimeSlots extends Model
     public function getStatusAttribute($value)
     {
         return str_replace("_"," ",ucfirst($value));    
+    }
+
+    public function appointmentdate() : Attribute
+    {
+        return new Attribute(
+            get : fn () => date('d-m-Y',strtotime($this->availableDate))
+        );
     }
 }
