@@ -31,6 +31,7 @@ class Appointments extends Model
         $appointment->createdBy = Auth::user()->id;
         $appointment->reason = $data['reason'] ?? null;
         $appointment->isBooked = 1;
+        $appointment->amount = $data['consultationFees'];
 
         $appointment->save();
 
@@ -108,6 +109,14 @@ class Appointments extends Model
                     WHEN appointments.appointmentDate = CURDATE() THEN "today"
                     ELSE "upcoming"
                     END as appointment_type
+            '),
+            'appointments.advance_amount',
+            DB::raw('
+                CASE
+                    WHEN appointments.payment_status = "pending" THEN (appointments.amount - appointments.advance_amount)
+                    WHEN appointments.payment_status = "partial" THEN (appointments.amount - appointments.advance_amount)
+                    ELSE "0.00"
+                    END as balance
             ')
         ]);
 

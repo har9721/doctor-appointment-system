@@ -76,7 +76,9 @@
                             <th>Date</th>
                             <th>Time</th>
                             <th>Status</th>
-                            <th>Amount (₹)</th>
+                            <th>Total Amount (₹)</th>
+                            <th>Advance Paid (₹)</th>
+                            <th>Balance (₹)</th>
                             <th>Payment Status</th>
                             <th>Action</th>
                         </tr>

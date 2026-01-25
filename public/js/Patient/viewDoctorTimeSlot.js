@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', function() {
     var calendarEl = document.getElementById('calendar');
 
     selectedDoctorId = String(selectedDoctorId);
- 
+
     var calendar = new FullCalendar.Calendar(calendarEl, {
         initialView: 'dayGridMonth',
         timeZone: 'local',
@@ -22,9 +22,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
         events: function(fetchInfo, successCallback, failureCallback) {
 
-            if (!selectedDoctorId) {
+            if (!Number(selectedDoctorId)) {
                 successCallback([]); // no doctor selected
-                return;
+                return false;
             }
 
             $.ajax({
@@ -36,6 +36,18 @@ document.addEventListener('DOMContentLoaded', function() {
                     end: fetchInfo.endStr
                 },
                 success: function(response) {
+
+                    if(response.length === 0)
+                    {
+                        Swal.fire({
+                            title: "Not Allowed",
+                            text: "No timeslots available",
+                            icon: "warning",
+                            timer: 3000
+                        });
+
+                        return false;
+                    }
                     successCallback(response);
                 },
                 error: function() {

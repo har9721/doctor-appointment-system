@@ -9,7 +9,7 @@
                     </span>&nbsp;
 
                     @if(in_array(Auth::user()->role_ID,config('constant.admin_and_doctor_role_ids')))
-                        @if($status == 'confirmed')
+                        @if($status == 'confirmed' || $status == 'pending')
                             <button class="btn btn-sm btn-light ms-2 amount" data-id="{{ $appointment->id }}" title="edit amount">
                                 <i class="fas fa-edit"  aria-hidden="true"></i>
                             </button>
@@ -52,14 +52,16 @@
                 </p>
             </div>
             <div class="appointment-right text-end">
-                <span class="badge 
-                    @if($appointment->appointment_type == 'today') bg-success text-white
-                    @elseif($appointment->appointment_type == 'past') bg-secondary text-white
-                    @else bg-warning text-dark
-                    @endif
-                ">
-                    {{ strtoupper($appointment->appointment_type) }}
-                </span>
+                @if($status != "completed")
+                    <span class="badge 
+                        @if($appointment->appointment_type == 'today') bg-success text-white
+                        @elseif($appointment->appointment_type == 'past') bg-secondary text-white
+                        @else bg-warning text-dark
+                        @endif
+                    ">
+                        {{ strtoupper($appointment->appointment_type) }}
+                    </span>
+                @endif
             </div>
         </div>
         <div class="text-right">
