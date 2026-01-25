@@ -86,6 +86,8 @@ class PaymentController extends Controller
             // update the db
             Appointments::updatePaymentStatus($request->appointment_id);
 
+            $getPatientDetails = Patients::getPatientDetails($request->appointment_id);
+
             // fetch the payment details using the payment id
             $fetchPaymentDetails = $this->api->payment->fetch($request->razorpay_payment_id);
 
@@ -96,8 +98,8 @@ class PaymentController extends Controller
                 ->update([
                     'status' => 'completed',
                     'method' => $fetchPaymentDetails->method,
-                    'email' => $request->email,
-                    'phone' => $request->contact,
+                    'email' => $getPatientDetails->email,
+                    'phone' => $getPatientDetails->mobile,
                     'res_payment_id' => $fetchPaymentDetails->id,
                     'json_response' => json_encode((array)$fetchPaymentDetails),
                     'updated_at' => now()
@@ -112,9 +114,9 @@ class PaymentController extends Controller
                     'res_payment_id' => $fetchPaymentDetails->id,
                     'transaction_id' => null,
                     'method' => $fetchPaymentDetails->method,
-                    'email' => $fetchPaymentDetails->email,
-                    'phone' => $fetchPaymentDetails->contact,
-                    'payment_type' => 'balance',
+                    'email' => $getPatientDetails->email,
+                    'phone' => $getPatientDetails->mobile,
+                    'payment_type' => 'full_payment',
                     // 'payment_signature' => $request->razorpay_signature,
                     'amount' => ($request->amount) ? $request->amount/100 : 0.00,
                     'currency' => $request->currency,

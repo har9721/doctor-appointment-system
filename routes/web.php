@@ -58,19 +58,19 @@ Route::middleware('auth')->group(function(){
         });
 
         Route::controller(DoctorController::class)->group(function(){
-            Route::get('/doctor','doctorView')->name('doctor');
-            Route::get('add-doctor','addDoctor')->name('add-doctor');
-            Route::post('register-doctor','doctorRegistration')->name('doctorRegister');
-            Route::get('/get-doctor-list','fetchAllDoctorList')->name('doctor-list');
-            Route::get('specialty','getAllSpecialty')->name('specialty');
-            Route::post('save-specialty','saveSpecialty')->name('save-specialty');
-            Route::get('fetch-specialty','fetchAllSpecialty')->name('get-specialty');
-            Route::post('delete-specialty','deleteSpecialty')->name('delete-specialty');
+            Route::get('/doctor','doctorView')->name('doctor')->middleware('can:isAdmin');
+            Route::get('add-doctor','addDoctor')->name('add-doctor')->middleware('can:isAdmin');
+            Route::post('register-doctor','doctorRegistration')->name('doctorRegister')->middleware('can:isAdmin');
+            Route::get('/get-doctor-list','fetchAllDoctorList')->name('doctor-list')->middleware('can:isAdmin');
+            Route::get('specialty','getAllSpecialty')->name('specialty')->middleware('can:isAdmin');
+            Route::post('save-specialty','saveSpecialty')->name('save-specialty')->middleware('can:isAdmin');
+            Route::get('fetch-specialty','fetchAllSpecialty')->name('get-specialty')->middleware('can:isAdmin');
+            Route::post('delete-specialty','deleteSpecialty')->name('delete-specialty')->middleware('can:isAdmin');
             Route::get('/edit-doctor-details/{doctor}','editDoctorForm')->name('editDoctorDetails');
             Route::post('/update-doctor-details','doctorUpdate')->name('doctorUpdate');
-            Route::post('/delete-doctor','deleteDoctor')->name('deleteDoctor');
+            Route::post('/delete-doctor','deleteDoctor')->name('deleteDoctor')->middleware('can:isAdmin');
             Route::get('/edit-doctor-details','getEditForm')->name('editDoctor');
-            Route::post('/send-time-slot-mail/{doctor}','sendTimeSlotMail')->name('send-time-slot-mail');
+            Route::post('/send-time-slot-mail/{doctor}','sendTimeSlotMail')->name('send-time-slot-mail')->middleware('can:isAdmin');
         });
 
         Route::middleware(['can:isAdmin'])->group(function(){   

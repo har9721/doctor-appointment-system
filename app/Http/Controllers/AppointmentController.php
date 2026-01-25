@@ -270,13 +270,29 @@ class AppointmentController extends Controller
                     $color = '<label class="badge bg-danger text-white">'.ucfirst($row['status']).'</label>';
                 }else
                 {
-                    $color = '<label class="badge .bg-secondary text-white">'.ucfirst($row['status']).'</label>';
+                    $color = '<label class="badge bg-secondary text-white">'.ucfirst($row['status']).'</label>';
                 }
 
                 return $color;
             })
             ->editColumn('payment_status', function($row){
-                return ($row['payment_status'] == 'pending') ? '<label class="badge bg-warning text-white">'.ucfirst($row['payment_status']).'</label>' : '<label class="badge bg-success text-white">'.ucfirst($row['payment_status']).'</label>';
+                if($row['payment_status'] == 'pending')
+                {
+                    $color = '<label class="badge bg-warning text-white">'.ucfirst($row['payment_status']).'</label>';
+                }
+                else if($row['payment_status'] == 'completed')
+                {
+                    $color = '<label class="badge bg-success text-white">'.ucfirst($row['payment_status']).'</label>';
+                }
+                else
+                {
+                    $color = '<label class="badge bg-primary text-white">'.ucfirst($row['payment_status']).'</label>';
+                }
+                
+                return $color;
+            })
+            ->editColumn('balance', function($row){
+                return number_format($row['balance'], 2);
             })
             ->rawColumns(['action','status','payment_status'])
             ->make(true);

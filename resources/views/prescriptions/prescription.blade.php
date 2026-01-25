@@ -43,8 +43,11 @@
             font-weight: bold;
         }
         .footer {
+            position: fixed;
+            bottom: 20px;
+            left: 0;
+            right: 0;
             text-align: center;
-            margin-top: 20px;
             font-size: 12px;
             color: #777;
         }

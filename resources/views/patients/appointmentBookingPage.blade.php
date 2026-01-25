@@ -114,6 +114,7 @@
         <div class="card-header py-3 d-flex justify-content-between">
             <h4 class="mt-2 font-weight-bold text-primary">Appointment Booking</h4>
             <div class="text-right">
+                <a href="{{ route('patients.view-doctor-slots') }}"><button class="btn btn-info">View Doctors Availability</button></a>
             </div>
         </div>
         <div class="card-body">
