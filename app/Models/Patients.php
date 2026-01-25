@@ -138,4 +138,18 @@ class Patients extends Model
                 DB::raw('CONCAT_WS(" ", users.first_name, users.last_name) as patient_full_name')
             ]);
     }
+
+    public static function getPatientDetails($appointment_ID)
+    {
+        $patientDetails =   Appointments::join('patients','patients.id','appointments.patient_ID')
+                            ->join('users','users.id','patients.user_ID')
+                            ->where('appointments.id', $appointment_ID)
+                            ->select(
+                                DB::raw('CONCAT_WS(" ", users.first_name, users.last_name) as patient_full_name'),
+                                'users.email','users.mobile'
+                            )
+                            ->get();
+
+        return (!empty($patientDetails)) ? $patientDetails[0] : null;
+    }
 }

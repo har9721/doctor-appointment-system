@@ -59,6 +59,8 @@ var table = $('#appointmentHistory').DataTable({
         {data: 'time', name:'time',"sortable": true, "searchable": true},
         {data: 'status', name:'status',"sortable": true, "searchable": true},
         {data: 'amount', name:'amount',"sortable": true, "searchable": true},
+        {data: 'advance_amount', name:'advance_amount',"sortable": true, "searchable": true},
+        {data: 'balance', name:'balance',"sortable": true, "searchable": true},
         {data: 'payment_status', name:'payment_status',"sortable": true, "searchable": true},
         {data: 'action', name:'action',"sortable": false, "searchable": false},
     ],

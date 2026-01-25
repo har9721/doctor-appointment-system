@@ -26,7 +26,7 @@ function razorPay(order)
                 appointment_id: document.getElementById('appointment_id').value, // Retrieve appointment ID
                 currency: order.currency,
                 amount: order.amount,
-                payment_details_id: paymentDetails_id,
+                payment_details_id: response.paymentDetails_id || null,
                 name : response.patientName,
                 email : response.patientEmail,
                 contact : response.patientContact
