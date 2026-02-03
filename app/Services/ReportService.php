@@ -105,8 +105,8 @@ class ReportService
 
     public function getDoctorPerformanceReport($request)
     {
-        $startDate = date('Y-m-d', strtotime($request->from_date));
-        $toDate = date('Y-m-d', strtotime($request->to_date));
+        $startDate = date('Y-m-d', strtotime($request->start_date));
+        $toDate = date('Y-m-d', strtotime($request->end_date));
 
         $doctorPerformanceReport = $this->doctor->getDoctorPerformance($request);
 

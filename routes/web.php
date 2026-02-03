@@ -189,7 +189,7 @@ Route::middleware('auth')->group(function(){
 });
 
 Route::post('/payment/success', [PaymentController::class, 'handlePayment'])->name('payment.success');
-Route::post('/payment/fail', [PaymentController::class, 'handleFailPayment'])->name('payment.fail');
+Route::post('/webhooks/razorpay', [PaymentController::class, 'razorpayWebhooks']);
 
 // forgot password
 Route::get('forgot-password',[ForgotPasswordController::class,'index'])->name('forgot-password');

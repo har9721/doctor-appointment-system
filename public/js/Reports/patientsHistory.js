@@ -22,7 +22,7 @@ $('#to_date').datetimepicker({
     datepicker : true,
     changeMonth:true,
     changeYear:true,
-    minDate : "-1",
+    // minDate : "-1",
     scrollInput : false,
 });
 
@@ -42,8 +42,8 @@ $('#patientHistoryTable').DataTable({
         },
         data: function(d)
         {
-            d.from_date = $('#from_date').val()
-            d.to_date = $('#to_date').val()
+            d.start_date = $('#from_date').val()
+            d.end_date = $('#to_date').val()
             d.id = $('#patient_name_list').val()
         },
         complete: function()
@@ -116,7 +116,20 @@ function reload_table() {
     
     if (startDate != '' && toDate != '')
     {
-        $('#patientHistoryTable').DataTable().ajax.reload();
+        // Parse dates to compare them
+        const start = new Date(startDate.split('-').reverse().join('-'));
+        const end = new Date(toDate.split('-').reverse().join('-'));
+        
+        if (end < start) {
+            Swal.fire({
+                title: "Error",
+                text: "The end date must be a date after or equal to start date.",
+                icon: "error",
+                timer: 4000
+            });
+        } else {
+            $('#patientHistoryTable').DataTable().ajax.reload();
+        }
     }
     else
     {
@@ -152,16 +165,39 @@ $(document).on('click','.payment_summary', function(){
         data : {appointment_id:appointment_id},
         success: function(response)
         {
-            const details = `
-                <ul>
-                    <li><strong>Payment ID:</strong> ${response.res_payment_id}</li>
-                    <li><strong>Order ID:</strong> ${response.order_id}</li>
-                    <li><strong>Amount:</strong> ₹ ${response.amount}.00</li>
-                    <li><strong>Status:</strong> ${response.status}</li>
-                    <li><strong>Transaction Date:</strong> ${response.formatted_date}</li>
-                </ul>`;
+            if(response)
+            {
+                let allDetails = '';
+                const entries = Object.entries(response);
+                
+                entries.forEach(function([key, value]) {
+                    
+                    // Determine heading based on payment_type
+                    let heading = '';
+                    if(value.payment_type === 'advance') {
+                        heading = '<h5><strong>Advance Payment Details</strong></h5>';
+                    } else if(value.payment_type === 'full_payment') {
+                        heading = '<h5><strong>Remaining Payment Details</strong></h5>';
+                    }
+                    
+                    const details = `
+                        <fieldset class="border border-warning p-3 rounded mb-4">
+                            <legend class="float-none w-auto px-3 text-success">${heading}</legend>
+                            <ul>
+                                <li><strong>Payment ID:</strong> ${value.res_payment_id}</li>
+                                <li><strong>Order ID:</strong> ${value.order_id}</li>
+                                <li><strong>Amount:</strong> ₹ ${value.amount}</li>
+                                <li><strong>Status:</strong> ${value.status}</li>
+                                <li><strong>Transaction Date:</strong> ${value.formatted_date}</li>
+                            </ul>
+                        </fieldset>`;
+                    
+                    allDetails += details;
+                });
+        
+                $('#paymentSummaryModal .modal-body').html(allDetails);
+            }
 
-            $('#paymentSummaryModal .modal-body').html(details);
             $('#paymentSummaryModal').modal('show');
         },
         error: function () {

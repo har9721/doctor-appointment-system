@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\AppointmentBooking;
 use App\Http\Requests\AppointmentRequest;
+use App\Http\Requests\ValidateReportsDate;
 use App\Models\Appointments;
 use App\Models\Doctor;
 use App\Models\DoctorTimeSlots;
@@ -194,10 +195,10 @@ class AppointmentController extends Controller
         return view('patients.completedAppointmentList');    
     }
 
-    public function getCompletedAppointment(Request $request)
+    public function getCompletedAppointment(ValidateReportsDate $request)
     {
-        $from_date = (!empty($request->from_date)) ? $request->from_date : date('01-m-Y');
-        $to_date = (!empty($request->to_date)) ? $request->to_date : date('d-m-Y',strtotime(date('t-m-Y')));
+        $from_date = (!empty($request->start_date)) ? $request->start_date : date('01-m-Y');
+        $to_date = (!empty($request->end_date)) ? $request->end_date : date('d-m-Y',strtotime(date('t-m-Y')));
         $status = (!empty($request->status)) ? $request->status : "";
         $appoinmentno = $request->appointment_no ?? '';
 
@@ -210,11 +211,11 @@ class AppointmentController extends Controller
                     <i class="fas fa-file-invoice-dollar"></i> 
                 </button>' : '' ;
 
-                $viewPrescriptions = (isset($row['prescriptions_ID']) && !empty($row['prescriptions_ID'])) ? '<button name="View Prescriptions" class="mr-2 btn btn-sm btn-info border text-white prescription_summary"  data-toggle="tooltip" data-prescriptions_id = "'.$row['prescriptions_ID'].'" data-placement="bottom" title="View Prescriptions"  data-bs-toggle="modal" data-bs-target="#paymentSummaryModal">
+                $viewPrescriptions = (isset($row['prescriptions_ID']) && !empty($row['prescriptions_ID'])) ? '<button name="View Prescriptions" class="mr-2 btn btn-sm btn-info border text-white prescription_summary"  data-toggle="tooltip" data-id = "'.$row['id'].'" data-placement="bottom" title="View Prescriptions"  data-bs-toggle="modal" data-bs-target="#paymentSummaryModal">
                     <i class="fas fa-receipt"></i> 
                 </button>' : '' ;
 
-                $pay = ($row['payment_status'] == 'pending' && ($row['status'] == 'completed' || $row['status'] == 'confirmed') && (!in_array(Auth::user()->role_ID, config('constant.admin_and_doctor_role_ids')))
+                $pay = (($row['payment_status'] == 'pending' || $row['payment_status'] == 'partial') && ($row['status'] == 'completed') && (!in_array(Auth::user()->role_ID, config('constant.admin_and_doctor_role_ids')))
                 && $row['amount'] != null
                 ) 
                 ? '<button name="Pay" id="payment" class="mr-2 payment btn btn-sm success border text-white bg-dark" data-toggle="tooltip" data-id = "'.$row['id'].'" data-placement="bottom" title="Pay" data-email ="' . $row['patient_email'] . '" data-contact ="' . $row['patient_contact'] . '" data-name="'. $row['patient_full_name'] .'">
@@ -224,8 +225,8 @@ class AppointmentController extends Controller
 
                 // $filePath = 'public/invoices/invoice_' . $row['transaction_id'] . '.pdf';
 
-                $downloadInvoice = ($row['payment_status'] == 'completed' && (!empty($row['res_payment_id']))) ? 
-                '<a href="'. route("payments.download-invoice",['link' => $row['res_payment_id']]) .'">
+                $downloadInvoice = ($row['payment_status'] == 'completed') ? 
+                '<a href="'. route("payments.download-invoice",['link' => $row['appointment_no']]) .'">
                 <button name="invoice" class="mr-2 btn btn-sm btn-dark border text-white download_invoice"  data-toggle="tooltip" data-id = "'.$row['id'].'" data-amount = "'. $row['amount'] .'" data-placement="bottom" title="Download Payment Summary"  data-bs-toggle="modal">
                     <i class="fas fa-download"></i> 
                 </button></a>' : '' ;
@@ -308,7 +309,10 @@ class AppointmentController extends Controller
                 $q->with(['doctor.user']);
             }])
             ->where('id',$appointment_id)
-            ->first(['id','doctorTimeSlot_ID','patient_ID','amount','status','isBooked','isCancel','created_at',DB::raw('DATE_FORMAT(appointments.appointmentDate,"%M %d, %Y") as appointmentDate')]);
+            ->first(['id','doctorTimeSlot_ID','patient_ID','status','isBooked','isCancel','created_at',    
+            DB::raw('DATE_FORMAT(appointments.appointmentDate,"%M %d, %Y") as appointmentDate'),
+            DB::raw('(appointments.amount - appointments.advance_amount) as amount')
+            ]);
 
             if(!in_array(Auth::user()->role_ID,config('constant.admin_and_doctor_role_ids')))
             {
@@ -320,6 +324,7 @@ class AppointmentController extends Controller
             return [
                 'paymentsData' => ($paymentData) ? (array)$paymentData : '',
                 'getApointmentDetails' => $getAppointmentDetails,
+                'isAdvance' => 0
             ];
         }else{
             return null;

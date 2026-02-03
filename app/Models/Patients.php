@@ -146,7 +146,7 @@ class Patients extends Model
                             ->where('appointments.id', $appointment_ID)
                             ->select(
                                 DB::raw('CONCAT_WS(" ", users.first_name, users.last_name) as patient_full_name'),
-                                'users.email','users.mobile'
+                                'users.email','users.mobile','patients.razorpay_cust_id'
                             )
                             ->get();
 

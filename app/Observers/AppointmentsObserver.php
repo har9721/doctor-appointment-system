@@ -14,9 +14,16 @@ class AppointmentsObserver
     {
         $doctor_ID = DoctorTimeSlots::where('id', $appointments->doctorTimeSlot_ID)->value('doctor_ID');
 
-        $count = Appointments::whereDate('created_at', now()->toDateString())->count() + 1;
+        $count = Appointments::where('appointment_no', 'LIKE', 'APT-'. date('dmY'). '-'. $doctor_ID . '-%')->latest('appointment_no')->first('appointment_no');
+        info('Count: ' . $count);
 
-        $formattedCount = str_pad($count, 3, '0', STR_PAD_LEFT);
+        $getNumber = substr($count->appointment_no ?? 'APT-'. date('dmY'). '-'. $doctor_ID . '-000', -3);
+        info('Get Number: ' . $getNumber);
+
+        $incrementedValue = strval(intval($getNumber)+1);
+        info('incremented value : ' . $incrementedValue);
+
+        $formattedCount = str_pad($incrementedValue, 3, '0', STR_PAD_LEFT);
         info('Formatted Count: ' . $formattedCount);
 
         $appointments->appointment_no = "APT-". date('dmY'). "-". $doctor_ID . "-" . $formattedCount;
