@@ -115,11 +115,11 @@ class Doctor extends Model
                 'appointments as completed_count' => function ($query1) use($inputs){
                     $query1
                         ->when(
-                            !empty($inputs['from_date']) && !empty($inputs['to_date']),
+                            !empty($inputs['start_date']) && !empty($inputs['end_date']),
                             function($query) use($inputs)
                             {
-                                $startDate = date('Y-m-d', strtotime($inputs['from_date']));
-                                $toDate = date('Y-m-d', strtotime($inputs['to_date']));
+                                $startDate = date('Y-m-d', strtotime($inputs['start_date']));
+                                $toDate = date('Y-m-d', strtotime($inputs['end_date']));
 
                                 return $query->whereBetween('appointmentDate',[$startDate, $toDate]);
                             }
@@ -130,11 +130,11 @@ class Doctor extends Model
                 'appointments as cancelled_count' => function ($query1) use($inputs){
                     $query1
                         ->when(
-                            !empty($inputs['from_date']) && !empty($inputs['to_date']),
+                            !empty($inputs['start_date']) && !empty($inputs['end_date']),
                             function($query) use($inputs)
                             {
-                                $startDate = date('Y-m-d', strtotime($inputs['from_date']));
-                                $toDate = date('Y-m-d', strtotime($inputs['to_date']));
+                                $startDate = date('Y-m-d', strtotime($inputs['start_date']));
+                                $toDate = date('Y-m-d', strtotime($inputs['end_date']));
 
                                 return $query->whereBetween('appointmentDate',[$startDate, $toDate]);
                             }
@@ -145,11 +145,11 @@ class Doctor extends Model
                 'appointments as pending_count' => function ($query1) use($inputs){
                     $query1
                         ->when(
-                            !empty($inputs['from_date']) && !empty($inputs['to_date']),
+                            !empty($inputs['start_date']) && !empty($inputs['end_date']),
                             function($query) use($inputs)
                             {
-                                $startDate = date('Y-m-d', strtotime($inputs['from_date']));
-                                $toDate = date('Y-m-d', strtotime($inputs['to_date']));
+                                $startDate = date('Y-m-d', strtotime($inputs['start_date']));
+                                $toDate = date('Y-m-d', strtotime($inputs['end_date']));
                             
                                 return $query->whereBetween('appointmentDate',[$startDate, $toDate]);
                             }
@@ -161,11 +161,11 @@ class Doctor extends Model
             ->withSum(['appointments as sum_amount' => function($query1) use($inputs){
                 $query1
                     ->when(
-                        !empty($inputs['from_date']) && !empty($inputs['to_date']),
+                        !empty($inputs['start_date']) && !empty($inputs['end_date']),
                         function($query) use($inputs)
                         {
-                            $startDate = date('Y-m-d', strtotime($inputs['from_date']));
-                            $toDate = date('Y-m-d', strtotime($inputs['to_date']));
+                            $startDate = date('Y-m-d', strtotime($inputs['start_date']));
+                            $toDate = date('Y-m-d', strtotime($inputs['end_date']));
                         
                             return $query->whereBetween('appointmentDate',[$startDate, $toDate]);
                         }

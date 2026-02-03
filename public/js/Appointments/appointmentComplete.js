@@ -16,7 +16,7 @@ $('#to_date').datetimepicker({
     datepicker : true,
     changeMonth:true,
     changeYear:true,
-    minDate : "-1",
+    // minDate : "-1",
     scrollInput : false,
 });
 
@@ -36,8 +36,8 @@ var table = $('#completeAppointmentList').DataTable({
         },
         data: function(d)
         {
-            d.from_date = $('#from_date').val()
-            d.to_date = $('#to_date').val()
+            d.start_date = $('#from_date').val()
+            d.end_date = $('#to_date').val()
             d.status = ""
         },
         complete: function()
@@ -64,7 +64,19 @@ function reload_table() {
     
     if (startDate != '' && toDate != '')
     {
-        $('#completeAppointmentList').DataTable().ajax.reload();
+        const start = new Date(startDate.split('-').reverse().join('-'));
+        const end = new Date(toDate.split('-').reverse().join('-'));
+        
+        if (end < start) {
+            Swal.fire({
+                title: "Error",
+                text: "The end date must be a date after or equal to start date.",
+                icon: "error",
+                timer: 4000
+            });
+        } else {
+            $('#completeAppointmentList').DataTable().ajax.reload();
+        }
     }
     else
     {

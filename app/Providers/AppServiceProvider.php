@@ -16,9 +16,9 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot()
     {
-        // if (app()->environment('local')) {
-        //     URL::forceScheme('https');
-        // }
+        if (app()->environment('local')) {
+            URL::forceScheme('https');
+        }
 
         Gate::define('isAuthorized',[IsAdminOrDoctor::class,'checkIsAdminOrDoctor']);
         Gate::define('isPatients', [\App\Gate\isPatients::class, 'checkIsPatients']);
