@@ -61,7 +61,7 @@ class Appointments extends Model
         ->join('users as d', 'd.id', '=', 'doctors.user_ID')
         ->join('users as p', 'p.id', '=', 'patients.user_ID')
         ->join('mst_specialties', 'mst_specialties.id', '=', 'specialty_ID')
-        ->leftJoin('payment_details','payment_details.appointment_ID','appointments.id')
+        // ->leftJoin('payment_details','payment_details.appointment_ID','appointments.id')
         ->leftJoin('prescriptions','prescriptions.appointment_ID','appointments.id')
         ->when((!empty($from_date)) || !empty($to_date), function($q) use($from_date, $to_date){     
             $q->whereBetween('appointmentDate', [
@@ -72,7 +72,6 @@ class Appointments extends Model
         ->when($status === 'payment_pending', function($query) use($status){
             $query->where('appointments.payment_status','pending');
         }, function($query) use($status){
-            info($status);
             ($status != 'all' && !empty($status)) ? $query->where('appointments.status',$status) : '';
         })
         ->where('appointments.isActive', 1)
@@ -100,8 +99,7 @@ class Appointments extends Model
             'mst_specialties.specialtyName',
             DB::raw('CONCAT_WS(" ", p.first_name, p.last_name) as patient_full_name'),                
             DB::raw('CONCAT_WS(" ", d.first_name, d.last_name) as doctor_full_name'),
-            DB::raw('CONCAT_WS("-", DATE_FORMAT(doctor_time_slots.start_time, "%h:%i %p"), DATE_FORMAT(doctor_time_slots.end_time, "%h:%i %p")) as time'),
-            'payment_details.res_payment_id','doctor_time_slots.doctor_ID','prescriptions.id as prescriptions_ID',
+            DB::raw('CONCAT_WS("-", DATE_FORMAT(doctor_time_slots.start_time, "%h:%i %p"), DATE_FORMAT(doctor_time_slots.end_time, "%h:%i %p")) as time'),'doctor_time_slots.doctor_ID','prescriptions.id as prescriptions_ID',
             'p.email as patient_email', 'p.mobile as patient_contact',
             DB::raw('
                 CASE
@@ -566,9 +564,9 @@ class Appointments extends Model
             );
         })
         ->where('isActive', 1)
-        ->when(!empty($data['from_date'] && !empty($data['to_date'])), function($query) use($data){
-            $startDate = date('Y-m-d', strtotime($data['from_date']));
-            $toDate = date('Y-m-d', strtotime($data['to_date']));
+        ->when(!empty($data['start_date'] && !empty($data['end_date'])), function($query) use($data){
+            $startDate = date('Y-m-d', strtotime($data['start_date']));
+            $toDate = date('Y-m-d', strtotime($data['end_date']));
 
             return $query->whereBetween('appointmentDate',[$startDate, $toDate]);
         })

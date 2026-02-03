@@ -21,6 +21,8 @@ class sendPaymentDone extends Mailable
     public function __construct($data)
     {
         $this->mailData = $data;
+        info('-----------------------inside send payment done mail---------------------');
+        info($this->mailData);
     }
 
     public function envelope()
@@ -51,7 +53,7 @@ class sendPaymentDone extends Mailable
     {
         $pdf = PDF::loadView('invoices.invoice', ['invoiceData' => $this->mailData]);
 
-        $filePath = 'public/invoices/invoice_' . $this->mailData['transaction_id'] . '.pdf';
+        $filePath = 'public/invoices/invoice_' . $this->mailData['appointment_no'] . '.pdf';
     
         Storage::put($filePath,$pdf->output());
 

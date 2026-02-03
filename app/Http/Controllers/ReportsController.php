@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\ValidateReportsDate;
 use App\Services\ReportService;
 use Illuminate\Http\Request;
 
@@ -48,7 +49,7 @@ class ReportsController extends Controller
         return view('reports.appointments.doctorPerformance');    
     }
 
-    public function fetchDoctorPerformance(Request $request)
+    public function fetchDoctorPerformance(ValidateReportsDate $request)
     {
         return $this->reportService->getDoctorPerformanceReport($request);
     }
@@ -74,9 +75,9 @@ class ReportsController extends Controller
         return view('reports.patientHistory');
     }
 
-    public function fetchPatientHistory(Request $request)
+    public function fetchPatientHistory(ValidateReportsDate $request)
     {
-        return $this->reportService->getPatientstHistory($request->only(['id','from_date','to_date']));
+        return $this->reportService->getPatientstHistory($request->only(['id','start_date','end_date']));
     }
 
     public function getRevenueReport()
@@ -84,7 +85,7 @@ class ReportsController extends Controller
         return view('reports.revenueReport');
     }
 
-    public function fetchRevenueDetails(Request $request)
+    public function fetchRevenueDetails(ValidateReportsDate $request)
     {
         if($request->ajax())
         {

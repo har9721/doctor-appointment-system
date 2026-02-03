@@ -69,6 +69,6 @@ class PrescriptionsController extends Controller
 
         $random_str = Str::random(5);
 
-        return Storage::download($filePath, "invoice_$random_str.pdf");
+        return Storage::download($filePath, "prescription_" . now()->format('Y-m-d') . "_$random_str.pdf");
     }
 }
