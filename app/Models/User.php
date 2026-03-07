@@ -188,4 +188,9 @@ class User extends Authenticatable
     {
         return $this->role->roleName === 'Patients';    
     }
+
+    public function createdBy()
+    {
+        return $this->hasOne(Appointments::class, 'createdBy');
+    }
 }

@@ -4,10 +4,11 @@ let localIsAdvance = 0;
 $(document).on('click','.payment', function(){
     $('.payment').attr('disabled',true);
     const appointment_id = $(this).data('id');
+    let payment_status = $(this).data('payment-status');
 
     $('#loader').css('display','block');
 
-    fetchAppointmentDetails(appointment_id);
+    fetchAppointmentDetails(appointment_id, payment_status);
 });
 
 function razorPay(order, isAdvance)
@@ -79,18 +80,23 @@ function razorPay(order, isAdvance)
     rzp.open();
 }
 
-function fetchAppointmentDetails(appointment_id)
+function fetchAppointmentDetails(appointment_id, payment_status)
 {
     $.ajax({
         type : 'get',
         url : getAppointmentDetails,
-        data : {appointment_id:appointment_id},
+        data : {appointment_id:appointment_id, 'payment_status' : payment_status},
         success: function(response)
-        {
+        {   
             $('#doctor_name').val(response.getApointmentDetails.doctor_time_slot.doctor.user.full_name);
             let date_time = `${response.getApointmentDetails.appointmentDate} , ${response.getApointmentDetails.doctor_time_slot.time}`;
             $('#appointment_Date').val(date_time);
-            $('#amount').val(response.getApointmentDetails.amount);
+
+            if(response.getApointmentDetails.status == 'awaiting for payment')
+                $('#amount').val(response.getApointmentDetails.advance_amount);
+            else
+                $('#amount').val(response.getApointmentDetails.amount);
+
             $('#makePaymentModal').modal('show');
             $('#appointment_id').val(appointment_id);
             $('#amount_hidden').val(response.getApointmentDetails.amount);
@@ -125,13 +131,12 @@ $(document).on('click','.payment_summary', function(){
                 const entries = Object.entries(response);
                 
                 entries.forEach(function([key, value]) {
-                    console.log(key + ': ' + value);
                     
                     // Determine heading based on payment_type
                     let heading = '';
                     if(value.payment_type === 'advance') {
                         heading = '<h5><strong>Advance Payment Details</strong></h5>';
-                    } else if(value.payment_type === 'full_payment') {
+                    } else if(value.payment_type === 'remaining') {
                         heading = '<h5><strong>Remaining Payment Details</strong></h5>';
                     }
                     

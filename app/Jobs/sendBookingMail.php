@@ -3,6 +3,7 @@
 namespace App\Jobs;
 
 use App\Mail\AppointmentConfirmationPatient;
+use App\Mail\AppointmentPaymentPendingMail;
 use App\Mail\NewAppointmentForDoctor;
 use App\Mail\SendAppointmentUpdateMail;
 use App\Mail\SendAppointmentUpdateMailToDoctor;
@@ -43,11 +44,20 @@ class sendBookingMail implements ShouldQueue
         if($this->status == 'create')
         {
             info($this->emailData);
-            // send mail to patient 
-            Mail::to($this->emailData['patientsEmail'])->send(new AppointmentConfirmationPatient($this->emailData));
-    
-            // send mail to doctor
-            Mail::to($this->emailData['doctor_email'])->send(new NewAppointmentForDoctor($this->emailData));
+
+            if(in_array($this->emailData['createdByRoleID'], config('constant.admin_and_doctor_role_ids')))
+            {
+                // send mail to patient 
+                Mail::to($this->emailData['patientsEmail'])->send(new AppointmentPaymentPendingMail($this->emailData));
+
+            }else{
+            
+                // send mail to patient 
+                Mail::to($this->emailData['patientsEmail'])->send(new AppointmentConfirmationPatient($this->emailData));
+        
+                // send mail to doctor
+                Mail::to($this->emailData['doctor_email'])->send(new NewAppointmentForDoctor($this->emailData));
+            }
         }else{
             info($this->emailData);
             // send mail to patient 

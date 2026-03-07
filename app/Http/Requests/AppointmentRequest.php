@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Models\DoctorTimeSlots;
 use Carbon\Carbon;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
@@ -20,8 +21,18 @@ class AppointmentRequest extends FormRequest
             'appointment_date' => ['required','date_format:d-m-Y',
                 function($attributes,$value,$fail)
                 {
-                    $currentDate = Carbon::now()->format('d-m-Y');
-                    $appointmentDate = Carbon::parse($value);
+                    $currentDate = Carbon::now()->addHour(5)->addMinute(30);
+
+                    $timeSlotDetails = DoctorTimeSlots::getSlotTime($this->timeSlot);
+
+                    if(empty($timeSlotDetails))
+                    {
+                        $fail("The time slot is not found.");
+                    }
+
+                    $appointmentDate = Carbon::parse(
+                        $timeSlotDetails->appointmentDate.''.$timeSlotDetails->start_time
+                    );
 
                     if($appointmentDate->gte($currentDate) && in_array($this->status, ['completed'])) //'confirmed'
                     {

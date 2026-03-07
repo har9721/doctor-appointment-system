@@ -168,4 +168,9 @@ class DoctorTimeSlots extends Model
             get : fn () => date('d-m-Y',strtotime($this->availableDate))
         );
     }
+
+    public static function getSlotTime($id)
+    {
+        return DoctorTimeSlots::where('id',$id)->first();   
+    }
 }

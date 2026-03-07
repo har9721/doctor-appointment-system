@@ -7,6 +7,8 @@ use App\Jobs\sendBookingMail;
 use App\Models\Appointments;
 use App\Models\DoctorTimeSlots;
 use App\Models\Patients;
+use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 
 class AppointmentsObserver
 {
@@ -15,28 +17,26 @@ class AppointmentsObserver
         $doctor_ID = DoctorTimeSlots::where('id', $appointments->doctorTimeSlot_ID)->value('doctor_ID');
 
         $count = Appointments::where('appointment_no', 'LIKE', 'APT-'. date('dmY'). '-'. $doctor_ID . '-%')->latest('appointment_no')->first('appointment_no');
-        info('Count: ' . $count);
 
         $getNumber = substr($count->appointment_no ?? 'APT-'. date('dmY'). '-'. $doctor_ID . '-000', -3);
-        info('Get Number: ' . $getNumber);
 
         $incrementedValue = strval(intval($getNumber)+1);
-        info('incremented value : ' . $incrementedValue);
 
         $formattedCount = str_pad($incrementedValue, 3, '0', STR_PAD_LEFT);
-        info('Formatted Count: ' . $formattedCount);
 
         $appointments->appointment_no = "APT-". date('dmY'). "-". $doctor_ID . "-" . $formattedCount;
     }
 
     public function created(Appointments $appointments)
     {
-        dispatch(new sendBookingMail(Appointments::getEmailData($appointments),'create'));
+        dispatch(new sendBookingMail(Appointments::getEmailData($appointments, Auth::user()->role_ID),'create'));
     }
 
     public function updated(Appointments $appointments)
     {
-        info('inside a update observer class');
+        info('appointment observer update methods');
+
+        $roleID = User::where('id', $appointments->createdBy)->first('role_ID');
 
         if ($appointments->wasChanged('status') || $appointments->wasChanged('isRescheduled')) 
         {
@@ -45,7 +45,7 @@ class AppointmentsObserver
             // Handle specific status change logic
             if ($new_status === 'Pending') {
                 info('inside a pending status');
-                dispatch(new SendAppointmentStatus(Appointments::getEmailData($appointments), $new_status));
+                dispatch(new SendAppointmentStatus(Appointments::getEmailData($appointments, $roleID->role_ID), $new_status));
             }
 
             if ($new_status === 'completed' && !$appointments->getOriginal('status') === 'completed') {
@@ -54,13 +54,13 @@ class AppointmentsObserver
             }
 
             // Send email for all status changes
-            dispatch(new SendAppointmentStatus(Appointments::getEmailData($appointments), $new_status));
+            dispatch(new SendAppointmentStatus(Appointments::getEmailData($appointments, $roleID->role_ID), $new_status));
         }
 
         if($appointments->wasChanged(['appointmentDate','patient_ID', 'doctorTimeSlot_ID']))
         {
-            info('inside a update observer class for reschedule');
-            dispatch(new sendBookingMail(Appointments::getEmailData($appointments),'update'));
+            info('inside a appointment observer update methods for reschedule');
+            dispatch(new sendBookingMail(Appointments::getEmailData($appointments, $roleID->role_ID),'update'));
         }
     }
 

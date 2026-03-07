@@ -97,4 +97,11 @@ class HomeController extends Controller
     {
         return $this->fetchPieChartData();    
     }
+
+    // public function testPaymentSummary(Appointments $appointments)
+    // {
+    //     $paymentSummary = $appointments->getPaymentSummary($appointments->id);
+    //     // dd($paymentSummary);
+    //     dispatch(new SendPaymentSummary($paymentSummary));
+    // }
 }

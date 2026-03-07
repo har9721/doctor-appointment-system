@@ -69,7 +69,7 @@ class PaymentController extends Controller
                 'appointment_ID' => $appointments->id,
                 'order_id' => $razorPayResponse['id'],
                 'transaction_id' => null,
-                'payment_type' => ($column == 'advanceFees') ? 'advance' :'full_payment',
+                'payment_type' => ($column == 'advanceFees') ? 'advance' : 'remaining',
                 'amount' => number_format($amountToPay,2),
                 'status' => 'pending',
                 'createdBy' => auth()->user()->id,
@@ -137,9 +137,21 @@ class PaymentController extends Controller
 
             // update the db
             if($request->isAdvance == 0)
+            {
                 Appointments::updatePaymentStatus($request->appointment_id);
+            }
 
-            // $getPatientDetails = Patients::getPatientDetails($request->appointment_id);
+            // update the appointment table
+            $appointment = Appointments::findOrFail($request->appointment_id);
+
+            if($request->isAdvance == 1 && 
+                ($appointment->status == 'pending'|| $appointment->status == 'awaiting for payment')
+            ){
+                $appointment->status = 'confirmed';
+                $appointment->payment_status = 'partial';
+                $appointment->updatedBy = Auth()->user()->id;
+                $appointment->update();
+            }
 
             // fetch the payment details using the payment id
             $fetchPaymentDetails = $this->api->payment->fetch($request->razorpay_payment_id);
@@ -172,7 +184,7 @@ class PaymentController extends Controller
                     'method' => $fetchPaymentDetails->method,
                     'email' => $request->email,
                     'phone' => $request->contact,
-                    'payment_type' => 'full_payment',
+                    'payment_type' => 'remaining',
                     'amount' => ($request->amount) ? $request->amount/100 : 0.00,
                     'currency' => $request->currency,
                     'status' => 'completed',
@@ -215,7 +227,7 @@ class PaymentController extends Controller
             return PaymentDetails::where('appointment_ID',$appointment_id)->where('id',$payment_id)->first();
         }
 
-        return PaymentDetails::where('appointment_ID',$appointment_id)->get();
+        return PaymentDetails::where('appointment_ID',$appointment_id)->whereNotNull('res_payment_id')->get();
     }
 
     public function sendPaymentPedingMail(Request $request)

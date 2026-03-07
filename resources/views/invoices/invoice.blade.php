@@ -1,113 +1,170 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="utf-8">
     <title>Invoice</title>
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
     <style>
         body {
-            font-family: Arial, sans-serif;
-            font-size: 14px;
+            background: #f4f6f9;
         }
         .invoice-box {
-            max-width: 800px;
-            margin: auto;
-            padding: 30px;
-            border: 1px solid #eee;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
-        }
-        .header {
-            text-align: center;
-        }
-        .header img {
-            max-width: 150px;
-        }
-        .company-details {
-            text-align: right;
+            background: #ffffff;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.05);
         }
         .invoice-title {
-            font-size: 24px;
+            font-size: 22px;
+            font-weight: 700;
+        }
+        .section-title {
+            font-weight: 600;
+            font-size: 14px;
+            color: #6c757d;
+            text-transform: uppercase;
             margin-bottom: 10px;
-            color: #333;
         }
-        .details {
-            width: 100%;
-            margin-bottom: 20px;
-        }
-        .details td {
-            padding: 8px;
-            border-bottom: 1px solid #ddd;
-        }
-        .total {
+        .amount-highlight {
             font-size: 18px;
-            font-weight: bold;
+            font-weight: 600;
         }
-        .footer {
-            text-align: center;
-            margin-top: 20px;
+        .status-badge {
+            padding: 6px 12px;
+            border-radius: 20px;
             font-size: 12px;
-            color: #777;
+            font-weight: 600;
         }
-        .qr-code {
-            text-align: center;
-            margin-top: 10px;
+        .status-paid {
+            background: #d4edda;
+            color: #155724;
+        }
+        .status-partial {
+            background: #fff3cd;
+            color: #856404;
+        }
+        .status-failed {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        hr {
+            margin: 20px 0;
         }
     </style>
 </head>
+
 <body>
+
+<div class="container mt-5 mb-5">
     <div class="invoice-box">
-        <table width="100%">
-            <tr>
-                <td class="header">
-                    <img src="{{ public_path('assets/Images/stethoscope.jpg') }}" alt="Company Logo">
-                </td>
-                <td class="company-details">
-                    <strong>Doctor Management System</strong>
-                    <br>
-                    123 Street, Mumbai, India<br>
-                    Email: admin@yopmail.com<br>
-                    Phone: +91 9876543210
-                </td>
-            </tr>
-        </table>
 
-        <h2 class="invoice-title">Invoice</h2>
+        <!-- Header -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <div class="invoice-title">Appointment Invoice</div>
+                <small class="text-muted">Invoice No: {{ $invoiceData['appointment_no'] }}</small><br>
+                <small class="text-muted">Date: {{ $invoiceData['paymentDate'] }}</small>
+            </div>
 
-        <table class="details">
-            <tr>
-                <td><strong>Payment ID:</strong></td>
-                <td>{{ $invoiceData['transaction_id'] }}</td>
-            </tr>
-            <tr>
-                <td><strong>Amount:</strong></td>
-                <td>&#8377; {{ number_format($invoiceData['amount'], 2) }}</td>
-            </tr>
-            <tr>
-                <td><strong>Status:</strong></td>
-                <td>{{ ucfirst($invoiceData['payment_status']) }}</td>
-            </tr>
-            <tr>
-                <td><strong>Payment Method:</strong></td>
-                <td>{{ ucfirst($invoiceData['method']) }}</td>
-            </tr>
-            <tr>
-                <td><strong>Email:</strong></td>
-                <td>{{ $invoiceData['email'] }}</td>
-            </tr>
-            <tr>
-                <td><strong>Contact:</strong></td>
-                <td>{{ $invoiceData['mobile'] }}</td>
-            </tr>
-            <tr>
-                <td><strong>Date:</strong></td>
-                <td>{{ $invoiceData['paymentDate'] }}</td>
-            </tr>
-        </table>
-
-        <div class="footer">
-            Thank you for your payment!<br>
-            <small>This is an auto-generated invoice. No signature required.</small>
+            <div>
+                @if($invoiceData['payment_status'] == 'completed')
+                    <span class="status-badge status-paid">Fully Paid</span>
+                @elseif($invoiceData['payment_status'] == 'partial')
+                    <span class="status-badge status-partial">Partially Paid</span>
+                @else
+                    <span class="status-badge status-failed">Payment Failed</span>
+                @endif
+            </div>
         </div>
+
+        <!-- Patient & Appointment Info -->
+        <div class="row mb-4">
+            <div class="col-md-6 mb-4">
+                <div class="section-title">Patient Details</div>
+                <strong>{{ $invoiceData['patientName'] }}</strong><br>
+                {{ $invoiceData['email'] }}<br>
+                {{ $invoiceData['mobile'] }}
+            </div>
+
+            <div class="col-md-6 text-md-right">
+                <div class="section-title">Appointment Details</div>
+                Doctor: {{ $invoiceData['doctorName'] }}<br>
+                Date: {{ $invoiceData['appointmentDate'] }}<br>
+                Time: {{ $invoiceData['time'] }}
+            </div>
+        </div>
+
+        <hr>
+
+        <!-- Charges -->
+        <div class="section-title">Charges</div>
+        <div class="d-flex justify-content-between">
+            <span>Consultation Fee</span>
+            <span>{{ number_format($invoiceData['amount'], 2) }}</span>
+        </div>
+
+        <hr>
+
+        <!-- Payment Breakdown -->
+        <div class="section-title">Payment Breakdown</div>
+
+        @if($invoiceData['advance_amount'] > 0)
+        <div class="d-flex justify-content-between">
+            <span>Advance Paid</span>
+            <span class="text-success">
+                - {{ number_format($invoiceData['advance_amount'], 2) }}
+            </span>
+        </div>
+        <small class="text-muted">
+            Transaction ID: {{ $invoiceData['advance_transaction_id'] }}
+        </small>
+        @endif
+
+        @if($invoiceData['remaining_amount'] > 0)
+        <div class="d-flex justify-content-between mt-2">
+            <span>Remaining Payment</span>
+            <span class="text-success">
+                - {{ number_format($invoiceData['remaining_amount'], 2) }}
+            </span>
+        </div>
+        <small class="text-muted">
+            Transaction ID: {{ $invoiceData['remaining_transaction_id'] }}
+        </small>
+        @endif
+
+        <hr>
+
+        <!-- Total Paid -->
+        <div class="d-flex justify-content-between amount-highlight">
+            <span>Total Paid</span>
+            <span>
+                {{ number_format($invoiceData['advance_amount'] + $invoiceData['remaining_amount'], 2) }}
+            </span>
+        </div>
+
+        @if($invoiceData['payment_status'] == 'partial')
+        <div class="d-flex justify-content-between amount-highlight mt-2 text-danger">
+            <span>Balance Due</span>
+            <span>
+                {{ number_format($invoiceData['amount'] - ($invoiceData['advance_amount'] + $invoiceData['remaining_amount']), 2) }}
+            </span>
+        </div>
+        @endif
+
+        <hr>
+
+        <!-- Footer -->
+        <div class="text-center mt-4">
+            <small class="text-muted">
+                Thank you for choosing our clinic.  
+                For any queries, contact support.
+            </small>
+        </div>
+
     </div>
+</div>
+
 </body>
 </html>
 

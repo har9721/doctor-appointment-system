@@ -1,9 +1,24 @@
+let selectedDoctorId;
+
+getPatientsList();
+
 document.addEventListener('DOMContentLoaded', function() {
-    let selectedDoctorId = document.getElementById('doctorSelect');
+    if (login_user_role_id == doctor_role_ID) {  
+        // Doctor login
+        selectedDoctorId = doctorId;
+    } else {
+        // Patient login
+        selectedDoctorId = $('#doctorSelect').val();
+    }
+    
+    // Load patients list for admin
+    if(login_user_role_id == admin_role_ID) {
+        getPatientsList();
+    }
 
     var calendarEl = document.getElementById('calendar');
 
-    selectedDoctorId = String(selectedDoctorId);
+    // selectedDoctorId = String(selectedDoctorId);
 
     var calendar = new FullCalendar.Calendar(calendarEl, {
         initialView: 'dayGridMonth',
@@ -157,10 +172,19 @@ document.addEventListener('DOMContentLoaded', function() {
 
     calendar.render();
 
-    $('#doctorSelect').on('change', function () {
-        selectedDoctorId = $(this).val();
-        calendar.refetchEvents();
-    });
+    if (login_user_role_id != doctor_role_ID) {
+        $('#doctorSelect').on('change', function () {
+            selectedDoctorId = $(this).val();
+            calendar.refetchEvents();
+        });
+    }
+    
+    // Patient dropdown listener for admin
+    if(login_user_role_id == admin_role_ID) {
+        $('#patientSelect').on('change', function () {
+            $('#patient_id').val($(this).val());
+        });
+    }
 });
 
 $(document).on('click','#reasonModal', function(){
@@ -171,9 +195,32 @@ $(document).on('click','#reasonModal', function(){
     let consultationFees = $('#consultation_fees').val();
     let advanceFees = $('#advanceFees').val();
     let paymentMethod = $('#advanceFees').data('payment-method');
-    let patient_ID = $('#patient_id').val();
 
-    bookingUrl = (paymentMethod && paymentMethod.toLowerCase() === 'none') ? bookingUrl : bookingWithPaymentGateway;
+    let patient_ID;
+
+    if(login_user_role_id == admin_role_ID || login_user_role_id == doctor_role_ID) {
+        patient_ID = $('#patients').val();
+    }else{
+        patient_ID = $('#patient_id').val();
+    }
+    
+    if(patient_ID == '0' || patient_ID == undefined)
+    {
+        return Swal.fire({
+                title: "Error",
+                text: "Please select patient",
+                icon: "error",
+                timer: 3000
+            });
+    }
+
+    bookingUrl = (paymentMethod && paymentMethod.toLowerCase() === 'none') 
+    ? bookingUrl 
+    : (
+        (login_user_role_id == doctor_role_ID || login_user_role_id == admin_role_ID) 
+        ? bookingUrl 
+        : bookingWithPaymentGateway
+    );
 
     $.ajaxSetup({
         headers:{
@@ -303,6 +350,49 @@ function parseDateTime(dateTimeStr) {
     const [day, month, year] = date.split('-');
 
     return new Date(`${year}-${month}-${day}T${time}`);
+}
+
+function getPatientsList()
+{
+    $('#patients').empty();
+    $('#patients').append($("<option value='' disabled selected>Select Patient</option>"));
+
+    $.ajaxSetup({
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
+    });
+    
+    $.ajax({
+        type : "GET",
+        url : getPatientListUrl,
+        success : function (response){
+            if(response && response.length > 0) {
+                $.each(response, function (key, val) 
+                { 
+                    if(val.user)
+                    {
+                        $('#patients').append($("<option></option>")
+                        .attr("value", val.id)
+                        .text(val.user.first_name + ' ' + val.user.last_name));
+                    }
+                });
+            }
+        },
+        error: function() {
+            Swal.fire({
+                title: "Error",
+                text: "Failed to load patients list",
+                icon: "error",
+                timer: 3000
+            });
+        }
+    });
+
+    $('#patients').select2({
+        placeholder: "Select patient name",
+        dropdownParent: $('#bookModal')
+    });
 }
 
 

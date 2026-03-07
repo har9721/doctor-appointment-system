@@ -10,10 +10,23 @@
                         </button>
                     </div>
                     <div class="modal-body">
-                        <p id="available-date" value=""></p>
+                        <small class="text-muted" style="color:#f59e0b;font-weight:500;">Please review details before confirming</small>
+                        <p class="mt-2" id="available-date" value=""></p>
                         <p id="selectedTimeSlot" value=""></p>
                         <p id="consultationFeesInfo" value=""></p>
                         <p id="advanceFees" value=""></p>
+
+                        @if(in_array(Auth::user()->role_ID, config('constant.admin_and_doctor_role_ids')))
+                            <div class="form-group">
+                                <label class="text-muted"><strong>
+                                    Select Patient :
+                                </strong></label>
+                                <select id="patients" class="form-control col-md-6" style="border-radius:10px;height:45px;">
+                                    <option value="" selected>Select patient</option>
+                                </select>
+                            </div>
+                        @endif
+
                         <div class="mb-3">
                             <label for="reason" class="form-label"><strong>Reason for Appointment <small class="text-muted">(optional)</small></strong></label>
                             <textarea name="reason" id="reason" class="form-control" placeholder="e.g., headache, routine checkup"></textarea>

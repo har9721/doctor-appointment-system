@@ -169,8 +169,10 @@ function clickOnTimeSlot(timeSlot)
     selectedTimeSlot = $(timeSlot).data('time_slot_id');
     selectedTimeSlotText = $(timeSlot).data('time_slot_text');
     paymentMethod = $(timeSlot).data('payment-mode');
-    consultationFees = $(timeSlot).data('consultation-fees');
+    consultationFees = $(timeSlot).data('consultation_fees');
     selectedAppointmentDate = $(timeSlot).data('selected-date');
+    followUpFees = $(timeSlot).data('follow_up_fees');
+    advanceFees = $(timeSlot).data('advance_amount');
 
     $('.time-slot').removeClass('selected');
 
@@ -320,11 +322,14 @@ $(document).on('click','#searchForTimeslot',function(){
                 if(response.time_slot)
                 {
                     $(`#timeSlotDiv`).empty();
+                    let consultationFees = response.consultationFees;
+                    let followUpFees = response.followUpFees;
+                    let advance_amount = response.advanceFees;
 
                     response.time_slot.forEach(element => {
                         if(element)
                         {
-                            const available_time_slot = `<div class="time-slot mr-1" onclick="clickOnTimeSlot(this)" data-time_slot_id ="${element.id}">${element.time}</div>`;
+                            const available_time_slot = `<div class="time-slot mr-1" onclick="clickOnTimeSlot(this)" data-time_slot_id ="${element.id}" data-consultation_fees="${consultationFees}" data-advance_amount="${advance_amount}" data-follow_up_fees="${followUpFees}">${element.time}</div>`;
 
                             $(`#timeSlotDiv`).append(available_time_slot);
                         }
@@ -398,7 +403,7 @@ $(document).on('click','#confirmAppointment', function(){
             beforeSend : function(){ 
                 $('#confirmAppointment').attr('disabled',true);
             },
-            data : {'doctor_ID' : doctor, 'date' : date, 'patient_ID' : patients, 'timeSlot' : selectedTimeSlot},
+            data : {'doctor_ID' : doctor, 'date' : date, 'patient_ID' : patients, 'timeSlot' : selectedTimeSlot, 'consultationFees' : consultationFees, 'advanceFees' : advanceFees},
             success : function(response)
             {
                 if(response['status'] == 'success'){
