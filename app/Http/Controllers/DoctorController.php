@@ -392,12 +392,19 @@ class DoctorController extends Controller
         if($request->ajax())
         {
             $selected_date = date('Y-m-d', strtotime($request->date));
+            $current_date_time_object = Carbon::now()->addHours(5)->addMinutes(30);
+            $current_time = $current_date_time_object->format('H:i:s');
+            $current_date = $current_date_time_object->format('Y-m-d');
 
-            $getAvailableTimeSlot = Doctor::with(['timeSlot' => function($query) use($selected_date){
+            $getAvailableTimeSlot = Doctor::with(['timeSlot' => function($query) use($selected_date, $current_time,$current_date){
                 $query->where('availableDate',$selected_date)->where('isBooked',0);
+
+                $query->when(($selected_date == $current_date), function($q) use($current_time){
+                    $q->where('start_time', '>', $current_time);
+                });
             }])->where('id',$request->doctor_ID)
             ->where('isActive',1)
-            ->first(['id','specialty_ID','user_ID']);
+            ->first(['id','specialty_ID','user_ID','consultationFees','followUpFees','payment_mode', 'advanceFees']);
 
             return $getAvailableTimeSlot;
         }else{

@@ -46,6 +46,8 @@
                         <span class="appointment-status status-pending">Pending</span>
                     @elseif($status == 'canceled')
                         <span class="appointment-status status-canceled">Canceled</span>
+                    @elseif($status == 'awaiting for payment')
+                        <span class="appointment-status status-pending">Awaiting For Payment</span>
                     @else
                         <span class="appointment-status status-completed">Completed</span>
                     @endif
@@ -62,10 +64,21 @@
                         {{ strtoupper($appointment->appointment_type) }}
                     </span>
                 @endif
+
+                <div class="mt-2">
+                    <p style="color: black;">
+                        <strong>
+                            Advance Payment Status :
+                        </strong>
+                        <span class="badge
+                        @if($appointment->advanced_payment_status == 'pending') bg-danger text-white 
+                        @else bg-success text-white @endif">{{ ucfirst($appointment->advanced_payment_status) }}</span>
+                    </p>
+                </div>
             </div>
         </div>
         <div class="text-right">
-            @if($status == 'pending' && (in_array(Auth::user()->role_ID,config('constant.admin_and_doctor_role_ids'))))
+            @if($status == 'pending' && (in_array(Auth::user()->role_ID,config('constant.admin_and_doctor_role_ids'))) && $appointment->payment_status == 'partial')
                 <button class="btn btn-success appointmentButoon" id="confirm_button" data-id="{{ $appointment->id }}" data-status="confirmed" data-date="{{ $appointment->appointmentDate }}" data-patient_ID = "{{ $appointment->patient_ID }}" data-timeslot_id = "{{ $appointment->doctorTimeSlot_ID }}"  data-timeslot_id = "{{ $appointment->doctorTimeSlot_ID }}">
                     <i class="fas fa-check"></i>
                     Confirm Appointment

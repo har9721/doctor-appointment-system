@@ -6,7 +6,6 @@ use App\Models\Appointments;
 use App\Models\Doctor;
 use App\Models\Patients;
 use App\Models\PaymentDetails;
-use Faker\Provider\ar_EG\Payment;
 use Yajra\DataTables\Facades\DataTables;
 
 class ReportService

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\AppointmentBooking;
 use App\Http\Requests\RegisterUserRequest;
+use App\Jobs\SlotReleasedJob;
 use App\Models\Appointments;
 use App\Models\Doctor;
 use App\Models\DoctorTimeSlots;
@@ -127,6 +128,11 @@ class PatientsController extends Controller
         if(empty($checkForOutstandingPayments))
         {
             $bookAppointment = $this->appointment_model->bookPatientAppointment($data);
+
+            // dispatch jon to release the slot if payment is not made by patient.
+            dispatch(new SlotReleasedJob($bookAppointment->id))->delay(
+                now()->addMinutes(config('constant.payment_expiry_time'))
+            );
     
             if($bookAppointment != null)
             {
@@ -238,11 +244,32 @@ class PatientsController extends Controller
 
     public function viewDoctorSlots()
     {
-        $doctors = Doctor::with(['user', 'specialty'])->where('isActive', 1)->get(['id', 'user_ID', 'specialty_ID']);
+        $login_user_role_ID = Auth::user()->role_ID;
+        $login_user_id = Auth::user()->id;
 
-        $patient_id = Patients::where('user_ID', Auth::user()->id)->value('id');
+        $doctors = Doctor::when(
+            ($login_user_role_ID == config('constant.doctor_role_ID')),
+            function($query) use($login_user_id)
+            {
+                return $query->where('user_ID', $login_user_id);
+            }
+        )
+        ->with(['user', 'specialty'])
+        ->where('isActive', 1)
+        ->get(['id', 'user_ID', 'specialty_ID']);
 
-        return view('patients.viewDoctorSlots', compact('doctors', 'patient_id'));
+        if($login_user_role_ID == config('constant.doctor_role_ID'))
+        {
+            $patient_id = 0;
+            $doctor_id = $doctors->first()->id ?? 0;
+        }
+        else if(in_array($login_user_role_ID, config('constant.admin_and_patients_role_ids')))
+        {
+            $patient_id = Patients::where('user_ID', Auth::user()->id)->value('id');
+            $doctor_id = 0;
+        }
+
+        return view('patients.viewDoctorSlots', compact('doctors', 'patient_id', 'doctor_id'));
     }
 
     public function getDoctorTimeSlot(Request $request)

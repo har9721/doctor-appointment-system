@@ -20,6 +20,9 @@ class Appointments extends Model
 
     public function bookPatientAppointment($data)
     {
+        // to handle the race condition first locked the slot and then do the further stuffs.
+        DoctorTimeSlots::updateIsBookTimeSlot($data,1);
+
         $appointment = new Appointments();
 
         $appointment->doctorTimeSlot_ID = $data['timeSlot'];
@@ -32,10 +35,13 @@ class Appointments extends Model
         $appointment->reason = $data['reason'] ?? null;
         $appointment->isBooked = 1;
         $appointment->amount = $data['consultationFees'];
+        $appointment->status = 'awaiting for payment';
+        $appointment->payment_status = 'pending';
+        $appointment->advance_amount = $data['advanceFees'] ?? 0.00;
 
         $appointment->save();
 
-        return DoctorTimeSlots::updateIsBookTimeSlot($data,1);
+        return $appointment;
     }
 
     public function doctorTimeSlot()
@@ -53,7 +59,7 @@ class Appointments extends Model
         return date('d-m-Y',strtotime($value));
     }
 
-    public static function getAppointmentList($from_date = null,$to_date  = null,$status = null, $appointment_no = null)
+    public static function getAppointmentList($from_date = null,$to_date  = null,$status = [], $appointment_no = null, $sortBy = null)
     {
         $getMyAppointments = Appointments::join('doctor_time_slots', 'doctor_time_slots.id', '=', 'appointments.doctorTimeSlot_ID')
         ->join('doctors', 'doctors.id', '=', 'doctor_time_slots.doctor_ID')
@@ -69,10 +75,10 @@ class Appointments extends Model
                 date('Y-m-d', strtotime($to_date))
             ]);
         })
-        ->when($status === 'payment_pending', function($query) use($status){
+        ->when((!empty($status)) && in_array('payment_pending', $status), function($query) use($status){
             $query->where('appointments.payment_status','pending');
         }, function($query) use($status){
-            ($status != 'all' && !empty($status)) ? $query->where('appointments.status',$status) : '';
+            (!empty($status)) ? $query->whereIn('appointments.status',$status) : '';
         })
         ->where('appointments.isActive', 1)
         ->when(Auth::user()->role_ID == config('constant.doctor_role_ID'),function($query){
@@ -84,7 +90,7 @@ class Appointments extends Model
         ->when(!empty($appointment_no), function($query) use($appointment_no){
             $query->where('appointments.appointment_no', 'like', '%' . $appointment_no . '%');
         })
-        ->latest('appointment_type')
+        ->latest($sortBy)
         ->get([
             'appointments.id',
             'appointments.doctorTimeSlot_ID',
@@ -115,6 +121,12 @@ class Appointments extends Model
                     WHEN appointments.payment_status = "partial" THEN (appointments.amount - appointments.advance_amount)
                     ELSE "0.00"
                     END as balance
+            '),
+            DB::raw('
+                CASE
+                    WHEN appointments.payment_status = "partial" THEN "Completed"
+                    ELSE appointments.payment_status
+                    END as advanced_payment_status 
             ')
         ]);
 
@@ -135,7 +147,7 @@ class Appointments extends Model
       
     }
 
-    public static function getEmailData($appointments)
+    public static function getEmailData($appointments, $role_ID)
     {
         $doctorDetails = Doctor::join('doctor_time_slots', 'doctor_time_slots.doctor_ID', 'doctors.id')
         ->join('mst_specialties', 'mst_specialties.id', 'doctors.specialty_ID')
@@ -152,8 +164,9 @@ class Appointments extends Model
         $emailData['specialty'] = $doctorDetails ? $doctorDetails->specialtyName : null;
         $emailData['payment_status'] = $appointments->payment_status;
         $emailData['appointment_no'] = $appointments->appointment_no;
+        $emailData['createdByRoleID'] = $appointments->creator?->role_ID;
 
-        if (Auth::user()->role_ID == config('constant.doctor_role_ID') || Auth::user()->role_ID == config('constant.admin_role_ID')) {
+        if ($role_ID == config('constant.doctor_role_ID') || $role_ID == config('constant.admin_role_ID')) {
             $appointments->load(['patients.user']);
 
             $emailData['patientsName'] = $appointments->patients ? $appointments->patients->user->first_name . ' ' . $appointments->patients->user->last_name : null;
@@ -199,6 +212,7 @@ class Appointments extends Model
         $appointment->updated_at = now();
         $appointment->updatedBy = Auth()->user()->id;
         $appointment->update();
+        $appointment->save();
 
         return Patients::updatePaymentStatus($appointment->patient_ID,0);
     }
@@ -210,30 +224,46 @@ class Appointments extends Model
 
     public static function getPaymentSummary($appointment_id)
     {
-        $getPaymentSummary = PaymentDetails::with(['appointments.patients.user','appointments.doctorTimeSlot.doctor.user'])
-        ->where('appointment_ID',$appointment_id)
+        $payments = PaymentDetails::with([
+            'appointments.patients.user',
+            'appointments.doctorTimeSlot.doctor.user'
+        ])
+        ->where('appointment_ID', $appointment_id)
+        ->whereNotNull('res_payment_id')
         ->get();
 
-        $paymentSummary = $getPaymentSummary->map(function($details){
+        $appointment = $payments->first()->appointments;
 
-            return [
-                'payment_status' => $details->appointments->payment_status,
-                'patientName' => $details->appointments->patients->user->full_name,
-                'email' => $details->appointments->patients->user->email,
-                'mobile' => $details->appointments->patients->user->mobile,
-                'doctorName' => $details->appointments->doctorTimeSlot->doctor->user->full_name,
-                'doctorEmail' => $details->appointments->doctorTimeSlot->doctor->user->email,
-                'appointmentDate' => date('d-m-Y',strtotime($details->appointments->appointmentDate)),
-                'time' => $details->appointments->doctorTimeSlot->time,
-                'transaction_id' => $details->res_payment_id,
-                'paymentDate' => date('d-m-Y',strtotime($details->created_at)),
-                'amount' => $details->appointments->amount,
-                'method' =>  $details->method,
-                'appointment_no' => $details->appointments->appointment_no
-            ];
-        });
+        $advance = $payments->firstWhere('payment_type', 'advance');
+        $remaining = $payments->firstWhere('payment_type', 'remaining');
 
-        return $paymentSummary;
+        return [
+            'payment_status' => $payments->last()->status,
+
+            'patientName' => $appointment->patients->user->full_name,
+            'email' => $appointment->patients->user->email,
+            'mobile' => $appointment->patients->user->mobile,
+
+            'doctorName' => $appointment->doctorTimeSlot->doctor->user->full_name,
+            'doctorEmail' => $appointment->doctorTimeSlot->doctor->user->email,
+
+            'appointmentDate' => date('d-m-Y', strtotime($appointment->appointmentDate)),
+            'time' => $appointment->doctorTimeSlot->time,
+
+            'appointment_no' => $appointment->appointment_no,
+
+            'amount' => $appointment->amount,
+
+            'advance_amount' => $advance?->amount,
+            'advance_transaction_id' => $advance?->res_payment_id,
+
+            'remaining_amount' => $remaining?->amount,
+            'remaining_transaction_id' => $remaining?->res_payment_id,
+
+            'method' => $payments->last()?->method,
+            'created_at' => $remaining?->created_at,
+            'paymentDate' => date('d-m-Y',strtotime($remaining?->created_at)),
+        ];
     }
 
     public static function checkForOutstandingPayments($patients_id)
@@ -386,7 +416,7 @@ class Appointments extends Model
         })
         ->where('appointments.payment_status', $status)
         ->limit(5)
-        ->orderBy('appointments.appointmentDate','asc')
+        ->orderBy('appointments.appointmentDate','desc')
         ->select(
             DB::raw('CONCAT_WS(" ", p.first_name, p.last_name) as patient_full_name'),  
             DB::raw('CONCAT_WS(" ", d.first_name, d.last_name) as doctor_full_name'),
@@ -584,5 +614,10 @@ class Appointments extends Model
             'payment_status',
             'amount'
         ]);
+    }
+
+    public function creator()
+    {
+        return $this->belongsTo(User::class, 'createdBy');    
     }
 }
