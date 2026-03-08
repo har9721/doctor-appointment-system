@@ -214,6 +214,9 @@ $(document).on('click','#reasonModal', function(){
             });
     }
 
+    // generate idempotency key
+    const idempotencyKey = generateIdempotencyKey(patient_ID);
+
     bookingUrl = (paymentMethod && paymentMethod.toLowerCase() === 'none') 
     ? bookingUrl 
     : (
@@ -224,7 +227,8 @@ $(document).on('click','#reasonModal', function(){
 
     $.ajaxSetup({
         headers:{
-            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content'),
+            'Idempotency-Key' : idempotencyKey
         }
     })
     $.ajax({
