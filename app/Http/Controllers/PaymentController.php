@@ -304,8 +304,16 @@ class PaymentController extends Controller
     {        
         try {
             $patient_id = $request->patient_ID;
+            $key = $request->header('Idempotency-Key');
                 
-            DB::transaction(function ()  use($request, $patient_id, &$response){
+            DB::transaction(function ()  use($request, $patient_id, &$response, $key){
+                
+                DB::table('idempotency_keys')->insert([
+                    'key' => $key,
+                    'status' => 'processing',
+                    'created_at' => now()
+                ]);
+
                 $time_slot_id = $request->timeSlot;
                     
                 $appointment_date = date('Y-m-d', strtotime($request->date));
@@ -372,6 +380,15 @@ class PaymentController extends Controller
                     // 'paymentDetails' => $paymentDetails,
                     'paymentData' => $paymentData
                 ];
+
+                // update the repsonse in idempotency table
+                DB::table('idempotency_keys')
+                ->where('key', $key)
+                ->update([
+                    'response' => json_encode($response),
+                    'status' => 'success'
+                ]);
+
             },3);
 
             DB::commit();

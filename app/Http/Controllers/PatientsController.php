@@ -13,6 +13,7 @@ use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\Facades\DataTables;
 
 class PatientsController extends Controller
@@ -122,32 +123,61 @@ class PatientsController extends Controller
     public function bookAppointment(AppointmentBooking $request)
     {
         $data = $request->validated();
+        $key = $request->header('Idempotency-Key');
 
         $checkForOutstandingPayments = Appointments::checkForOutstandingPayments($data['patient_ID']);
 
-        if(empty($checkForOutstandingPayments))
-        {
-            $bookAppointment = $this->appointment_model->bookPatientAppointment($data);
-
-            // dispatch jon to release the slot if payment is not made by patient.
-            dispatch(new SlotReleasedJob($bookAppointment->id))->delay(
-                now()->addMinutes(config('constant.payment_expiry_time'))
-            );
-    
-            if($bookAppointment != null)
-            {
-                $response['status'] = 'success';
-                $response['message'] = 'Appointment book successfully.';
-            }else{
-                $response['status'] = 'error';
-                $response['message'] = 'Appointment not book successfully.';
-            }
-        }else{
-            $response['status'] = 'error';
-            $response['message'] = 'Outstanding payments found. Please complete the payments to proceed.';
+        if(!empty($checkForOutstandingPayments)) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Outstanding payments found. Please complete the payments to proceed.'
+            ]);
         }
 
-        return response()->json($response);
+        try {
+
+            $bookAppointment = DB::transaction(function () use ($data, $key) {
+
+                DB::table('idempotency_keys')->insert([
+                    'key' => $key,
+                    'status' => 'processing',
+                    'created_at' => now()
+                ]);
+
+                $bookAppointment = $this->appointment_model->bookPatientAppointment($data);
+
+                $response = [
+                    'status' => 'success',
+                    'appointment_id' => $bookAppointment->id
+                ];
+
+                DB::table('idempotency_keys')
+                ->where('key',$key)
+                ->update([
+                    'status'=>'success',
+                    'response'=>json_encode($response)
+                ]);
+
+                return $bookAppointment;
+
+            });
+
+            dispatch(new SlotReleasedJob($bookAppointment->id))
+                ->delay(now()->addMinutes(config('constant.payment_expiry_time')))
+                ->afterCommit();
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Appointment book successfully.'
+            ]);
+
+        } catch (\Exception $e) {
+
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Appointment not booked.'
+            ]);
+        }
     }
 
     public function getAllPatientsList()

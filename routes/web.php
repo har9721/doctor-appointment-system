@@ -112,7 +112,7 @@ Route::middleware('auth')->group(function(){
         Route::controller(PatientsController::class)->group(function(){
             Route::get('appointment-booking','viewAppointmentBookingPage')->name('appointment-booking');
             Route::get('search-doctor','searchDoctor')->name('search-doctor');
-            Route::post('book-appointment','bookAppointment')->name('book-appointment');
+            Route::post('book-appointment','bookAppointment')->name('book-appointment')->middleware('idempotency');
             Route::get('/get-patients-list','getAllPatientsList')->name('get-all-patients');
             Route::get('/edit-patients-details/{patients}','editPatient')->name('edit-patients');
             Route::get('view-doctor-slots', 'viewDoctorSlots')->name('view-doctor-slots');
@@ -152,7 +152,7 @@ Route::middleware('auth')->group(function(){
             Route::post('/send-payment-pending-mail','sendPaymentPedingMail')->name('send-payment-mail');
             Route::post('/mark-payment-done','markPaymentDone')->name('mark-payment');
             Route::get('download-invoice/{link?}','downloadInvoice')->name('download-invoice');
-            Route::post('/advance-payment', 'makeAdvancePayment')->name('advance-payment');
+            Route::post('/advance-payment', 'makeAdvancePayment')->name('advance-payment')->middleware('idempotency');
         });
     });
 

@@ -20,8 +20,17 @@ class Appointments extends Model
 
     public function bookPatientAppointment($data)
     {
-        // to handle the race condition first locked the slot and then do the further stuffs.
-        DoctorTimeSlots::updateIsBookTimeSlot($data,1);
+        $slot = DoctorTimeSlots::where('id', $data['timeSlot'])
+            ->lockForUpdate()
+            ->first();
+
+        if ($slot->isBooked == 1) {
+            throw new \Exception("Slot already booked");
+        }
+
+        $slot->update([
+            'isBooked' => 1
+        ]);
 
         $appointment = new Appointments();
 
@@ -31,7 +40,7 @@ class Appointments extends Model
         $appointment->originalAppointmentDate = date('Y-m-d',strtotime($data['date']));
         $appointment->appointment_reminder_time = true;
         $appointment->created_at = now();
-        $appointment->createdBy = Auth::user()->id;
+        $appointment->createdBy = Auth::id();
         $appointment->reason = $data['reason'] ?? null;
         $appointment->isBooked = 1;
         $appointment->amount = $data['consultationFees'];

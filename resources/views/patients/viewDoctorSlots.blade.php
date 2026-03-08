@@ -54,5 +54,6 @@
 </script>
 
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script src="{{ asset('js/idempotency.js') }}" ></script>
 <script src="{{ asset('js/Patient/viewDoctorTimeSlot.js') }}"></script>
 @endpush
