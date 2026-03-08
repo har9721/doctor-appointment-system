@@ -87,7 +87,7 @@ Route::middleware('auth')->group(function(){
         ->name('appointments-history');
     });
 
-    Route::middleware(['can:isDoctor'])->prefix('/doctor')->as('doctor.')->group(function(){
+    Route::middleware(['can:isAuthorized'])->prefix('/doctor')->as('doctor.')->group(function(){
         Route::controller(DoctorController::class)->group(function(){
             Route::get('time-slot','viewTimeSlot')->name('time-slot');
             Route::get('fetch-time-slot-list','getTimeSlot')->name('getTimeSlot');

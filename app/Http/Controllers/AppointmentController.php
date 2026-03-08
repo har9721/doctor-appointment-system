@@ -30,14 +30,19 @@ class AppointmentController extends Controller
         $to_date = (!empty($request->to_date)) ? $request->to_date : date('d-m-Y',strtotime(date('t-m-Y')));
         $status = $request->status;
 
-        $myPendingAppointments = Appointments::getAppointmentList($from_date,$to_date,'pending');
-        $myConfirmedAppointments = Appointments::getAppointmentList($from_date,$to_date,'confirmed');
-        $myCancelledAppointments = Appointments::getAppointmentList($from_date,$to_date,'cancelled');
-        $completedAppointments = Appointments::getAppointmentList($from_date,$to_date,'completed');
+        $myPendingAppointments = Appointments::getAppointmentList($from_date,$to_date,['pending', 'awaiting for payment'], null, 'appointment_type');
+        $myConfirmedAppointments = Appointments::getAppointmentList($from_date,$to_date,['confirmed'], null, 'appointment_type');
+        $myCancelledAppointments = Appointments::getAppointmentList($from_date,$to_date,['cancelled'], null, 'appointment_type');
+        $completedAppointments = Appointments::getAppointmentList($from_date,$to_date,['completed'], null, 'appointment_type');
 
         $heading = (Auth::user()->role->roleName === 'Admin' || Auth::user()->role->roleName === 'Doctor') ? 'Appointments' : 'My Appointments';
 
-        return view('patients.myAppointments',compact('myPendingAppointments','myConfirmedAppointments','myCancelledAppointments','to_date','completedAppointments','heading','from_date'));
+        if(Auth::user()->role_ID == config('constant.patients_role_ID'))
+            $url = route('patients.appointment-booking');
+        else
+            $url = route('patients.view-doctor-slots');
+
+        return view('patients.myAppointments',compact('myPendingAppointments','myConfirmedAppointments','myCancelledAppointments','to_date','completedAppointments','heading','from_date', 'url'));
     }
 
     public function markAppointments(AppointmentRequest $request)
@@ -199,15 +204,21 @@ class AppointmentController extends Controller
     {
         $from_date = (!empty($request->start_date)) ? $request->start_date : date('01-m-Y');
         $to_date = (!empty($request->end_date)) ? $request->end_date : date('d-m-Y',strtotime(date('t-m-Y')));
-        $status = (!empty($request->status)) ? $request->status : "";
+        $status = (!empty($request->status)) ? [$request->status] : "";
         $appoinmentno = $request->appointment_no ?? '';
 
-        $completedAppointments = Appointments::getAppointmentList($from_date,$to_date,$status, $appoinmentno);
+        $completedAppointments = Appointments::getAppointmentList(
+            $from_date,
+            $to_date,
+            $status, 
+            $appoinmentno, 
+            'created_at'
+        );
         
         return DataTables::of($completedAppointments)
             ->addIndexColumn()
             ->editColumn('action', function($row){
-                $viewPaymentSummay = ($row['payment_status'] == 'completed') ? '<button name="Pay" class="mr-2 btn btn-sm btn-info border text-white payment_summary"  data-toggle="tooltip" data-id = "'.$row['id'].'" data-amount = "'. $row['amount'] .'" data-placement="bottom" title="View Payment Summary"  data-bs-toggle="modal" data-bs-target="#paymentSummaryModal">
+                $viewPaymentSummay = (in_array($row['payment_status'], ['completed','partial'])) ? '<button name="Pay" class="mr-2 btn btn-sm btn-info border text-white payment_summary"  data-toggle="tooltip" data-id = "'.$row['id'].'" data-amount = "'. $row['amount'] .'" data-placement="bottom" title="View Payment Summary"  data-bs-toggle="modal" data-bs-target="#paymentSummaryModal">
                     <i class="fas fa-file-invoice-dollar"></i> 
                 </button>' : '' ;
 
@@ -215,17 +226,17 @@ class AppointmentController extends Controller
                     <i class="fas fa-receipt"></i> 
                 </button>' : '' ;
 
-                $pay = (($row['payment_status'] == 'pending' || $row['payment_status'] == 'partial') && ($row['status'] == 'completed') && (!in_array(Auth::user()->role_ID, config('constant.admin_and_doctor_role_ids')))
+                $pay = (($row['payment_status'] == 'pending' || $row['payment_status'] == 'partial') && ($row['status'] == 'awaiting for payment' || $row['status'] == 'completed') && (!in_array(Auth::user()->role_ID, config('constant.admin_and_doctor_role_ids')))
                 && $row['amount'] != null
                 ) 
-                ? '<button name="Pay" id="payment" class="mr-2 payment btn btn-sm success border text-white bg-dark" data-toggle="tooltip" data-id = "'.$row['id'].'" data-placement="bottom" title="Pay" data-email ="' . $row['patient_email'] . '" data-contact ="' . $row['patient_contact'] . '" data-name="'. $row['patient_full_name'] .'">
-                    <i class="fas fa-credit-card"></i> Pay Now
+                ? '<button name="Pay" id="payment" class="mr-2 payment btn btn-sm success border text-white bg-dark" data-toggle="tooltip" data-id = "'.$row['id'].'" data-placement="bottom" title="Pay Now" data-email ="' . $row['patient_email'] . '" data-contact ="' . $row['patient_contact'] . '" data-name="'. $row['patient_full_name'] .'" data-payment-status="'. $row['payment_status'] .'">
+                    <i class="fas fa-credit-card"></i>
                 </button>' 
                 : '';
 
                 // $filePath = 'public/invoices/invoice_' . $row['transaction_id'] . '.pdf';
 
-                $downloadInvoice = ($row['payment_status'] == 'completed') ? 
+                $downloadInvoice = (in_array($row['payment_status'], ['completed','partial'])) ? 
                 '<a href="'. route("payments.download-invoice",['link' => $row['appointment_no']]) .'">
                 <button name="invoice" class="mr-2 btn btn-sm btn-dark border text-white download_invoice"  data-toggle="tooltip" data-id = "'.$row['id'].'" data-amount = "'. $row['amount'] .'" data-placement="bottom" title="Download Payment Summary"  data-bs-toggle="modal">
                     <i class="fas fa-download"></i> 
@@ -257,7 +268,7 @@ class AppointmentController extends Controller
                     $markPayment = '';
                 }
 
-                return $viewPaymentSummay.$pay.$sendMail.$markPayment.$downloadInvoice.$viewPrescriptions.$downloadPrescriptions;
+                return $viewPaymentSummay.$downloadInvoice.$pay.$sendMail.$markPayment.$viewPrescriptions.$downloadPrescriptions;
             })
             ->editColumn('status', function($row){
                 if($row['status'] === 'pending')
@@ -304,27 +315,37 @@ class AppointmentController extends Controller
         if($request->ajax())
         {
             $appointment_id = $request->appointment_id;
+            $payment_status = ($request->has('payment_status') && $request->payment_status == 'pending')
+                ? 'advanceFees'
+                : 'amount';
 
             $getAppointmentDetails = Appointments::with(['doctorTimeSlot' => function($q){
                 $q->with(['doctor.user']);
             }])
             ->where('id',$appointment_id)
-            ->first(['id','doctorTimeSlot_ID','patient_ID','status','isBooked','isCancel','created_at',    
+            ->first(['id','doctorTimeSlot_ID','patient_ID','status','isBooked','isCancel','created_at',
+            'advance_amount',    
             DB::raw('DATE_FORMAT(appointments.appointmentDate,"%M %d, %Y") as appointmentDate'),
             DB::raw('(appointments.amount - appointments.advance_amount) as amount')
             ]);
 
             if(!in_array(Auth::user()->role_ID,config('constant.admin_and_doctor_role_ids')))
             {
-                $paymentData = (new PaymentController)->viewPaymentPage($appointment_id);
+                $paymentData = (new PaymentController)->viewPaymentPage($appointment_id, $payment_status);
             }else{
                 $paymentData = '';
             }
+
+            $isAdvance = (
+                !empty($getAppointmentDetails) && $getAppointmentDetails->status == 'awaiting for payment'
+            ) 
+            ? 1
+            : 0;
             
             return [
                 'paymentsData' => ($paymentData) ? (array)$paymentData : '',
                 'getApointmentDetails' => $getAppointmentDetails,
-                'isAdvance' => 0
+                'isAdvance' => $isAdvance
             ];
         }else{
             return null;

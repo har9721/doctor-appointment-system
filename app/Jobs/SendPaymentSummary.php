@@ -22,7 +22,7 @@ class SendPaymentSummary implements ShouldQueue
     public function __construct($data)
     {
         info($data);
-        $this->mailData = $data->first();
+        $this->mailData = $data;
         info('-----------------------inside payment summary---------------------');
         info($this->mailData['email']);
     }
@@ -32,7 +32,16 @@ class SendPaymentSummary implements ShouldQueue
         if(isset($this->mailData))
         {
             Mail::to($this->mailData['email'])->send(new sendPaymentDone($this->mailData));
-            Mail::to($this->mailData['doctorEmail'])->send(new sendAddPrescriptionMail($this->mailData));
+            
+            if($this->mailData['payment_status'] == 'completed')
+            {
+                Mail::to($this->mailData['doctorEmail'])->send(new sendAddPrescriptionMail($this->mailData));
+            }
         }
+    }
+
+    public function backoff()
+    {
+        return [60, 120, 180];
     }
 }

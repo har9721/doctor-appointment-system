@@ -91,7 +91,7 @@
         <div class="card-header py-3 d-flex justify-content-between">
             <h4 class="mt-2 font-weight-bold text-primary">{{ $heading }}</h4>
             <div class="text-right">
-                <a href="{{ route('patients.appointment-booking') }}"><button class="btn btn-info">Book Appointment</button></a>
+                <a href="{{ $url }}"><button class="btn btn-info">Book Appointment</button></a>
             </div>
         </div>
         <div class="card-body">
@@ -134,7 +134,7 @@
                         <p class="mt-4" style="text-align: center;">No pending appointments found for the selected date range.</p>
                     @else
                         @foreach($myPendingAppointments as $appointment)
-                            <x-appointment-card :appointment="$appointment" status="pending" />
+                            <x-appointment-card :appointment="$appointment" status="{{ $appointment->status }}" />
                         @endforeach
                     @endif
                 </div>

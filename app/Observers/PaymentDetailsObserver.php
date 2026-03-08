@@ -10,9 +10,9 @@ class PaymentDetailsObserver
 {
     public function created(PaymentDetails $paymentDetails)
     {
-        if($paymentDetails->status == 'completed')
+        if($paymentDetails->status == 'partial' || $paymentDetails->status == 'completed')
         {   
-            info('------------------------id--------------------');
+            info('------------------------paymentDetailsObserver created method--------------------');
             info($paymentDetails->appointment_ID);
             $paymentSummary = Appointments::getPaymentSummary($paymentDetails->appointment_ID);
             info($paymentSummary);
@@ -24,7 +24,7 @@ class PaymentDetailsObserver
     {
         if($paymentDetails->wasChanged('status') && $paymentDetails->status == 'completed')
         {
-            info('------------------------updated--------------------');
+            info('------------------------paymentDetailsObserver updated method--------------------');
             info($paymentDetails->appointment_ID);
             $paymentSummary = Appointments::getPaymentSummary($paymentDetails->appointment_ID);
             info($paymentSummary);

@@ -15,13 +15,16 @@
         <div class="card-body"> 
             <div class="mb-4 row col-md-4">
                 <input type="hidden" id="patient_id" value="{{ $patient_id }}" />
-                <select id="doctorSelect" class="form-control" >
-                    <option value="">Select Doctor</option>
-                    @foreach($doctors as $doctor)
-                        <option value="{{ $doctor->id }}">{{ $doctor->user->doctor_name }} - {{ $doctor->specialty->specialtyName }}</option>
-                    @endforeach
-                </select>
-                <span style="color: red;">Note: Please select doctor to view his availability.</span>
+
+                @if(Auth::user()->role_ID != config('constant.doctor_role_ID'))
+                    <select id="doctorSelect" class="form-control" >
+                        <option value="">Select Doctor</option>
+                        @foreach($doctors as $doctor)
+                            <option value="{{ $doctor->id }}">{{ $doctor->user->doctor_name }} - {{ $doctor->specialty->specialtyName }}</option>
+                        @endforeach
+                    </select>
+                    <span style="color: red;">Note: Please select doctor to view his availability.</span>
+                @endif
             </div>
 
             <div id="calendar"></div>
@@ -35,6 +38,7 @@
 @push('scripts')
 <script>
     let getDoctorTimeSlot = '{{ route("patients.doctor-time-slot") }}';
+    let getPatientListUrl = '{{ route("patients.get-all-patients") }}';
     let bookingUrl = "{{ route('patients.book-appointment') }}";
     let bookingWithPaymentGateway = "{{ route('payments.advance-payment') }}";
     let razorpayKey = "{{ config('services.razorpay.RAZORPAY_KEY_ID') }}";
@@ -42,6 +46,11 @@
     let successRoute = "{{ route('payment.success') }}";
     let successPage = "{{ route('payments.success-page') }}";
     let failedUrl = "{{ url('payment/fail') }}";
+    let login_user_role_id = `{{Auth::user()->role_ID}}`;
+    let loginUserId = `{{ Auth::user()->id }}`;
+    let doctor_role_ID =  `{{ config('constant.doctor_role_ID') }}`;
+    let admin_role_ID =  `{{ config('constant.admin_role_ID') }}`;
+    let doctorId = `{{ $doctor_id ?? 0 }}`;
 </script>
 
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>

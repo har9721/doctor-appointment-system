@@ -176,7 +176,7 @@ $(document).on('click','.payment_summary', function(){
                     let heading = '';
                     if(value.payment_type === 'advance') {
                         heading = '<h5><strong>Advance Payment Details</strong></h5>';
-                    } else if(value.payment_type === 'full_payment') {
+                    } else if(value.payment_type === 'remaining') {
                         heading = '<h5><strong>Remaining Payment Details</strong></h5>';
                     }
                     
