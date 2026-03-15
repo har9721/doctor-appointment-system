@@ -145,5 +145,6 @@
     let successPage = "{{ route('payments.success-page') }}";
 </script>
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script src="{{ asset('js/idempotency.js') }}" ></script>
 <script src="{{ asset('js/Appointments/appointmentBook.js') }}"></script>
 @endpush

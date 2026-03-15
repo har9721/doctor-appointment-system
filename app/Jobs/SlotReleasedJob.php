@@ -16,6 +16,8 @@ class SlotReleasedJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
+    public $tries = 3;
+
     public function __construct(
         public int $appointmentId
     )

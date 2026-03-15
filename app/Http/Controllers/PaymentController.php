@@ -10,6 +10,7 @@ use App\Models\DoctorTimeSlots;
 use App\Models\Patients;
 use App\Models\PaymentDetails;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
@@ -58,8 +59,16 @@ class PaymentController extends Controller
             ];
 
             if(empty($getPatientDetails->razorpay_cust_id))
+            {
                 $customer_id = $this->api->customer->create($patientsData);
-            else
+
+                // update the patients table
+                Patients::where('id', $appointments->patient_ID)
+                    ->update([
+                        'razorpay_cust_id' => $customer_id->id,
+                        'updatedBy' => Auth::user()->id
+                    ]);
+            }else
                 $customer_id = $getPatientDetails->razorpay_cust_id;
 
             $razorPayResponse = $this->api->order->create($paymentData);
@@ -262,14 +271,17 @@ class PaymentController extends Controller
 
             $randon_string = str()->random();
 
+            // fetch patients details
+            $getPatientDetails = Patients::getPatientDetails($request->appointment_id);
+
             $paymentResponseData = [
                 'appointment_ID' => $request->appointment_id,
                 'order_id' => "order_$randon_string",
                 'res_payment_id' => $randon_string,
                 'transaction_id' => null,
                 'method' => 'offline',
-                'email' => $request->email,
-                'phone' => $request->contact,
+                'email' => $getPatientDetails->email,
+                'phone' => $getPatientDetails->mobile,
                 'payment_type' => 'offline',
                 // 'payment_signature' => null,
                 'amount' => $request->amount,

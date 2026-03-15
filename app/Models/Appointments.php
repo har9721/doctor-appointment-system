@@ -44,7 +44,7 @@ class Appointments extends Model
         $appointment->reason = $data['reason'] ?? null;
         $appointment->isBooked = 1;
         $appointment->amount = $data['consultationFees'];
-        $appointment->status = 'awaiting for payment';
+        $appointment->status = ($data['advanceFees'] > 0) ? 'confirmed' : 'awaiting for payment';
         $appointment->payment_status = 'pending';
         $appointment->advance_amount = $data['advanceFees'] ?? 0.00;
 

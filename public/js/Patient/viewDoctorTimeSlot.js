@@ -246,7 +246,12 @@ $(document).on('click','#reasonModal', function(){
 
                 if(paymentMethod && paymentMethod.toLowerCase() !== 'none' && response.paymentsData)
                 {
-                    return razorPay(response.paymentsData, response.appointment_id,response.paymentDetails_id,response.isAdvance);
+                    return razorPay(
+                        response.paymentsData, 
+                        response.appointment_id,
+                        response.paymentDetails_id,
+                        response.isAdvance
+                    );
                 }
 
                 Swal.fire({
@@ -326,12 +331,24 @@ function razorPay(order, appointment_id, paymentDetails_id, isAdvance)
             }).then(response => response.json()).then(data => {
 
                 if (data.success) {
-                    Swal.fire('Payment successful!');
+
+                    Swal.fire({
+                        title: "Success",
+                        text: "Payment Successful!",
+                        icon: "success",
+                        timer: 3000
+                    });
+
                     let successUrl = `${successPage}?appointment_id=${appointment_id}&payment_id=${paymentDetails_id}`;
 
                     window.location.href = successUrl; // Redirect to success page
                 } else {
-                    Swal.fire('Payment verification failed.'); // Notify if verification fails
+                    Swal.fire({
+                        title: "Error",
+                        text: "Payment verification failed.",
+                        icon: "error",
+                        timer: 3000
+                    });
                 }
             });
         },
