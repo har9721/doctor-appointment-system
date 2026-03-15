@@ -169,10 +169,10 @@ function clickOnTimeSlot(timeSlot)
     selectedTimeSlot = $(timeSlot).data('time_slot_id');
     selectedTimeSlotText = $(timeSlot).data('time_slot_text');
     paymentMethod = $(timeSlot).data('payment-mode');
-    consultationFees = $(timeSlot).data('consultation_fees');
+    consultationFees = $(timeSlot).data('consultation-fees');
     selectedAppointmentDate = $(timeSlot).data('selected-date');
-    followUpFees = $(timeSlot).data('follow_up_fees');
-    advanceFees = $(timeSlot).data('advance_amount');
+    followUpFees = $(timeSlot).data('follow-up-fees');
+    advanceFees = $(timeSlot).data('advance-fees');
 
     $('.time-slot').removeClass('selected');
 
@@ -390,11 +390,15 @@ $(document).on('click','#confirmAppointment', function(){
         });
     }
 
+    // generate idempotency key
+    const idempotencyKey = generateIdempotencyKey(patients);
+
     if(selectedTimeSlot)
     {
         $.ajaxSetup({
             headers:{
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content'),
+                'Idempotency-Key' : idempotencyKey
             }
         })
         $.ajax({
@@ -570,10 +574,14 @@ function bookAppointment(selectedTimeSlot, reason)
     {
         let date = $('#date').val();
         let patient_ID = $('#patients_ID').val();
+
+        // generate idempotency key
+        const idempotencyKey = generateIdempotencyKey(patient_ID);
         
         $.ajaxSetup({
             headers:{
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content'),
+                'Idempotency-Key' : idempotencyKey
             }
         })
         $.ajax({
@@ -591,7 +599,12 @@ function bookAppointment(selectedTimeSlot, reason)
 
                     if(paymentMethod && paymentMethod.toLowerCase() !== 'none' && response.paymentsData)
                     {
-                        return razorPay(response.paymentsData, response.appointment_id,response.paymentDetails_id);
+                        return razorPay(
+                            response.paymentsData, 
+                            response.appointment_id,
+                            response.paymentDetails_id, 
+                            response.isAdvance
+                        );
                     }
 
                     Swal.fire({
@@ -642,30 +655,31 @@ function bookAppointment(selectedTimeSlot, reason)
     }
 }
 
-function razorPay(order, appointment_id, paymentDetails_id)
+function razorPay(order, appointment_id, paymentDetails_id, isAdvance)
 {
     const options = {   
         key: razorpayKey, // Razorpay API Key
-        amount: order.amount, // Amount in paise
-        currency: order.currency,
+        amount: order.response.amount, // Amount in paise
+        currency: order.response.currency,
         name: "Doctor Appointment Fees",
         description:  `Payment for Order # ${order.id}`,
-        order_id: order.id,
+        order_id: order.response.id,
         callback_url: successRoute,
         "handler": function (response) {
         
             // Handle the response after successful payment
             var data = {
-                razorpay_payment_id: response.razorpay_payment_id, // Payment ID
-                razorpay_order_id: response.razorpay_order_id, // Order ID
-                razorpay_signature: response.razorpay_signature, // Payment signature
+                razorpay_payment_id: response.razorpay_payment_id || '', // Payment ID
+                razorpay_order_id: response.razorpay_order_id || order.response.id, // Order ID
+                razorpay_signature: response.razorpay_signature || '', // Payment signature
                 appointment_id: appointment_id, // Retrieve appointment ID
-                currency: order.currency,
-                amount: order.amount,
+                currency: order.response.currency,
+                amount: order.response.amount,
                 payment_details_id: paymentDetails_id,
-                name : order.patientName,
-                email : order.patientEmail,
-                contact : order.patientContact
+                name : order.userName,
+                email : order.userEmail,
+                contact : order.contact,
+                isAdvance : isAdvance || 0
             };
 
             // Send payment details to the server for verification
@@ -689,9 +703,9 @@ function razorPay(order, appointment_id, paymentDetails_id)
             });
         },
         prefill: {
-            name: order.patientName,
-            email: order.patientEmail,
-            contact: order.patientContact,
+            name: order.userName,
+            email: order.userEmail,
+            contact: order.contact,
         },
         theme: {
             color: "#14eb2a"

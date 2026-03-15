@@ -6,6 +6,6 @@
         'admin_and_doctor_role_ids' => [1,2],
         'admin_and_patients_role_ids' => [1,3],
 
-        'payment_expiry_time' => env('payment_expiry_time', 60)
+        'payment_expiry_time' => env('payment_expiry_time', 5)
     ];
 ?>

@@ -22,7 +22,7 @@ class PaymentDetailsObserver
 
     public function updated(PaymentDetails $paymentDetails)
     {
-        if($paymentDetails->wasChanged('status') && $paymentDetails->status == 'completed')
+        if($paymentDetails->wasChanged('status') && in_array($paymentDetails->status, ['partial','completed']))
         {
             info('------------------------paymentDetailsObserver updated method--------------------');
             info($paymentDetails->appointment_ID);
