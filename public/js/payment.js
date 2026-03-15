@@ -53,11 +53,22 @@ function razorPay(order, isAdvance)
             }).then(response => response.json()).then(data => {
 
                 if (data.success) {
-                    Swal.fire('Payment successful!');
+                    Swal.fire({
+                        title: "Success",
+                        text: "Payment Successful!",
+                        icon: "success",
+                        timer: 3000
+                    });
+
                     let successUrl = `${successPage}?appointment_id=${appointment_id}&payment_id=${payment_details_id}`;
                     window.location.href = successUrl; // Redirect to success page
                 } else {
-                    Swal.fire('Payment verification failed.'); // Notify if verification fails
+                    Swal.fire({
+                        title: "Error",
+                        text: "Payment verification failed.",
+                        icon: "error",
+                        timer: 3000
+                    });
                 }
             });
         },
@@ -136,7 +147,7 @@ $(document).on('click','.payment_summary', function(){
                     let heading = '';
                     if(value.payment_type === 'advance') {
                         heading = '<h5><strong>Advance Payment Details</strong></h5>';
-                    } else if(value.payment_type === 'remaining') {
+                    } else if(value.payment_type === 'remaining' || value.payment_type == 'offline') {
                         heading = '<h5><strong>Remaining Payment Details</strong></h5>';
                     }
                     

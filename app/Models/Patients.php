@@ -82,25 +82,29 @@ class Patients extends Model
 
     public static function getPatientsList()
     {
-        return Patients::leftJoin('appointments','appointments.patient_ID','patients.id')
-        ->leftJoin('doctor_time_slots','doctor_time_slots.id','appointments.doctorTimeSlot_ID')
-        ->leftJoin('doctors','doctors.id','doctor_time_slots.doctor_ID')
-        ->leftJoin('users','users.id','patients.user_ID')
+        return Patients::
+        when(Auth::user()->role_ID == config('constant.doctor_role_ID'), function($q){
+            
+            $q->leftJoin('appointments','appointments.patient_ID','patients.id')
+            ->leftJoin('doctor_time_slots','doctor_time_slots.id','appointments.doctorTimeSlot_ID')
+            ->leftJoin('doctors','doctors.id','doctor_time_slots.doctor_ID');
+        })
+        ->join('users','users.id','patients.user_ID')
         ->join('mst_genders','mst_genders.id','users.gender_ID')
         ->join('cities','cities.id','users.city_ID')
         ->join('states','states.id','cities.state_id')
         ->when(Auth::user()->role_ID === config('constant.doctor_role_ID'), function($query)
         {
-            $query->where('doctors.user_ID',Auth::user()->id);
+            $query->where('doctors.user_ID',Auth::user()->id)
+            ->groupBy('appointments.patient_ID');
         })
         ->where('patients.isActive',1)
         ->where('users.isActive',1)
-        ->groupBy('appointments.patient_ID')
         ->get([ 
             'patients.id',
             'patients.user_ID',
-            'appointments.doctorTimeSlot_ID',
-            'appointments.patient_ID',
+            // 'appointments.doctorTimeSlot_ID',
+            // 'appointments.patient_ID',
             DB::raw('CONCAT_WS(" ", users.first_name, users.last_name) as patient_full_name'),
             'email','mobile','age','address','gender','mst_genders.gender','cities.name AS city','states.name AS state', 'role_ID'
         ])->toArray();

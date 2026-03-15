@@ -20,7 +20,7 @@ class DoctorTimeSlots extends Model
 
     CONST DELETED_AT = 'deletedAt';
 
-    protected $fillable = ['doctor_ID', 'availableDate' ,'start_time','end_time','created_at'];
+    protected $fillable = ['doctor_ID', 'availableDate' ,'start_time','end_time','created_at', 'isBooked'];
 
     protected $appends = ['start','end','title','time', 'appointmentdate'];
 

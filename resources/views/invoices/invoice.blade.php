@@ -138,9 +138,15 @@
         <!-- Total Paid -->
         <div class="d-flex justify-content-between amount-highlight">
             <span>Total Paid</span>
-            <span>
-                {{ number_format($invoiceData['advance_amount'] + $invoiceData['remaining_amount'], 2) }}
-            </span>
+            @if($invoiceData['method'] == 'offline')
+                <span>
+                    {{ number_format($invoiceData['amount'], 2) }}
+                </span>
+            @else
+                <span>
+                    {{ number_format($invoiceData['advance_amount'] + $invoiceData['remaining_amount'], 2) }}
+                </span>
+            @endif
         </div>
 
         @if($invoiceData['payment_status'] == 'partial')

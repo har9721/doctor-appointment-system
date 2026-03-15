@@ -2,7 +2,7 @@
 <body>
     <h5>Dear {{ $patientName }},</h5>
     <p>Your appointment has been scheduled successfully.</p>
-    <br/>
+
     <p>To confirm your booking, please complete the advance payment within 1 hour using the link below:</p>
     
     <h3>Appointment Details:</h3>
@@ -19,7 +19,7 @@
 
     <br/>
 
-    <p>Kindly note that the appointment will be confirmed only after payment is received. If payment is not completed within 1 hour, the slot may be released.</p>
+    <p>Kindly note that the appointment will be confirmed only after payment is received. If payment is not completed within 5 minutes, the slot may be released.</p>
 
     <br/>
 
