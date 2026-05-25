@@ -702,6 +702,18 @@ function razorPay(order, appointment_id, paymentDetails_id, isAdvance)
                 }
             });
         },
+
+        modal: {
+            ondismiss: function () {
+
+                handlePaymentDismissed(
+                    appointment_id,
+                    paymentDetails_id,
+                    order.response.id
+                );
+            }
+        },
+
         prefill: {
             name: order.userName,
             email: order.userEmail,
@@ -714,4 +726,31 @@ function razorPay(order, appointment_id, paymentDetails_id, isAdvance)
 
     const rzp = new Razorpay(options);
     rzp.open();
+}
+
+function handlePaymentDismissed(appointment_id, paymentDetails_id, razorpay_order_id)
+{
+    fetch(cancelUrl, {
+
+        method: 'POST',
+
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        },
+
+        body: JSON.stringify({
+            appointment_id,
+            payment_details_id: paymentDetails_id,
+            razorpay_order_id
+        })
+
+    });
+
+    Swal.fire({
+        title: "Cancelled",
+        text: "Payment is cancelled.",
+        icon: "warning",
+        timer: 3000
+    });
 }

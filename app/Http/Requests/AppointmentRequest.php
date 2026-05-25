@@ -17,6 +17,28 @@ class AppointmentRequest extends FormRequest
 
     public function rules()
     {
+        // Check if this is a reschedule appointment request
+        if($this->routeIs('appointments.reschedule-appoitment')) {
+            return [
+                'appointment_date' => ['required', 'date_format:d-m-Y'],
+                'doctor_ID' => ['required', 'numeric'],
+                'appointment_id' => ['required', 'numeric', 'exists:appointments,id'],
+                'patient_ID' => ['required', 'numeric'],
+                'new_time_slot' => ['required', 'numeric', 'exists:doctor_time_slots,id'],
+                'hidden_timeslot_id' => ['required', 'numeric'],
+            ];
+        }
+
+        // Check if this is a fetch available time slots request
+        if($this->routeIs('appointments.fetch-time-slot')) {
+            return [
+                'appointment_date' => ['required', 'date_format:d-m-Y'],
+                'doctor_ID' => ['required', 'numeric', 'exists:doctors,id'],
+                'patient_ID' => ['required', 'numeric', 'exists:patients,id'],
+            ];
+        }
+
+        // Default validation rules for other appointment operations
         return [
             'appointment_date' => ['required','date_format:d-m-Y',
                 function($attributes,$value,$fail)

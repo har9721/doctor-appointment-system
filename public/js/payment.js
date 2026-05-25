@@ -74,7 +74,12 @@ function razorPay(order, isAdvance)
         },
         modal: {
             ondismiss: function () {
-                rzp.close(); 
+
+                handlePaymentDismissed(
+                    appointment_id,
+                    payment_details_id,
+                    order.response.id
+                );
             }
         },
         prefill: {
@@ -227,3 +232,30 @@ $(document).on('click','.prescription_summary', function(){
 $(document).on('click','#rzp-button', function(){
     razorPay(localPaymentData,localIsAdvance);
 });
+
+function handlePaymentDismissed(appointment_id, paymentDetails_id, razorpay_order_id)
+{
+    fetch(cancelUrl, {
+
+        method: 'POST',
+
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        },
+
+        body: JSON.stringify({
+            appointment_id,
+            payment_details_id: paymentDetails_id,
+            razorpay_order_id
+        })
+
+    });
+
+    Swal.fire({
+        title: "Cancelled",
+        text: "Payment is cancelled.",
+        icon: "warning",
+        timer: 3000
+    });
+}

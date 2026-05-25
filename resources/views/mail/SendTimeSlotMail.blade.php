@@ -11,7 +11,7 @@
     </a>
 
     <br/>
-    <p>Thank you for using our service.</p>
+
     <p>Regards,</p>
     <p>Doctor Management System</p>
 </body>

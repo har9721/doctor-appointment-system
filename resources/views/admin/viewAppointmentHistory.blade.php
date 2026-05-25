@@ -113,6 +113,7 @@
     let successPage = "{{ route('payments.success-page') }}";
     let markPaymentDone = "{{ route('payments.mark-payment') }}";
     let fetchPrescriptionsDetails = "{{ route('appointments.prescription.get') }}";
+    let cancelUrl = `{{ route('appointments.cancel') }}`;
 </script>
 
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
