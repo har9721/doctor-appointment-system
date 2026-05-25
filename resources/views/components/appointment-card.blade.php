@@ -71,7 +71,7 @@
                             Advance Payment Status :
                         </strong>
                         <span class="badge
-                        @if($appointment->advanced_payment_status == 'pending') bg-danger text-white 
+                        @if($appointment->advanced_payment_status == 'pending' || $appointment->advanced_payment_status == 'failed') bg-danger text-white 
                         @else bg-success text-white @endif">{{ ucfirst($appointment->advanced_payment_status) }}</span>
                     </p>
                 </div>

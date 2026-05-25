@@ -4,11 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\AppointmentBooking;
 use App\Http\Requests\AppointmentRequest;
+use App\Http\Requests\CancelAppointmentRequest;
 use App\Http\Requests\ValidateReportsDate;
 use App\Models\Appointments;
 use App\Models\Doctor;
 use App\Models\DoctorTimeSlots;
 use App\Models\Patients;
+use App\Services\PaymentHandlerService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -18,10 +20,12 @@ use Yajra\DataTables\Facades\DataTables;
 class AppointmentController extends Controller
 {
     protected $appoinments;
+    protected $payment_handler;
 
-    public function __construct(Appointments $appoinments)
+    public function __construct(Appointments $appoinments, PaymentHandlerService $paymentHandler)
     {
        $this->appoinments = $appoinments; 
+       $this->payment_handler = $paymentHandler;
     }
 
     public function getAppointments(Request $request)
@@ -218,6 +222,9 @@ class AppointmentController extends Controller
         return DataTables::of($completedAppointments)
             ->addIndexColumn()
             ->editColumn('action', function($row){
+
+                $payment_status = ($row['advance_amount'] == '0.00' || $row['advance_amount'] != '0.00') ? 'full_payment' : $row['payment_status'];
+
                 $viewPaymentSummay = (in_array($row['payment_status'], ['completed','partial'])) ? '<button name="Pay" class="mr-2 btn btn-sm btn-info border text-white payment_summary"  data-toggle="tooltip" data-id = "'.$row['id'].'" data-amount = "'. $row['amount'] .'" data-placement="bottom" title="View Payment Summary"  data-bs-toggle="modal" data-bs-target="#paymentSummaryModal">
                     <i class="fas fa-file-invoice-dollar"></i> 
                 </button>' : '' ;
@@ -229,7 +236,7 @@ class AppointmentController extends Controller
                 $pay = (($row['payment_status'] == 'pending' || $row['payment_status'] == 'partial') && ($row['status'] == 'awaiting for payment' || $row['status'] == 'completed') && (!in_array(Auth::user()->role_ID, config('constant.admin_and_doctor_role_ids')))
                 && $row['amount'] != null
                 ) 
-                ? '<button name="Pay" id="payment" class="mr-2 payment btn btn-sm success border text-white bg-dark" data-toggle="tooltip" data-id = "'.$row['id'].'" data-placement="bottom" title="Pay Now" data-email ="' . $row['patient_email'] . '" data-contact ="' . $row['patient_contact'] . '" data-name="'. $row['patient_full_name'] .'" data-payment-status="'. $row['payment_status'] .'">
+                ? '<button name="Pay" id="payment" class="mr-2 payment btn btn-sm success border text-white bg-dark" data-toggle="tooltip" data-id = "'.$row['id'].'" data-placement="bottom" title="Pay Now" data-email ="' . $row['patient_email'] . '" data-contact ="' . $row['patient_contact'] . '" data-name="'. $row['patient_full_name'] .'" data-payment-status="'. $payment_status .'">
                     <i class="fas fa-credit-card"></i>
                 </button>' 
                 : '';
@@ -389,5 +396,27 @@ class AppointmentController extends Controller
         }
 
         echo json_encode($response);
+    }
+
+    public function cancelAppointments(CancelAppointmentRequest $request)
+    {
+        try {
+            $data = $request->validated();
+
+            // Cancel appointment: mark as cancelled, mark payment as failed, and release the timeslot
+            $result = $this->payment_handler->cancelAppointment($data);
+
+            return response()->json([
+                'success' => true,
+                'message' => $result['message'],
+                'appointment_id' => $result['appointment_id']
+            ], 200);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 400);
+        }
     }
 }
