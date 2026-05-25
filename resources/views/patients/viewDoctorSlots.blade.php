@@ -51,6 +51,7 @@
     let doctor_role_ID =  `{{ config('constant.doctor_role_ID') }}`;
     let admin_role_ID =  `{{ config('constant.admin_role_ID') }}`;
     let doctorId = `{{ $doctor_id ?? 0 }}`;
+    let cancelUrl = `{{ route('appointments.cancel') }}`;
 </script>
 
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>

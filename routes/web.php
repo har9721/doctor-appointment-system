@@ -133,6 +133,7 @@ Route::middleware('auth')->group(function(){
             Route::get('get-completed-appointment','getCompletedAppointment')->name('get-appointment-completed-list');
             Route::get('get-appointment-details','getAppointmentDetails')->name('get-appointment-details');
             Route::post('/edit-appointments','updateAppointments')->name('edit-appointments-details');
+            Route::post('/cancel-appointments', 'cancelAppointments')->name('cancel');
         });
 
         Route::controller(PrescriptionsController::class)->group(function(){

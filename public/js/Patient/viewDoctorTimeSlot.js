@@ -88,6 +88,18 @@ document.addEventListener('DOMContentLoaded', function() {
             const finalDate = appointmentdate+' '+startTime;
             const clickedDate = parseDateTime(finalDate);
             const isBooked = event.event.extendedProps.isBooked;
+            const status = event.event.extendedProps.status;
+
+            if(status == 'Not available')
+            {
+                Swal.fire({
+                    title: "Not Allowed",
+                    text: "Doctor is not available for this time slot.",
+                    icon: "warning",
+                    timer: 3000
+                });
+                return false;
+            }
 
             clickedDate.setHours(0, 0, 0, 0);
             today.setHours(0, 0, 0, 0);
@@ -352,6 +364,18 @@ function razorPay(order, appointment_id, paymentDetails_id, isAdvance)
                 }
             });
         },
+
+        modal: {
+            ondismiss: function () {
+
+                handlePaymentDismissed(
+                    appointment_id,
+                    paymentDetails_id,
+                    order.response.id
+                );
+            }
+        },
+
         prefill: {
             name: order.userName,
             email: order.userEmail,
@@ -413,6 +437,33 @@ function getPatientsList()
     $('#patients').select2({
         placeholder: "Select patient name",
         dropdownParent: $('#bookModal')
+    });
+}
+
+function handlePaymentDismissed(appointment_id, paymentDetails_id, razorpay_order_id)
+{
+    fetch(cancelUrl, {
+
+        method: 'POST',
+
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        },
+
+        body: JSON.stringify({
+            appointment_id,
+            payment_details_id: paymentDetails_id,
+            razorpay_order_id
+        })
+
+    });
+
+    Swal.fire({
+        title: "Cancelled",
+        text: "Payment is cancelled.",
+        icon: "warning",
+        timer: 3000
     });
 }
 

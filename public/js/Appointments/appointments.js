@@ -66,58 +66,90 @@ $(document).on('click','.appointmentButoon', function()
         });
     }else{
 
-        $.ajaxSetup({
-            headers:{
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        // Create dynamic action message based on appointment_status
+        let actionMessage = appointment_status;
+        switch(appointment_status) {
+            case 'completed':
+                actionMessage = 'mark complete';
+                break;
+            case 'confirmed':
+                actionMessage = 'confirm';
+                break;
+            case 'cancelled':
+                actionMessage = 'cancel';
+                break;
+            default:
+                actionMessage = appointment_status;
+        }
+
+        // Show confirmation dialog
+        Swal.fire({
+            title: 'Confirmation',
+            text: `Are you sure you want to ${actionMessage} this appointment?`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Yes',
+            cancelButtonText: 'No',
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // User clicked Yes, proceed with AJAX call
+                $.ajaxSetup({
+                    headers:{
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    }
+                }); 
+                $.ajax({
+                    type : "post",
+                    url : mark_appointments,
+                    data : {'appointment_id' : appointment_id, 'status' : appointment_status,'appointment_date' : appointment_date, 'patient_ID' : patient_ID, 'timeSlot' : timeslot_ID},
+                    beforeSend : function(){
+                        $('#confirm_button').attr('disabled',true)
+                        $('#cancel_button').attr('disabled',true)
+                    },
+                    success: function (response){
+                        if(response['status'] == 'success'){
+                            Swal.fire({
+                                title: "Success",
+                                text: response['message'],
+                                icon: "success",
+                                timer: 3000
+                            });
+            
+                            setTimeout(function(){
+                                window.location.reload();
+                            },2000);
+                        }else{    
+                            Swal.fire({
+                                title: "Error",
+                                text: response['message'],
+                                icon: "error",
+                                timer: 3000
+                            });
+                        }
+                    },
+                    error: function(response)
+                    {
+                        if(response.status === 422)
+                        {
+                            var errors = response.responseJSON;
+                            Swal.fire({
+                                title: "Error",
+                                text: errors.message,
+                                icon: "error",
+                                timer: 4000
+                            });
+                        }
+                    },
+                    complete : function(){
+                        $('#confirm_button').attr('disabled',false);
+                        $('#cancel_button').attr('disabled',false);
+                    }
+                })
             }
-        }); 
-        $.ajax({
-            type : "post",
-            url : mark_appointments,
-            data : {'appointment_id' : appointment_id, 'status' : appointment_status,'appointment_date' : appointment_date, 'patient_ID' : patient_ID, 'timeSlot' : timeslot_ID},
-            beforeSend : function(){
-                $('#confirm_button').attr('disabled',true)
-                $('#cancel_button').attr('disabled',true)
-            },
-            success: function (response){
-                if(response['status'] == 'success'){
-                    Swal.fire({
-                        title: "Success",
-                        text: response['message'],
-                        icon: "success",
-                        timer: 3000
-                    });
-    
-                    setTimeout(function(){
-                        window.location.reload();
-                    },2000);
-                }else{    
-                    Swal.fire({
-                        title: "Error",
-                        text: response['message'],
-                        icon: "error",
-                        timer: 3000
-                    });
-                }
-            },
-            error: function(response)
-            {
-                if(response.status === 422)
-                {
-                    var errors = response.responseJSON;
-                    Swal.fire({
-                        title: "Error",
-                        text: errors.message,
-                        icon: "error",
-                        timer: 4000
-                    });
-                }
-            },
-            complete : function(){
-                $('#confirm_button').attr('disabled',false);
-                $('#cancel_button').attr('disabled',false);
-            }
-        })
+            // If user clicks No or Cancel, nothing happens
+        });
     }
 });
 
@@ -377,58 +409,74 @@ $(document).on('click','#submit', function(){
 
         if(appointment_date != hidden_appointment_date || hidden_timeslot_id != selectedTimeSlot)
         {
-            $.ajaxSetup({
-                headers:{
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            // Show confirmation dialog
+            Swal.fire({
+                title: 'Confirmation',
+                text: 'Are you sure you want to reschedule this appointment?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Yes',
+                cancelButtonText: 'No',
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // User clicked Yes, proceed with AJAX call
+                    $.ajaxSetup({
+                        headers:{
+                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                        }
+                    })
+                    $.ajax({
+                        type : "get",
+                        url : reschedule_appointment,
+                        data : {'appointment_date' : appointment_date,'doctor_ID' : doctor_ID, 'appointment_id' : appointment_id, 'patient_ID' : patient_ID,'new_time_slot' : selectedTimeSlot, 'hidden_timeslot_id' : hidden_timeslot_id},
+                        beforeSend : function()
+                        {
+                            $('#submit').attr('disabled',true);
+                        },
+                        success: function (response)
+                        {
+                            if(response['status'] == 'success'){
+                                Swal.fire({
+                                    title: "Success",
+                                    text: response['message'],
+                                    icon: "success",
+                                    timer: 3000
+                                });
+                
+                                setTimeout(function(){
+                                    window.location.reload();
+                                },2000);
+                            }else{    
+                                Swal.fire({
+                                    title: "Error",
+                                    text: response['message'],
+                                    icon: "error",
+                                    timer: 3000
+                                });
+                            }
+                        },
+                        error: function(response)
+                        {
+                            if(response.status === 422)
+                            {
+                                var errors = response.responseJSON;
+                                Swal.fire({
+                                    title: "Error",
+                                    text: errors.message,
+                                    icon: "error",
+                                    timer: 4000
+                                });
+                            }
+                        },
+                        complete : function()
+                        {
+                            $('#submit').attr('disabled',false);
+                        }
+                    });
                 }
-            })
-            $.ajax({
-                type : "get",
-                url : reschedule_appointment,
-                data : {'appointment_date' : appointment_date,'doctor_ID' : doctor_ID, 'appointment_id' : appointment_id, 'patient_ID' : patient_ID,'new_time_slot' : selectedTimeSlot, 'hidden_timeslot_id' : hidden_timeslot_id},
-                beforeSend : function()
-                {
-                    $('#submit').attr('disabled',true);
-                },
-                success: function (response)
-                {
-                    if(response['status'] == 'success'){
-                        Swal.fire({
-                            title: "Success",
-                            text: response['message'],
-                            icon: "success",
-                            timer: 3000
-                        });
-        
-                        setTimeout(function(){
-                            window.location.reload();
-                        },2000);
-                    }else{    
-                        Swal.fire({
-                            title: "Error",
-                            text: response['message'],
-                            icon: "error",
-                            timer: 3000
-                        });
-                    }
-                },
-                error: function(response)
-                {
-                    if(response.status === 422)
-                    {
-                        var errors = response.responseJSON;
-                        Swal.fire({
-                            title: "Error",
-                            text: errors.message,
-                            icon: "error",
-                            timer: 4000
-                        });
-                    }
-                },
-                complete : function()
-                {
-                    $('#submit').attr('disabled',false);
-                }
+                // If user clicks No or Cancel, nothing happens
             });
         }else{
             Swal.fire({

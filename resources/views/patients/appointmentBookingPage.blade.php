@@ -143,6 +143,7 @@
     let successUrl = "{{ url('payment/success') }}";
     let successRoute = "{{ route('payment.success') }}";
     let successPage = "{{ route('payments.success-page') }}";
+    let cancelUrl = `{{ route('appointments.cancel') }}`;
 </script>
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <script src="{{ asset('js/idempotency.js') }}" ></script>
