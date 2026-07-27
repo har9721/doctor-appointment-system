@@ -403,8 +403,6 @@ class PaymentController extends Controller
 
             },3);
 
-            DB::commit();
-
             // $getPatientDetails = Patients::with('user')->where('id',$patient_id)->first();
 
             return response()->json([
@@ -421,8 +419,6 @@ class PaymentController extends Controller
 
         } catch (\Exception $e) {
 
-            DB::rollBack();
-
             return response()->json([
                 'status' => 'error', 
                 'message' => $e->getMessage(),
@@ -433,96 +429,49 @@ class PaymentController extends Controller
 
     public function razorpayWebhooks(Request $request)
     {
-        info('------------------inside webhook function---------------------');
-        $signature = $request->header('X-Razorpay-Signature');
-        $paymentData = $request->getContent();
+        try {
+            info('------------------inside webhook function---------------------');
+            $signature = $request->header('X-Razorpay-Signature');
+            $paymentData = $request->getContent();
 
-        if(!empty($paymentData))
-        {
-            $this->api->utility->verifyWebhookSignature(
-                $paymentData,
-                $signature,
-                $this->webhookSecret
-            );
-    
-            $event = json_decode($paymentData, true);;
-    
-            Log::info($event);
-
-            if($event['event'] === 'payment.captured')
+            if(!empty($paymentData))
             {
-                $paylod = $event['payload']['payment']['entity'];
+                $this->api->utility->verifyWebhookSignature(
+                    $paymentData,
+                    $signature,
+                    $this->webhookSecret
+                );
 
-                $description = $paylod['description'];
+                $event = json_decode($paymentData, true);
 
-                // fetch the payment details using the payment id
-                $fetchPaymentDetails = $this->api->payment->fetch($paylod['id']);
+                Log::info($event);
 
-                $appointment_id = substr($description, strrpos($description, '_') + 1);
-                info('appointment id');info($appointment_id);
-
-                Appointments::where('id', $appointment_id)->update([
-                    'payment_status' => 'completed',
-                    'updated_at'    => now()
-                ]);
-
-                $order_Id = $paylod['order_id'];
-                info('order_id');info($order_Id);
-
-                $payment = PaymentDetails::findOrFail($appointment_id, $order_Id);
-
-                $payment->update([
-                    'status'   => 'completed',
-                    'method'   => $paylod['method'],
-                    'email'    => $paylod['email'],
-                    'phone'    => $paylod['contact'],
-                    'currency' => $paylod['currency'],
-                    'res_payment_id' => $fetchPaymentDetails->id,
-                    'json_response'  => json_encode((array)$fetchPaymentDetails),
-                ]);
-
-                info('-----------------------Payment updated successfully via webhook.---------------------');
-            }
-
-            if($event['event'] === 'payment.failed')
-            {
-                info('-----------------------Payment failed webhook received.---------------------');
-
-                $paylod = $event['payload']['payment']['entity'];
-                info('------failed payment------------');info($paylod);
-
-                // fetch the payment details using the payment id
-                $fetchPaymentDetails = $this->api->payment->fetch($paylod['id']);
-
-                $order_Id = $paylod['order_id'];
-                info('order_id');info($order_Id);
- 
-                $payment = PaymentDetails::where('order_id', $order_Id)->first();
-
-                if(!empty($payment))
+                if($event['event'] === 'payment.captured')
                 {
-                    $appointment_ID = $payment->appointment_ID;
+                    $paylod = $event['payload']['payment']['entity'];
 
-                    $get_time_slot_id = Appointments::where('id', $appointment_ID)->value('doctorTimeSlot_ID');
+                    $description = $paylod['description'];
 
-                    if(!empty($get_time_slot_id))
-                    {
-                        // free the time slot
-                        DoctorTimeSlots::where('id', $get_time_slot_id)
-                        ->update([
-                            'isBooked' => 0,
-                            'updated_at' => now()
-                        ]);
-                    }
-    
-                    Appointments::where('id', $payment->appointment_ID)
-                    ->update([
-                        'payment_status' => 'failed',
+                    // fetch the payment details using the payment id
+                    $fetchPaymentDetails = $this->api->payment->fetch($paylod['id']);
+
+                    $appointment_id = substr($description, strrpos($description, '_') + 1);
+                    info('appointment id');info($appointment_id);
+
+                    Appointments::where('id', $appointment_id)->update([
+                        'payment_status' => 'completed',
                         'updated_at'    => now()
                     ]);
-    
+
+                    $order_Id = $paylod['order_id'];
+                    info('order_id');info($order_Id);
+
+                    $payment = PaymentDetails::where('appointment_ID', $appointment_id)
+                        ->where('order_id', $order_Id)
+                        ->firstOrFail();
+
                     $payment->update([
-                        'status'   => 'failed',
+                        'status'   => 'completed',
                         'method'   => $paylod['method'],
                         'email'    => $paylod['email'],
                         'phone'    => $paylod['contact'],
@@ -530,10 +479,71 @@ class PaymentController extends Controller
                         'res_payment_id' => $fetchPaymentDetails->id,
                         'json_response'  => json_encode((array)$fetchPaymentDetails),
                     ]);
-    
+
                     info('-----------------------Payment updated successfully via webhook.---------------------');
                 }
+
+                if($event['event'] === 'payment.failed')
+                {
+                    info('-----------------------Payment failed webhook received.---------------------');
+
+                    $paylod = $event['payload']['payment']['entity'];
+                    info('------failed payment------------');info($paylod);
+
+                    // fetch the payment details using the payment id
+                    $fetchPaymentDetails = $this->api->payment->fetch($paylod['id']);
+
+                    $order_Id = $paylod['order_id'];
+                    info('order_id');info($order_Id);
+
+                    $payment = PaymentDetails::where('order_id', $order_Id)->first();
+
+                    if(!empty($payment))
+                    {
+                        $appointment_ID = $payment->appointment_ID;
+
+                        $get_time_slot_id = Appointments::where('id', $appointment_ID)->value('doctorTimeSlot_ID');
+
+                        if(!empty($get_time_slot_id))
+                        {
+                            // free the time slot
+                            DoctorTimeSlots::where('id', $get_time_slot_id)
+                            ->update([
+                                'isBooked' => 0,
+                                'updated_at' => now()
+                            ]);
+                        }
+
+                        Appointments::where('id', $payment->appointment_ID)
+                        ->update([
+                            'payment_status' => 'failed',
+                            'updated_at'    => now()
+                        ]);
+
+                        $payment->update([
+                            'status'   => 'failed',
+                            'method'   => $paylod['method'],
+                            'email'    => $paylod['email'],
+                            'phone'    => $paylod['contact'],
+                            'currency' => $paylod['currency'],
+                            'res_payment_id' => $fetchPaymentDetails->id,
+                            'json_response'  => json_encode((array)$fetchPaymentDetails),
+                        ]);
+
+                        info('-----------------------Payment updated successfully via webhook.---------------------');
+                    }
+                }
             }
+
+            return response()->json(['status' => 'ok']);
+
+        } catch (\Throwable $e) {
+            Log::error('Webhook processing failed: ' . $e->getMessage());
+
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Webhook verification or processing failed'
+            ], 400);
         }
     }
 }
