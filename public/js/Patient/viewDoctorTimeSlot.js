@@ -1,4 +1,5 @@
 let selectedDoctorId;
+let idempotencyKey = null;
 
 getPatientsList();
 
@@ -140,6 +141,9 @@ document.addEventListener('DOMContentLoaded', function() {
             $('#advanceFees').attr('data-payment-method', paymentMethod);
             $('#advanceFees').val(advanceFees);
 
+            // generate idempotency key
+            idempotencyKey = generateIdempotencyKey(loginUserId);
+
             $('#bookModal').modal('show');
         },
 
@@ -225,9 +229,6 @@ $(document).on('click','#reasonModal', function(){
                 timer: 3000
             });
     }
-
-    // generate idempotency key
-    const idempotencyKey = generateIdempotencyKey(patient_ID);
 
     bookingUrl = (paymentMethod && paymentMethod.toLowerCase() === 'none') 
     ? bookingUrl 
