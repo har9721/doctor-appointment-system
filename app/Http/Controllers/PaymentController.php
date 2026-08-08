@@ -226,6 +226,11 @@ class PaymentController extends Controller
 
         $paymentData = $this->paymentSummary($appointment_id, $payment_id);
 
+        if(empty($payment_id) && !empty($paymentData))
+        {
+            $paymentData = $paymentData->last();
+        }
+
         return view('payments.success',['payment' => $paymentData]);    
     }
 

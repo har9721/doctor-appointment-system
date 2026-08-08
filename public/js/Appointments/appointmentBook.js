@@ -1,3 +1,5 @@
+let idempotencyKey = null;
+
 document.addEventListener('DOMContentLoaded', function() {
     //start date datepicker
     $('#date').datetimepicker({
@@ -193,6 +195,9 @@ $(document).on('click', '.book-btn',function(){
         $('#consultationFeesInfo').html(`<strong>Consultation Fees:</strong> ${consultationFees}`);
     
         $('#bookModal').modal('show');
+
+        // generate idempotency key
+        idempotencyKey = generateIdempotencyKey(loginUserId);
 
         // let time_slot = selectedTimeSlot;
         // let date = $('#date').val();
@@ -574,9 +579,6 @@ function bookAppointment(selectedTimeSlot, reason)
     {
         let date = $('#date').val();
         let patient_ID = $('#patients_ID').val();
-
-        // generate idempotency key
-        const idempotencyKey = generateIdempotencyKey(patient_ID);
         
         $.ajaxSetup({
             headers:{
