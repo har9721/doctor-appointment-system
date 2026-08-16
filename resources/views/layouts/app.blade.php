@@ -16,7 +16,7 @@
     <!-- Custom styles for this template-->
     <link href="{{ URL::to('assets/css/sb-admin-2.min.css') }}" rel="stylesheet">
 
-    <link href="{{ URL::to('assets/datatables/jquery.dataTable.min.css') }}" rel="stylesheet">
+    <link href="{{ URL::to('assets/datatables/jquery.datatable.min.css') }}" rel="stylesheet">
 
     <!-- toggle switch -->
     <link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
