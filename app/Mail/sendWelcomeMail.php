@@ -34,7 +34,7 @@ class sendWelcomeMail extends Mailable
             with: [
                 'name' => $this->data['first_name']. ' '.$this->data['last_name'],
                 'password' => '12345678',
-                'url' => "http://127.0.0.1:8000/",
+                'url' => url('/'),
                 'email' => $this->data['email'],
             ],
         );
