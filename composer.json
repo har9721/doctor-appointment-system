@@ -12,6 +12,7 @@
         "laravel/sanctum": "^3.0",
         "laravel/tinker": "^2.7",
         "laravel/ui": "^4.5",
+        "predis/predis": "^3.6",
         "razorpay/razorpay": "^2.9",
         "yajra/laravel-datatables": "^9.0"
     },
