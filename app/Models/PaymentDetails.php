@@ -42,7 +42,7 @@ class PaymentDetails extends Model
                 DB::raw('YEAR(created_at) as year'),
                 'created_at'
             )
-            ->groupBy('month')
+            // ->groupBy('month')
             ->orderBy('month', 'asc')
             ->get();
     }

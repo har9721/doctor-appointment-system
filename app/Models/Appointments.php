@@ -557,7 +557,7 @@ class Appointments extends Model
                 'status' => ucfirst($status)
             ])
             ->orderBy('id', 'desc')
-            ->get(['id','doctorTimeSlot_ID','patient_ID','appointmentDate']);
+            ->get(['id','doctorTimeSlot_ID','patient_ID','appointmentDate', 'amount']);
     }
 
     // protected function appointmentDate() : Attribute 

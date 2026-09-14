@@ -23,6 +23,7 @@
                             <th>Patients Name</th>
                             <th>Appointment Date</th>
                             <th>Appointment Time</th>
+                            <th>Amount</th>
                         </tr>
                     </thead>
                     <tbody class="text-center">

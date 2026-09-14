@@ -6,6 +6,7 @@ use App\Models\Appointments;
 use App\Models\Doctor;
 use App\Models\Patients;
 use App\Models\PaymentDetails;
+use Carbon\Carbon;
 use Yajra\DataTables\Facades\DataTables;
 
 class ReportService
@@ -240,8 +241,8 @@ class ReportService
 
     public function getRevenueDetails($request)
     {
-        $startDate = date('Y-m-d', strtotime($request['from_date']));
-        $endDate = date('Y-m-d', strtotime($request['to_date']));
+        $startDate = Carbon::createFromFormat('d-m-Y', $request['start_date'])->startOfDay();
+        $endDate   = Carbon::createFromFormat('d-m-Y', $request['end_date'])->endOfDay();
 
         $revenueDetails = PaymentDetails::getRevenueDetails($startDate, $endDate);
 

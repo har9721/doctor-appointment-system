@@ -89,7 +89,7 @@ class ReportsController extends Controller
     {
         if($request->ajax())
         {
-            return $this->reportService->getRevenueDetails($request->only(['from_date', 'to_date']));
+            return $this->reportService->getRevenueDetails($request->only(['start_date', 'end_date']));
         }
     }
 }
