@@ -117,14 +117,13 @@ trait Home
 
     public function fetchPieChartData()
     {
-        if(Auth::user()->isDoctor())
-        {
-            return Appointments::getPatientOverview('completed');    
-        }
-        else if(Auth::user()->isAdmin())
-        {
-            return Appointments::getPieChartData();   
-        } 
+        $role = Auth::user()->role?->roleName;
+
+        return match ($role) {
+            'Doctor' => Appointments::getPatientOverview('completed'),
+            'Admin' => Appointments::getPieChartData(),
+            default => null,
+        };
     }
 
     public function fetchAppointments()

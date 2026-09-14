@@ -100,8 +100,8 @@ function fetchRevenueData()
       type: "get",
       url: getRevenue,
       data: {
-        from_date: $('#from_date').val(),
-        to_date: $('#to_date').val(),
+        start_date: $('#from_date').val(),
+        end_date: $('#to_date').val(),
       },
       beforeSend: function() {
         $('#search').attr('disabled', true);
@@ -141,7 +141,7 @@ function fetchRevenueData()
                               label: function(context) {
                                   const value = context.parsed;
                                   const percentage = ((value / total) * 100).toFixed(2);
-                                  return `${context.label}: ${value} (${percentage}%)`;
+                                  return `Rs: ${value}/- (${percentage}%)`;
                               }
                           }
                       }

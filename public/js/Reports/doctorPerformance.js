@@ -20,7 +20,7 @@ $('#to_date').datetimepicker({
     datepicker : true,
     changeMonth:true,
     changeYear:true,
-    minDate : "-1",
+    // minDate : "-1",
     scrollInput : false,
 });
 
@@ -44,8 +44,8 @@ if(loadDoctorPerformanceTable)
             },
             data: function(d)
             {
-                d.from_date = $('#from_date').val()
-                d.to_date = $('#to_date').val()
+                d.start_date = $('#from_date').val()
+                d.end_date = $('#to_date').val()
                 d.id = $('#doctor_name_list').val()
             },
             complete: function()
@@ -99,7 +99,8 @@ if(loadAppointmentDetailsTable)
             {data: 'DT_RowIndex', name: 'DT_RowIndex',"sortable": true, "searchable": false},
             {data: 'patients_full_name', name:'patients_full_name',"sortable": true, "searchable": true},
             {data: 'appointmentDate', name:'appointmentDate',"sortable": true, "searchable": true},
-            {data: 'appointmentTime', name:'appointmentTime',"sortable": true, "searchable": true}
+            {data: 'appointmentTime', name:'appointmentTime',"sortable": true, "searchable": true},
+            {data: 'amount', name:'amount',"sortable": true, "searchable": true}
         ],
     });
 }
