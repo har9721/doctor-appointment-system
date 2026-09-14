@@ -30,7 +30,7 @@
                         <div class="col-md-3">
                             <label for="date" class="font-weight-bold">Patients Name : </label>
                             <select class="form-control" id="patient_name_list" name="patient_name" multiple>
-                                <option value="">Select Patient</option>
+                                <option value="" selected>Select Patient</option>
                             </select>
                         </div>
                     @endif

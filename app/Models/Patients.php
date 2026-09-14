@@ -132,7 +132,9 @@ class Patients extends Model
             ->leftJoin('doctor_time_slots','doctor_time_slots.id','appointments.doctorTimeSlot_ID')
             ->leftJoin('doctors','doctors.id','doctor_time_slots.doctor_ID')
             ->leftJoin('users','users.id','patients.user_ID')
-            ->where('doctors.user_ID',Auth::user()->id)
+            ->when(Auth::user()->isDoctor(), function($query){
+                $query->where('doctors.user_ID',Auth::user()->id);
+            })
             ->where('patients.isActive',1)
             ->where('users.isActive',1)
             ->groupBy('appointments.patient_ID')
